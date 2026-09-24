@@ -21,6 +21,12 @@ Circle doesn't just send you a passive push notification. If your deadline is ap
 2. **Persistent:** Automated system message sent to your Circle group chat.
 3. **Relentless:** The backend triggers a **VoIP AGI Phone Call**. Using Vapi and CallKit, your phone rings with a native call screen. When you answer, an AI drill sergeant demands to know why you haven't finished your habit.
 
+### 🎧 The Lo-Fi Focus Room (Built-in Work Tool)
+Circle isn't just for tracking work; it's a destination to *do* the work.
+* **The Vibe:** Enter the "Focus Room" to start a Pomodoro deep-work session. Chill lo-fi beats automatically begin playing in the background.
+* **The Dynamic Mascot:** A custom Rive animated mascot sits on your screen working alongside you. The animation state machine dynamically changes based on the timer (typing calmly at the start, typing frantically near the end, and celebrating when the timer hits zero).
+* **Multiplayer Presence:** Your Circle friends can see that you are currently "In the Zone," creating passive peer pressure to stay productive.
+
 ---
 
 ## 🎨 UI & UX Architecture
