@@ -1,0 +1,7 @@
+class: User
+table: user
+fields:
+  username: String
+  phoneNumber: String
+  streakCount: int
+  rankColor: String

@@ -1,0 +1,9 @@
+class: ProofPost
+table: proof_post
+fields:
+  userId: int
+  circleId: int
+  imageUrl: String
+  caption: String
+  isVerified: bool
+  createdAt: DateTime

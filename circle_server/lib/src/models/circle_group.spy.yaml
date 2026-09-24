@@ -1,0 +1,5 @@
+class: CircleGroup
+table: circle_group
+fields:
+  name: String
+  dailyDeadline: DateTime

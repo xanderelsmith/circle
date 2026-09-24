@@ -1,0 +1,44 @@
+services:
+  # Development services
+  postgres:
+    image: ghcr.io/serverpod/postgres:16
+    ports:
+      - "8090:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: circle
+      POSTGRES_PASSWORD: "aGhggNG6WqeAOgQsT86oYPFe6J07d5g9"
+    volumes:
+      - circle_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:6.2.6
+    ports:
+      - "8091:6379"
+    command: redis-server --requirepass "TJJjmHWDN4swHbMkTAlI9XYgP93je_ra"
+    environment:
+      - REDIS_REPLICATION_MODE=master
+
+  # Test services
+  postgres_test:
+    image: ghcr.io/serverpod/postgres:16
+    ports:
+      - "9090:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: circle_test
+      POSTGRES_PASSWORD: "OoxCLPwJYStL1Tr58AarsWSf1XLozYEE"
+    volumes:
+      - circle_test_data:/var/lib/postgresql/data
+
+  redis_test:
+    image: redis:6.2.6
+    ports:
+      - "9091:6379"
+    command: redis-server --requirepass "vcZQBGRJWA130Kl-Bg1gL5LMdiRZTS6s"
+    environment:
+      - REDIS_REPLICATION_MODE=master
+
+volumes:
+  circle_data:
+  circle_test_data:

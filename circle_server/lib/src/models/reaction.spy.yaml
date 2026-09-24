@@ -1,0 +1,6 @@
+class: Reaction
+table: reaction
+fields:
+  postId: int
+  userId: int
+  emoji: String
