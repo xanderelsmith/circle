@@ -34,6 +34,8 @@ dependencies:
     path: ../circle_client
   serverpod_flutter: 4.0.0
   serverpod_auth_idp_flutter: 4.0.0
+  flutter_riverpod: ^3.4.3
+  flutter_staggered_grid_view: ^0.7.0
 
 dev_dependencies:
   # Used for agents to drive the app through the Dart MCP
