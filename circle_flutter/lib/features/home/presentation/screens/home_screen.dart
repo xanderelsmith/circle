@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../widgets/proof_card.dart';
+import '../../../../theme.dart';
+import '../../../../core/widgets/circle_logo.dart';
 import '../widgets/custom_tab_bar.dart';
+import '../widgets/proof_card.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -10,37 +12,39 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      backgroundColor: Colors.transparent, // Uses atmospheric gradient from main
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Row(
           children: [
-            // Logo placeholder
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFF3D7BFF), width: 3),
-              ),
-              child: const Icon(Icons.circle_outlined, color: Color(0xFF42D9FF)),
-            ),
+            const CircleLogo(size: 40),
             const SizedBox(width: 12),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
+              children: const [
+                Text(
                   'Circle',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.textPrimary,
+                  ),
                 ),
                 Row(
-                  children: const [
+                  children: [
                     Text(
                       'My Circle',
-                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppTheme.textMuted,
+                      ),
                     ),
-                    Icon(Icons.keyboard_arrow_down, size: 16, color: Colors.grey),
+                    Icon(
+                      Icons.keyboard_arrow_down,
+                      size: 16,
+                      color: AppTheme.textMuted,
+                    ),
                   ],
                 ),
               ],
@@ -77,14 +81,18 @@ class HomeScreen extends ConsumerWidget {
               },
             ),
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 100)), // padding for bottom nav
+          const SliverToBoxAdapter(
+            child: SizedBox(height: 100),
+          ), // padding for bottom nav
         ],
       ),
     );
   }
 }
 
-// Dummy Data
+// -----------------------------------------------------------------------------
+// Dummy data
+// -----------------------------------------------------------------------------
 class ProofPostData {
   final String imageUrl;
   final String username;
@@ -111,7 +119,8 @@ class ProofPostData {
 
 final dummyPosts = [
   ProofPostData(
-    imageUrl: 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=500&q=80',
+    imageUrl:
+        'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=500&q=80',
     username: 'Emmanuel',
     timeAgo: '2h ago',
     habitName: 'Run 5km',
@@ -122,7 +131,8 @@ final dummyPosts = [
     cardHeight: 320,
   ),
   ProofPostData(
-    imageUrl: 'https://images.unsplash.com/photo-1456324504439-367cee3b3c32?w=500&q=80',
+    imageUrl:
+        'https://images.unsplash.com/photo-1456324504439-367cee3b3c32?w=500&q=80',
     username: 'Sarah',
     timeAgo: '4h ago',
     habitName: 'Read 20 pages',
@@ -133,7 +143,8 @@ final dummyPosts = [
     cardHeight: 260,
   ),
   ProofPostData(
-    imageUrl: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=500&q=80',
+    imageUrl:
+        'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=500&q=80',
     username: 'Chioma',
     timeAgo: '6h ago',
     habitName: 'Eat healthy',
@@ -144,7 +155,8 @@ final dummyPosts = [
     cardHeight: 280,
   ),
   ProofPostData(
-    imageUrl: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500&q=80',
+    imageUrl:
+        'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500&q=80',
     username: 'David',
     timeAgo: '5h ago',
     habitName: 'Gym Workout',

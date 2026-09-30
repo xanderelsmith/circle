@@ -205,14 +205,14 @@ class AppTheme {
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
         borderSide: BorderSide(
-          color: primary.withOpacity(.25),
+          color: primary.withValues(alpha: .25),
         ),
       ),
 
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
         borderSide: BorderSide(
-          color: primary.withOpacity(.20),
+          color: primary.withValues(alpha: .20),
         ),
       ),
 
@@ -262,7 +262,7 @@ class AppTheme {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
         side: BorderSide(
-          color: Colors.white.withOpacity(.06),
+          color: Colors.white.withValues(alpha: .06),
         ),
       ),
     ),
@@ -271,7 +271,7 @@ class AppTheme {
     // DIVIDERS
     // ─────────────────────────────────────────
     dividerTheme: DividerThemeData(
-      color: Colors.white.withOpacity(.06),
+      color: Colors.white.withValues(alpha: .06),
       thickness: 1,
     ),
 
@@ -282,7 +282,7 @@ class AppTheme {
       backgroundColor: const Color(0xFF080F20),
       elevation: 0,
 
-      indicatorColor: primary.withOpacity(.18),
+      indicatorColor: primary.withValues(alpha: .18),
 
       iconTheme: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {

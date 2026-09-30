@@ -33,7 +33,7 @@ class ProofCard extends StatelessWidget {
                   end: Alignment.bottomCenter,
                   colors: [
                     Colors.transparent,
-                    const Color(0xFF050A16).withOpacity(0.95),
+                    const Color(0xFF050A16).withValues(alpha: 0.95),
                   ],
                 ),
               ),
@@ -47,7 +47,7 @@ class ProofCard extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
-                color: const Color(0xFF101A32).withOpacity(0.8),
+                color: const Color(0xFF101A32).withValues(alpha: 0.8),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -116,9 +116,9 @@ class ProofCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF3D7BFF).withOpacity(0.2),
+                    color: const Color(0xFF3D7BFF).withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFF3D7BFF).withOpacity(0.3)),
+                    border: Border.all(color: const Color(0xFF3D7BFF).withValues(alpha: 0.3)),
                   ),
                   child: Row(
                     children: [
@@ -159,7 +159,7 @@ class ProofCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF3D7BFF).withOpacity(0.2),
+                        color: const Color(0xFF3D7BFF).withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Row(
@@ -171,9 +171,9 @@ class ProofCard extends StatelessWidget {
                       ),
                     ),
                     const Spacer(),
-                    Icon(Icons.chat_bubble_outline, size: 14, color: Colors.white.withOpacity(0.6)),
+                    Icon(Icons.chat_bubble_outline, size: 14, color: Colors.white.withValues(alpha: 0.6)),
                     const SizedBox(width: 4),
-                    Text('${post.comments}', style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 12)),
+                    Text('${post.comments}', style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 12)),
                   ],
                 ),
               ],
