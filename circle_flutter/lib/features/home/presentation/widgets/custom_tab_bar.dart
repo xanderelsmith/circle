@@ -10,7 +10,7 @@ class CustomTabBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF101A32),
         borderRadius: BorderRadius.circular(25),
-        border: Border.all(color: Colors.white.withOpacity(0.06)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
       ),
       child: Row(
         children: [

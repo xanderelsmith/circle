@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/widgets/circle_logo.dart';
+import '../../../../theme.dart';
+
 class CirclesScreen extends StatelessWidget {
   const CirclesScreen({super.key});
 
@@ -12,40 +15,48 @@ class CirclesScreen extends StatelessWidget {
         elevation: 0,
         title: Row(
           children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFF3D7BFF), width: 3),
-              ),
-              child: const Icon(Icons.circle_outlined, color: Color(0xFF42D9FF)),
-            ),
+            const CircleLogo(size: 40),
             const SizedBox(width: 12),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: const [
-                Text('Circle', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-                Text('My Circles', style: TextStyle(fontSize: 14, color: Colors.grey)),
+                Text(
+                  'Circle',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.textPrimary,
+                  ),
+                ),
+                Text(
+                  'My Circles',
+                  style: TextStyle(fontSize: 14, color: AppTheme.textMuted),
+                ),
               ],
             ),
           ],
         ),
         actions: [
-          IconButton(icon: const Icon(Icons.search), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.add_circle, color: Color(0xFF7B4DFF)), onPressed: () {}),
+          IconButton(
+            icon: const Icon(Icons.search, color: AppTheme.textPrimary),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(Icons.add_circle, color: AppTheme.primaryBright),
+            onPressed: () {},
+          ),
         ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // Search Bar
+          // Search bar
           TextField(
             decoration: InputDecoration(
               hintText: 'Search your circles...',
-              prefixIcon: const Icon(Icons.search, color: Colors.grey),
+              prefixIcon: const Icon(Icons.search, color: AppTheme.textMuted),
               filled: true,
-              fillColor: const Color(0xFF101A32),
+              fillColor: AppTheme.surfaceLight,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide.none,
@@ -53,7 +64,7 @@ class CirclesScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // Tabs
           Row(
             children: [
@@ -65,19 +76,57 @@ class CirclesScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 24),
-          
-          // Circle Cards
-          _buildCircleCard('Flutter Builders', 'Build. Ship. Grow. 🚀', const Color(0xFF7C4DFF), 12, 7, Icons.landscape),
-          _buildCircleCard('Fitness Bros', 'Better men. Better habits. 💪', const Color(0xFF35D49A), 8, 8, Icons.fitness_center),
-          _buildCircleCard('Study Squad', 'Discipline today, freedom tomorrow.', const Color(0xFF9B5CFF), 5, 5, Icons.book),
-          _buildCircleCard('Build & Flow', 'Code • Create • Level Up', const Color(0xFF42D9FF), 3, 4, Icons.code),
-          
+
+          // Circle cards
+          _buildCircleCard(
+            'Flutter Builders',
+            'Build. Ship. Grow. 🚀',
+            AppTheme.primaryBright,
+            12,
+            7,
+            Icons.landscape,
+          ),
+          _buildCircleCard(
+            'Fitness Bros',
+            'Better men. Better habits. 💪',
+            AppTheme.success,
+            8,
+            8,
+            Icons.fitness_center,
+          ),
+          _buildCircleCard(
+            'Study Squad',
+            'Discipline today, freedom tomorrow.',
+            AppTheme.accent,
+            5,
+            5,
+            Icons.book,
+          ),
+          _buildCircleCard(
+            'Build & Flow',
+            'Code • Create • Level Up',
+            AppTheme.cyan,
+            3,
+            4,
+            Icons.code,
+          ),
+
           const SizedBox(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Your Stats', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
-              Text('View all >', style: TextStyle(fontSize: 14, color: Colors.blue[300])),
+              const Text(
+                'Your Stats',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.textPrimary,
+                ),
+              ),
+              Text(
+                'View all >',
+                style: TextStyle(fontSize: 14, color: AppTheme.secondary),
+              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -92,26 +141,44 @@ class CirclesScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: active ? const Color(0xFF3D7BFF) : const Color(0xFF101A32),
+        color: active ? AppTheme.secondary : AppTheme.surfaceLight,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
         children: [
           if (active) const Icon(Icons.group, size: 16, color: Colors.white),
           if (active) const SizedBox(width: 4),
-          Text(title, style: TextStyle(color: active ? Colors.white : Colors.grey, fontWeight: FontWeight.bold)),
+          Text(
+            title,
+            style: TextStyle(
+              color: active ? Colors.white : AppTheme.textMuted,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           const SizedBox(width: 8),
-          Text(count, style: TextStyle(color: active ? Colors.white : Colors.grey)),
+          Text(
+            count,
+            style: TextStyle(
+              color: active ? Colors.white : AppTheme.textMuted,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildCircleCard(String name, String tagline, Color color, int streak, int members, IconData icon) {
+  Widget _buildCircleCard(
+    String name,
+    String tagline,
+    Color color,
+    int streak,
+    int members,
+    IconData icon,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: const Color(0xFF0D162B),
+        color: AppTheme.card,
         borderRadius: BorderRadius.circular(20),
         border: Border(left: BorderSide(color: color, width: 4)),
       ),
@@ -121,7 +188,7 @@ class CirclesScreen extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 24,
-            backgroundColor: color.withOpacity(0.2),
+            backgroundColor: color.withValues(alpha: 0.2),
             child: Icon(icon, color: color, size: 28),
           ),
           const SizedBox(width: 16),
@@ -129,19 +196,48 @@ class CirclesScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(name, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                Text(
+                  name,
+                  style: const TextStyle(
+                    color: AppTheme.textPrimary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text(tagline, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                Text(
+                  tagline,
+                  style: const TextStyle(
+                    color: AppTheme.textMuted,
+                    fontSize: 12,
+                  ),
+                ),
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    const Icon(Icons.group, size: 14, color: Colors.grey),
+                    const Icon(
+                      Icons.group,
+                      size: 14,
+                      color: AppTheme.textMuted,
+                    ),
                     const SizedBox(width: 4),
-                    Text('$members members', style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                    Text(
+                      '$members members',
+                      style: const TextStyle(
+                        color: AppTheme.textMuted,
+                        fontSize: 12,
+                      ),
+                    ),
                     const SizedBox(width: 8),
-                    const Icon(Icons.circle, size: 8, color: Colors.green),
+                    const Icon(Icons.circle, size: 8, color: AppTheme.success),
                     const SizedBox(width: 4),
-                    const Text('Active today', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                    const Text(
+                      'Active today',
+                      style: TextStyle(
+                        color: AppTheme.textMuted,
+                        fontSize: 12,
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -150,17 +246,24 @@ class CirclesScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: const Color(0xFF101A32),
+              color: AppTheme.surfaceLight,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
               children: [
                 const Text('🔥', style: TextStyle(fontSize: 12)),
                 const SizedBox(width: 4),
-                Text('$streak day streak', style: const TextStyle(color: Colors.orange, fontSize: 10, fontWeight: FontWeight.bold)),
+                Text(
+                  '$streak day streak',
+                  style: const TextStyle(
+                    color: AppTheme.fire,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
@@ -170,28 +273,51 @@ class CirclesScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF0D162B),
+        color: AppTheme.card,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildStatItem(Icons.group, '4', 'Circles', const Color(0xFF7C4DFF)),
-          _buildStatItem(Icons.local_fire_department, '32', 'Total Streak Days', Colors.orange),
-          _buildStatItem(Icons.emoji_events, '1', 'Top 3 Ranks', Colors.yellow),
-          _buildStatItem(Icons.star, '5', 'Achievements', Colors.green),
+          _buildStatItem(Icons.group, '4', 'Circles', AppTheme.primaryBright),
+          _buildStatItem(
+            Icons.local_fire_department,
+            '32',
+            'Total Streak Days',
+            AppTheme.fire,
+          ),
+          _buildStatItem(Icons.emoji_events, '1', 'Top 3 Ranks', AppTheme.gold),
+          _buildStatItem(Icons.star, '5', 'Achievements', AppTheme.success),
         ],
       ),
     );
   }
 
-  Widget _buildStatItem(IconData icon, String value, String label, Color color) {
+  Widget _buildStatItem(
+    IconData icon,
+    String value,
+    String label,
+    Color color,
+  ) {
     return Column(
       children: [
         Icon(icon, color: color, size: 28),
         const SizedBox(height: 8),
-        Text(value, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-        Text(label, style: const TextStyle(color: Colors.grey, fontSize: 10)),
+        Text(
+          value,
+          style: const TextStyle(
+            color: AppTheme.textPrimary,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Text(
+          label,
+          style: const TextStyle(
+            color: AppTheme.textMuted,
+            fontSize: 10,
+          ),
+        ),
       ],
     );
   }
