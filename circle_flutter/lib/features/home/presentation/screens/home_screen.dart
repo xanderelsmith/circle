@@ -80,28 +80,6 @@ class HomeScreen extends ConsumerWidget {
           const SliverToBoxAdapter(child: SizedBox(height: 100)), // padding for bottom nav
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: const Color(0xFF7C4DFF),
-        child: const Icon(Icons.add, size: 32),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color(0xFF080F20),
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color(0xFF7C4DFF),
-        unselectedItemColor: const Color(0xFF6F7B9A),
-        currentIndex: 1, // Circles active
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.group_outlined), label: 'Circles'),
-          BottomNavigationBarItem(
-            icon: Badge(child: Icon(Icons.chat_bubble_outline)),
-            label: 'Chat',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profile'),
-        ],
-      ),
     );
   }
 }
