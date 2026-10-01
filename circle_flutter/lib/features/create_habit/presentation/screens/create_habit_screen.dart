@@ -24,8 +24,16 @@ class _CreateHabitScreenState extends State<CreateHabitScreen> {
   bool _remindersEnabled = true;
 
   static const _emojis = <String>[
-    '🔥', '💪', '📚', '🏃', '💧',
-    '🧘', '🎯', '🍎', '🎨', '🧠',
+    '🔥',
+    '💪',
+    '📚',
+    '🏃',
+    '💧',
+    '🧘',
+    '🎯',
+    '🍎',
+    '🎨',
+    '🧠',
   ];
 
   static const _frequencies = <String>[
@@ -43,12 +51,12 @@ class _CreateHabitScreenState extends State<CreateHabitScreen> {
 
   static const _colors = <Color>[
     AppTheme.primaryBright, // Purple
-    AppTheme.secondary,     // Blue
-    AppTheme.cyan,          // Cyan
-    AppTheme.success,       // Green
-    AppTheme.warning,       // Orange
-    AppTheme.danger,        // Red
-    AppTheme.accent,        // Magenta-purple
+    AppTheme.secondary, // Blue
+    AppTheme.cyan, // Cyan
+    AppTheme.success, // Green
+    AppTheme.warning, // Orange
+    AppTheme.danger, // Red
+    AppTheme.accent, // Magenta-purple
   ];
 
   @override
@@ -151,8 +159,7 @@ class _CreateHabitScreenState extends State<CreateHabitScreen> {
                         emojis: _emojis,
                         selected: _selectedEmoji,
                         accent: _selectedColor,
-                        onChanged: (e) =>
-                            setState(() => _selectedEmoji = e),
+                        onChanged: (e) => setState(() => _selectedEmoji = e),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -164,8 +171,7 @@ class _CreateHabitScreenState extends State<CreateHabitScreen> {
                         options: _frequencies,
                         selected: _frequency,
                         accent: _selectedColor,
-                        onChanged: (f) =>
-                            setState(() => _frequency = f),
+                        onChanged: (f) => setState(() => _frequency = f),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -189,8 +195,7 @@ class _CreateHabitScreenState extends State<CreateHabitScreen> {
                         options: _circles,
                         selected: _selectedCircle,
                         accent: _selectedColor,
-                        onChanged: (c) =>
-                            setState(() => _selectedCircle = c),
+                        onChanged: (c) => setState(() => _selectedCircle = c),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -201,8 +206,7 @@ class _CreateHabitScreenState extends State<CreateHabitScreen> {
                       child: _ColorPicker(
                         colors: _colors,
                         selected: _selectedColor,
-                        onChanged: (c) =>
-                            setState(() => _selectedColor = c),
+                        onChanged: (c) => setState(() => _selectedColor = c),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -257,17 +261,21 @@ class _Header extends StatelessWidget {
             color: AppTheme.textPrimary,
             onPressed: onClose,
           ),
-          const Expanded(
-            child: Center(
-              child: Text(
-                'New Habit',
+          Column(
+            children: [
+              Text(
+                'Create an Activity',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
                   color: AppTheme.textPrimary,
                 ),
               ),
-            ),
+              Text(
+                'Start a challenge or habit to share with your circle',
+                style: TextStyle(fontSize: 12, color: AppTheme.textMuted),
+              ),
+            ],
           ),
           const SizedBox(width: 46), // balance the close button
         ],
@@ -544,9 +552,7 @@ class _FrequencyPicker extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
-                    color: isSelected
-                        ? Colors.white
-                        : AppTheme.textSecondary,
+                    color: isSelected ? Colors.white : AppTheme.textSecondary,
                   ),
                 ),
               ),

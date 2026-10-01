@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import '../features/circles/presentation/screens/circles_screen.dart';
-import '../features/create_habit/presentation/screens/create_habit_screen.dart';
-import '../features/home/presentation/screens/home_screen.dart';
-import '../features/leaderboard/presentation/screens/leaderboard_screen.dart';
-import '../features/profile/presentation/screens/profile_screen.dart';
+import 'features/circles/presentation/screens/circles_screen.dart';
+import 'features/create_habit/presentation/screens/create_habit_screen.dart';
+import 'features/home/presentation/screens/home_screen.dart';
+import 'features/leaderboard/presentation/screens/leaderboard_screen.dart';
+import 'features/profile/presentation/screens/profile_screen.dart';
+
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
 
@@ -121,4 +122,3 @@ class _BottomNav extends StatelessWidget {
     );
   }
 }
-
