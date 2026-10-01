@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
 import '../features/circles/presentation/screens/circles_screen.dart';
+import '../features/create_habit/presentation/screens/create_habit_screen.dart';
 import '../features/home/presentation/screens/home_screen.dart';
 import '../features/leaderboard/presentation/screens/leaderboard_screen.dart';
 
@@ -17,10 +17,19 @@ class _MainShellState extends State<MainShell> {
   // IndexedStack keeps every tab's state alive → instant tab switching.
   static const _tabs = <Widget>[
     HomeScreen(),
-    CirclesScreen(), // ← your real Circles screen
-    LeaderboardScreen(), // Statistics
+    CirclesScreen(),
+    LeaderboardScreen(),
     _ProfilePlaceholder(),
   ];
+
+  void _openCreateHabit() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => const CreateHabitScreen(),
+        fullscreenDialog: true,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +45,15 @@ class _MainShellState extends State<MainShell> {
         child: AnimatedOpacity(
           duration: const Duration(milliseconds: 180),
           opacity: showFab ? 1 : 0,
-          child: FloatingActionButton(
-            onPressed: () {},
-            backgroundColor: const Color(0xFF7C4DFF),
-            elevation: 8,
-            shape: const CircleBorder(),
-            child: const Icon(Icons.add, size: 30, color: Colors.white),
+          child: IgnorePointer(
+            ignoring: !showFab,
+            child: FloatingActionButton(
+              onPressed: _openCreateHabit, // ← wired up
+              backgroundColor: const Color(0xFF7C4DFF),
+              elevation: 8,
+              shape: const CircleBorder(),
+              child: const Icon(Icons.add, size: 30, color: Colors.white),
+            ),
           ),
         ),
       ),
