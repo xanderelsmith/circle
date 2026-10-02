@@ -1,0 +1,9 @@
+﻿class: ChatMessage
+table: chat_message
+fields:
+  userId: int
+  user: User?, relation
+  groupId: int
+  group: CircleGroup?, relation
+  message: String
+  createdAt: DateTime
