@@ -7,12 +7,16 @@ import 'package:serverpod_cloud_storage/serverpod_cloud_storage.dart';
 import 'src/cache_busting.dart';
 import 'src/generated/serverpod.dart';
 import 'src/web/routes/app_config_route.dart';
+import 'src/future_calls/escalation_call.dart';
 
 /// The starting point of the Serverpod server.
 void run(List<String> args) async {
   // Initialize Serverpod. The generated Serverpod class is already connected
   // with your project's generated code.
   final pod = Serverpod(args);
+
+  // Register the Vapi Escalation Call as a FutureCall
+  pod.registerFutureCall(EscalationCall(), 'escalationCall');
 
   // Initialize authentication services for the server.
   // Token managers will be used to validate and issue authentication keys,
