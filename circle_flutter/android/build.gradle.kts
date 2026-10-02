@@ -1,5 +1,6 @@
 allprojects {
     repositories {
+        maven { url = uri("C:/Users/Xander/Downloads/maven2") }
         google()
         mavenCentral()
     }

@@ -24,6 +24,16 @@
       "vmServiceInfoFile": "${workspaceFolder}/circle_server/.dart_tool/serverpod/vm-service-info.json",
       "preLaunchTask": "serverpod_start",
       "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "flutter (standalone)",
+      "type": "dart",
+      "request": "launch",
+      "program": "lib/main.dart",
+      "cwd": "${workspaceFolder}/circle_flutter",
+      "args": [
+        "--android-skip-build-dependency-validation"
+      ]
     }
   ],
   "compounds": [
