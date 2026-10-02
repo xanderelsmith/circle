@@ -3,11 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'client.dart';
 import 'theme.dart';
-<<<<<<< HEAD
+import 'main_shell.dart';
 import 'main_layout.dart';
-=======
 import 'screens/main_shell.dart';
->>>>>>> 632bf07b7e76ea78e5c6a2be24592361317bdd0f
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,11 +28,8 @@ class MyApp extends StatelessWidget {
         decoration: const BoxDecoration(
           gradient: AppTheme.atmosphericBackground,
         ),
-<<<<<<< HEAD
         child: const MainLayout(),
-=======
         child: const MainShell(), // ← was HomeScreen
->>>>>>> 632bf07b7e76ea78e5c6a2be24592361317bdd0f
       ),
     );
   }

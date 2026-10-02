@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import '../features/circles/presentation/screens/circles_screen.dart';
-import '../features/create_habit/presentation/screens/create_habit_screen.dart';
-import '../features/home/presentation/screens/home_screen.dart';
-import '../features/leaderboard/presentation/screens/leaderboard_screen.dart';
+import 'features/circles/presentation/screens/circles_screen.dart';
+import 'features/create_habit/presentation/screens/create_habit_screen.dart';
+import 'features/home/presentation/screens/home_screen.dart';
+import 'features/leaderboard/presentation/screens/leaderboard_screen.dart';
+import 'features/profile/presentation/screens/profile_screen.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -19,7 +20,7 @@ class _MainShellState extends State<MainShell> {
     HomeScreen(),
     CirclesScreen(),
     LeaderboardScreen(),
-    _ProfilePlaceholder(),
+    ProfileScreen(),
   ];
 
   void _openCreateHabit() {
@@ -118,17 +119,6 @@ class _BottomNav extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _ProfilePlaceholder extends StatelessWidget {
-  const _ProfilePlaceholder();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Profile', style: TextStyle(color: Colors.white54)),
     );
   }
 }
