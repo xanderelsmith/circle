@@ -11,6 +11,10 @@
 // ignore_for_file: dead_code, unnecessary_type_check
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:circle_server/src/generated/chat_message.dart' as _iukdsbyq;
+import 'package:circle_server/src/generated/circle_group.dart' as _imhv1m7j;
+import 'package:circle_server/src/generated/proof_post.dart' as _idd7hml3;
+import 'package:circle_server/src/generated/user.dart' as _iauvhat4;
 import 'package:serverpod/protocol.dart' as _isp;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
@@ -309,6 +313,28 @@ class Protocol extends _is.DatabaseSerializationManager {
     }
     if (t == _is.getType<_iv73i78m.User?>()) {
       return (data != null ? _iv73i78m.User.fromJson(data) : null) as T;
+    }
+    if (t == List<_iukdsbyq.ChatMessage>) {
+      return (data as List)
+              .map((e) => deserialize<_iukdsbyq.ChatMessage>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_imhv1m7j.CircleGroup>) {
+      return (data as List)
+              .map((e) => deserialize<_imhv1m7j.CircleGroup>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_idd7hml3.ProofPost>) {
+      return (data as List)
+              .map((e) => deserialize<_idd7hml3.ProofPost>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_iauvhat4.User>) {
+      return (data as List).map((e) => deserialize<_iauvhat4.User>(e)).toList()
+          as T;
     }
     try {
       return _iais.Protocol().deserialize<T>(data, t);

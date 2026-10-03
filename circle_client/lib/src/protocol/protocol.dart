@@ -11,6 +11,10 @@
 // ignore_for_file: dead_code, unnecessary_type_check
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:circle_client/src/protocol/chat_message.dart' as _i91r8fv7;
+import 'package:circle_client/src/protocol/circle_group.dart' as _ix4qfs8g;
+import 'package:circle_client/src/protocol/proof_post.dart' as _i97nygvf;
+import 'package:circle_client/src/protocol/user.dart' as _irryv4ps;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _iacc;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
@@ -99,6 +103,28 @@ class Protocol extends _isc.SerializationManager {
     }
     if (t == _isc.getType<_iv73i78m.User?>()) {
       return (data != null ? _iv73i78m.User.fromJson(data) : null) as T;
+    }
+    if (t == List<_i91r8fv7.ChatMessage>) {
+      return (data as List)
+              .map((e) => deserialize<_i91r8fv7.ChatMessage>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_ix4qfs8g.CircleGroup>) {
+      return (data as List)
+              .map((e) => deserialize<_ix4qfs8g.CircleGroup>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i97nygvf.ProofPost>) {
+      return (data as List)
+              .map((e) => deserialize<_i97nygvf.ProofPost>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_irryv4ps.User>) {
+      return (data as List).map((e) => deserialize<_irryv4ps.User>(e)).toList()
+          as T;
     }
     try {
       return _iaic.Protocol().deserialize<T>(data, t);

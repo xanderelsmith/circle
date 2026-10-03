@@ -11,8 +11,12 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _ida;
+import 'package:circle_client/src/protocol/chat_message.dart' as _i91r8fv7;
+import 'package:circle_client/src/protocol/circle_group.dart' as _ix4qfs8g;
 import 'package:circle_client/src/protocol/greetings/greeting.dart'
     as _i05q6mhs;
+import 'package:circle_client/src/protocol/proof_post.dart' as _i97nygvf;
+import 'package:circle_client/src/protocol/user.dart' as _irryv4ps;
 import 'package:http/http.dart' as _i85jenna;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _iacc;
@@ -247,6 +251,99 @@ class EndpointJwtRefresh extends _iacc.EndpointRefreshJwtTokens {
 }
 
 /// {@category Endpoint}
+class EndpointChat extends _isc.EndpointRef {
+  EndpointChat(_isc.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'chat';
+
+  _ida.Future<_i91r8fv7.ChatMessage> postMessage(
+    _i91r8fv7.ChatMessage message,
+  ) => caller.callServerEndpoint<_i91r8fv7.ChatMessage>(
+    'chat',
+    'postMessage',
+    {'message': message},
+  );
+
+  _ida.Future<List<_i91r8fv7.ChatMessage>> getMessages(int groupId) =>
+      caller.callServerEndpoint<List<_i91r8fv7.ChatMessage>>(
+        'chat',
+        'getMessages',
+        {'groupId': groupId},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointCircle extends _isc.EndpointRef {
+  EndpointCircle(_isc.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'circle';
+
+  _ida.Future<List<_ix4qfs8g.CircleGroup>> getCircles() =>
+      caller.callServerEndpoint<List<_ix4qfs8g.CircleGroup>>(
+        'circle',
+        'getCircles',
+        {},
+      );
+
+  _ida.Future<_ix4qfs8g.CircleGroup> createCircle(
+    _ix4qfs8g.CircleGroup circle,
+  ) => caller.callServerEndpoint<_ix4qfs8g.CircleGroup>(
+    'circle',
+    'createCircle',
+    {'circle': circle},
+  );
+
+  _ida.Future<_i97nygvf.ProofPost> createProofPost(_i97nygvf.ProofPost post) =>
+      caller.callServerEndpoint<_i97nygvf.ProofPost>(
+        'circle',
+        'createProofPost',
+        {'post': post},
+      );
+
+  _ida.Future<List<_i97nygvf.ProofPost>> getFeed(int circleId) =>
+      caller.callServerEndpoint<List<_i97nygvf.ProofPost>>(
+        'circle',
+        'getFeed',
+        {'circleId': circleId},
+      );
+
+  _ida.Future<bool> verifyPost(int postId) => caller.callServerEndpoint<bool>(
+    'circle',
+    'verifyPost',
+    {'postId': postId},
+  );
+}
+
+/// {@category Endpoint}
+class EndpointUser extends _isc.EndpointRef {
+  EndpointUser(_isc.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'user';
+
+  _ida.Future<_irryv4ps.User> getOrCreateUser(
+    String username,
+    String phoneNumber,
+  ) => caller.callServerEndpoint<_irryv4ps.User>(
+    'user',
+    'getOrCreateUser',
+    {
+      'username': username,
+      'phoneNumber': phoneNumber,
+    },
+  );
+
+  _ida.Future<List<_irryv4ps.User>> getLeaderboard() =>
+      caller.callServerEndpoint<List<_irryv4ps.User>>(
+        'user',
+        'getLeaderboard',
+        {},
+      );
+}
+
+/// {@category Endpoint}
 class EndpointVapi extends _isc.EndpointRef {
   EndpointVapi(_isc.EndpointCaller caller) : super(caller);
 
@@ -325,6 +422,9 @@ class Client extends _isc.ServerpodClientShared {
        ) {
     emailIdp = EndpointEmailIdp(this);
     jwtRefresh = EndpointJwtRefresh(this);
+    chat = EndpointChat(this);
+    circle = EndpointCircle(this);
+    user = EndpointUser(this);
     vapi = EndpointVapi(this);
     greeting = EndpointGreeting(this);
     modules = Modules(this);
@@ -333,6 +433,12 @@ class Client extends _isc.ServerpodClientShared {
   late final EndpointEmailIdp emailIdp;
 
   late final EndpointJwtRefresh jwtRefresh;
+
+  late final EndpointChat chat;
+
+  late final EndpointCircle circle;
+
+  late final EndpointUser user;
 
   late final EndpointVapi vapi;
 
@@ -344,6 +450,9 @@ class Client extends _isc.ServerpodClientShared {
   Map<String, _isc.EndpointRef> get endpointRefLookup => {
     'emailIdp': emailIdp,
     'jwtRefresh': jwtRefresh,
+    'chat': chat,
+    'circle': circle,
+    'user': user,
     'vapi': vapi,
     'greeting': greeting,
   };

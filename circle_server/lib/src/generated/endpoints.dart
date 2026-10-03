@@ -10,7 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:circle_server/src/generated/chat_message.dart' as _iukdsbyq;
+import 'package:circle_server/src/generated/circle_group.dart' as _imhv1m7j;
 import 'package:circle_server/src/generated/future_calls.dart' as _i66ecde7;
+import 'package:circle_server/src/generated/proof_post.dart' as _idd7hml3;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _iacs;
@@ -18,6 +21,9 @@ import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _iais;
 import '../auth/email_idp_endpoint.dart' as _iuc1hd5t;
 import '../auth/jwt_refresh_endpoint.dart' as _inwq3ztq;
+import '../endpoints/chat_endpoint.dart' as _ihc7hrsa;
+import '../endpoints/circle_endpoint.dart' as _i35yc453;
+import '../endpoints/user_endpoint.dart' as _iymy5306;
 import '../endpoints/vapi_endpoint.dart' as _ioy6ptx0;
 import '../greetings/greeting_endpoint.dart' as _il624ik7;
 export 'future_calls.dart' show ServerpodFutureCallsGetter;
@@ -36,6 +42,24 @@ class Endpoints extends _is.EndpointDispatch {
         ..initialize(
           server,
           'jwtRefresh',
+          null,
+        ),
+      'chat': _ihc7hrsa.ChatEndpoint()
+        ..initialize(
+          server,
+          'chat',
+          null,
+        ),
+      'circle': _i35yc453.CircleEndpoint()
+        ..initialize(
+          server,
+          'circle',
+          null,
+        ),
+      'user': _iymy5306.UserEndpoint()
+        ..initialize(
+          server,
+          'user',
           null,
         ),
       'vapi': _ioy6ptx0.VapiEndpoint()
@@ -254,6 +278,183 @@ class Endpoints extends _is.EndpointDispatch {
                         session,
                         refreshToken: params['refreshToken'],
                       ),
+        ),
+      },
+    );
+    connectors['chat'] = _is.EndpointConnector(
+      name: 'chat',
+      endpoint: endpoints['chat']!,
+      methodConnectors: {
+        'postMessage': _is.MethodConnector(
+          name: 'postMessage',
+          params: {
+            'message': _is.ParameterDescription(
+              name: 'message',
+              type: _is.getType<_iukdsbyq.ChatMessage>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['chat'] as _ihc7hrsa.ChatEndpoint).postMessage(
+                    session,
+                    params['message'],
+                  ),
+        ),
+        'getMessages': _is.MethodConnector(
+          name: 'getMessages',
+          params: {
+            'groupId': _is.ParameterDescription(
+              name: 'groupId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['chat'] as _ihc7hrsa.ChatEndpoint).getMessages(
+                    session,
+                    params['groupId'],
+                  ),
+        ),
+      },
+    );
+    connectors['circle'] = _is.EndpointConnector(
+      name: 'circle',
+      endpoint: endpoints['circle']!,
+      methodConnectors: {
+        'getCircles': _is.MethodConnector(
+          name: 'getCircles',
+          params: {},
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['circle'] as _i35yc453.CircleEndpoint)
+                  .getCircles(session),
+        ),
+        'createCircle': _is.MethodConnector(
+          name: 'createCircle',
+          params: {
+            'circle': _is.ParameterDescription(
+              name: 'circle',
+              type: _is.getType<_imhv1m7j.CircleGroup>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['circle'] as _i35yc453.CircleEndpoint)
+                  .createCircle(
+                    session,
+                    params['circle'],
+                  ),
+        ),
+        'createProofPost': _is.MethodConnector(
+          name: 'createProofPost',
+          params: {
+            'post': _is.ParameterDescription(
+              name: 'post',
+              type: _is.getType<_idd7hml3.ProofPost>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['circle'] as _i35yc453.CircleEndpoint)
+                  .createProofPost(
+                    session,
+                    params['post'],
+                  ),
+        ),
+        'getFeed': _is.MethodConnector(
+          name: 'getFeed',
+          params: {
+            'circleId': _is.ParameterDescription(
+              name: 'circleId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['circle'] as _i35yc453.CircleEndpoint).getFeed(
+                    session,
+                    params['circleId'],
+                  ),
+        ),
+        'verifyPost': _is.MethodConnector(
+          name: 'verifyPost',
+          params: {
+            'postId': _is.ParameterDescription(
+              name: 'postId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['circle'] as _i35yc453.CircleEndpoint).verifyPost(
+                    session,
+                    params['postId'],
+                  ),
+        ),
+      },
+    );
+    connectors['user'] = _is.EndpointConnector(
+      name: 'user',
+      endpoint: endpoints['user']!,
+      methodConnectors: {
+        'getOrCreateUser': _is.MethodConnector(
+          name: 'getOrCreateUser',
+          params: {
+            'username': _is.ParameterDescription(
+              name: 'username',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+            'phoneNumber': _is.ParameterDescription(
+              name: 'phoneNumber',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['user'] as _iymy5306.UserEndpoint).getOrCreateUser(
+                    session,
+                    params['username'],
+                    params['phoneNumber'],
+                  ),
+        ),
+        'getLeaderboard': _is.MethodConnector(
+          name: 'getLeaderboard',
+          params: {},
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['user'] as _iymy5306.UserEndpoint)
+                  .getLeaderboard(session),
         ),
       },
     );

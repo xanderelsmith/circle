@@ -28,9 +28,10 @@ class UserEndpoint extends Endpoint {
   Future<List<User>> getLeaderboard(Session session) async {
     return await User.db.find(
       session,
-      orderByList: (t) => [Order(column: t.streakCount, orderDescending: true)],
+      orderByList: (t) => [t.streakCount.desc()],
       limit: 50,
     );
   }
 }
+
 

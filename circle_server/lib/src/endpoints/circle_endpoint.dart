@@ -24,7 +24,7 @@ class CircleEndpoint extends Endpoint {
     return await ProofPost.db.find(
       session,
       where: (t) => t.circleId.equals(circleId),
-      orderByList: (t) => [Order(column: t.createdAt, orderDescending: true)],
+      orderByList: (t) => [t.createdAt.desc()],
     );
   }
 
@@ -39,4 +39,5 @@ class CircleEndpoint extends Endpoint {
     return false;
   }
 }
+
 
