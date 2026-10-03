@@ -38,12 +38,18 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
             return await ref.read(leaderboardProvider.future);
           },
           child: leaderboardAsync.when(
-            loading: () => const Center(child: CircularProgressIndicator(color: AppTheme.primaryBright)),
-            error: (err, stack) => Center(child: Text('Error loading leaderboard: $err', style: const TextStyle(color: Colors.red))),
+            loading: () => const Center(
+              child: CircularProgressIndicator(color: AppTheme.primaryBright),
+            ),
+            error: (err, stack) => Center(
+              child: Text(
+                'Error loading leaderboard: $err',
+                style: const TextStyle(color: Colors.red),
+              ),
+            ),
             data: (users) {
-              
-              final currentUser = currentUserAsync.valueOrNull;
-              
+              final currentUser = currentUserAsync.value;
+
               // Map backend Users to LeaderboardEntry for the UI
               final entries = List.generate(users.length, (i) {
                 final user = users[i];
@@ -57,7 +63,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                   isCurrentUser: currentUser?.id == user.id,
                 );
               });
-              
+
               StreakSummary? meSummary;
               if (currentUser != null) {
                 final myIndex = entries.indexWhere((e) => e.isCurrentUser);
@@ -101,7 +107,12 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
 
                   if (entries.isEmpty)
                     const SliverFillRemaining(
-                      child: Center(child: Text('No users in leaderboard yet', style: TextStyle(color: AppTheme.textMuted))),
+                      child: Center(
+                        child: Text(
+                          'No users in leaderboard yet',
+                          style: TextStyle(color: AppTheme.textMuted),
+                        ),
+                      ),
                     )
                   else
                     SliverPadding(
@@ -109,7 +120,8 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                       sliver: SliverList.separated(
                         itemCount: entries.length,
                         separatorBuilder: (_, _) => const SizedBox(height: 10),
-                        itemBuilder: (_, i) => LeaderboardTile(entry: entries[i]),
+                        itemBuilder: (_, i) =>
+                            LeaderboardTile(entry: entries[i]),
                       ),
                     ),
 

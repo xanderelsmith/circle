@@ -1,11 +1,13 @@
-﻿import 'package:flutter/material.dart';
+﻿import 'package:circle_flutter/features/home/data/home_feed_provider.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../theme.dart';
 import '../../../../core/widgets/circle_logo.dart';
 import '../widgets/custom_tab_bar.dart';
 import '../widgets/proof_card.dart';
-import '../data/home_feed_provider.dart';
+
+// import '../data/home_feed_provider.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -74,18 +76,30 @@ class HomeScreen extends ConsumerWidget {
           ),
           feedAsync.when(
             loading: () => const SliverFillRemaining(
-              child: Center(child: CircularProgressIndicator(color: AppTheme.primaryBright)),
+              child: Center(
+                child: CircularProgressIndicator(color: AppTheme.primaryBright),
+              ),
             ),
             error: (err, stack) => SliverFillRemaining(
-              child: Center(child: Text('Error: $err', style: const TextStyle(color: Colors.red))),
+              child: Center(
+                child: Text(
+                  'Error: $err',
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ),
             ),
             data: (posts) {
               if (posts.isEmpty) {
                 return const SliverFillRemaining(
-                  child: Center(child: Text('No proof posts yet in this circle', style: TextStyle(color: AppTheme.textMuted))),
+                  child: Center(
+                    child: Text(
+                      'No proof posts yet in this circle',
+                      style: TextStyle(color: AppTheme.textMuted),
+                    ),
+                  ),
                 );
               }
-              
+
               return SliverPadding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 sliver: SliverMasonryGrid.extent(
@@ -96,11 +110,12 @@ class HomeScreen extends ConsumerWidget {
                   itemBuilder: (context, index) {
                     final p = posts[index];
                     final uiData = ProofPostData(
-                      imageUrl: p.imageUrl.isEmpty 
+                      imageUrl: p.imageUrl.isEmpty
                           ? 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=500&q=80'
                           : p.imageUrl,
                       username: 'User ${p.userId}',
-                      timeAgo: '${DateTime.now().difference(p.createdAt).inHours}h ago',
+                      timeAgo:
+                          '${DateTime.now().difference(p.createdAt).inHours}h ago',
                       habitName: 'Habit challenge',
                       caption: p.caption,
                       streak: 0,
@@ -112,7 +127,7 @@ class HomeScreen extends ConsumerWidget {
                   },
                 ),
               );
-            }
+            },
           ),
           const SliverToBoxAdapter(
             child: SizedBox(height: 100),
