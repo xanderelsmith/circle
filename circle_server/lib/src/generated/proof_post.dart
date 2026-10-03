@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class ProofPost
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   ProofPost._({
     this.id,
     required this.userId,
@@ -41,10 +41,10 @@ abstract class ProofPost
       circleId: jsonSerialization['circleId'] as int,
       imageUrl: jsonSerialization['imageUrl'] as String,
       caption: jsonSerialization['caption'] as String,
-      isVerified: _i1.BoolJsonExtension.fromJson(
+      isVerified: _is.BoolJsonExtension.fromJson(
         jsonSerialization['isVerified'],
       ),
-      createdAt: _i1.DateTimeJsonExtension.fromJson(
+      createdAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['createdAt'],
       ),
     );
@@ -70,11 +70,11 @@ abstract class ProofPost
   DateTime createdAt;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ProofPost]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ProofPost copyWith({
     int? id,
     int? userId,
@@ -117,12 +117,11 @@ abstract class ProofPost
   }
 
   static ProofPostIncludeList includeList({
-    _i1.WhereExpressionBuilder<ProofPostTable>? where,
+    _is.WhereExpressionBuilder<ProofPostTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProofPostTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<ProofPostTable>? orderByList,
+    _is.OrderByBuilder<ProofPostTable>? orderBy,
+    _is.OrderByListBuilder<ProofPostTable>? orderByList,
     ProofPostInclude? include,
   }) {
     return ProofPostIncludeList._(
@@ -130,7 +129,6 @@ abstract class ProofPost
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ProofPost.t),
-      orderDescending: orderDescending,
       orderByList: orderByList?.call(ProofPost.t),
       include: include,
     );
@@ -138,7 +136,7 @@ abstract class ProofPost
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -165,7 +163,7 @@ class _ProofPostImpl extends ProofPost {
 
   /// Returns a shallow copy of this [ProofPost]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ProofPost copyWith({
     Object? id = _Undefined,
@@ -188,65 +186,65 @@ class _ProofPostImpl extends ProofPost {
   }
 }
 
-class ProofPostUpdateTable extends _i1.UpdateTable<ProofPostTable> {
+class ProofPostUpdateTable extends _is.UpdateTable<ProofPostTable> {
   ProofPostUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> userId(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> userId(int value) => _is.ColumnValue(
     table.userId,
     value,
   );
 
-  _i1.ColumnValue<int, int> circleId(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> circleId(int value) => _is.ColumnValue(
     table.circleId,
     value,
   );
 
-  _i1.ColumnValue<String, String> imageUrl(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> imageUrl(String value) => _is.ColumnValue(
     table.imageUrl,
     value,
   );
 
-  _i1.ColumnValue<String, String> caption(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> caption(String value) => _is.ColumnValue(
     table.caption,
     value,
   );
 
-  _i1.ColumnValue<bool, bool> isVerified(bool value) => _i1.ColumnValue(
+  _is.ColumnValue<bool, bool> isVerified(bool value) => _is.ColumnValue(
     table.isVerified,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
+      _is.ColumnValue(
         table.createdAt,
         value,
       );
 }
 
-class ProofPostTable extends _i1.Table<int?> {
+class ProofPostTable extends _is.Table<int?> {
   ProofPostTable({super.tableRelation}) : super(tableName: 'proof_post') {
     updateTable = ProofPostUpdateTable(this);
-    userId = _i1.ColumnInt(
+    userId = _is.ColumnInt(
       'userId',
       this,
     );
-    circleId = _i1.ColumnInt(
+    circleId = _is.ColumnInt(
       'circleId',
       this,
     );
-    imageUrl = _i1.ColumnString(
+    imageUrl = _is.ColumnString(
       'imageUrl',
       this,
     );
-    caption = _i1.ColumnString(
+    caption = _is.ColumnString(
       'caption',
       this,
     );
-    isVerified = _i1.ColumnBool(
+    isVerified = _is.ColumnBool(
       'isVerified',
       this,
     );
-    createdAt = _i1.ColumnDateTime(
+    createdAt = _is.ColumnDateTime(
       'createdAt',
       this,
     );
@@ -254,20 +252,20 @@ class ProofPostTable extends _i1.Table<int?> {
 
   late final ProofPostUpdateTable updateTable;
 
-  late final _i1.ColumnInt userId;
+  late final _is.ColumnInt userId;
 
-  late final _i1.ColumnInt circleId;
+  late final _is.ColumnInt circleId;
 
-  late final _i1.ColumnString imageUrl;
+  late final _is.ColumnString imageUrl;
 
-  late final _i1.ColumnString caption;
+  late final _is.ColumnString caption;
 
-  late final _i1.ColumnBool isVerified;
+  late final _is.ColumnBool isVerified;
 
-  late final _i1.ColumnDateTime createdAt;
+  late final _is.ColumnDateTime createdAt;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     userId,
     circleId,
@@ -278,23 +276,22 @@ class ProofPostTable extends _i1.Table<int?> {
   ];
 }
 
-class ProofPostInclude extends _i1.IncludeObject {
+class ProofPostInclude extends _is.IncludeObject {
   ProofPostInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => ProofPost.t;
+  _is.Table<int?> get table => ProofPost.t;
 }
 
-class ProofPostIncludeList extends _i1.IncludeList {
+class ProofPostIncludeList extends _is.IncludeList {
   ProofPostIncludeList._({
-    _i1.WhereExpressionBuilder<ProofPostTable>? where,
+    _is.WhereExpressionBuilder<ProofPostTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -302,10 +299,10 @@ class ProofPostIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => ProofPost.t;
+  _is.Table<int?> get table => ProofPost.t;
 }
 
 class ProofPostRepository {
@@ -334,22 +331,20 @@ class ProofPostRepository {
   /// );
   /// ```
   Future<List<ProofPost>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProofPostTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProofPostTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProofPostTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<ProofPostTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ProofPostTable>? orderBy,
+    _is.OrderByListBuilder<ProofPostTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ProofPost>(
       where: where?.call(ProofPost.t),
       orderBy: orderBy?.call(ProofPost.t),
       orderByList: orderByList?.call(ProofPost.t),
-      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -376,21 +371,19 @@ class ProofPostRepository {
   /// );
   /// ```
   Future<ProofPost?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProofPostTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProofPostTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ProofPostTable>? orderBy,
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<ProofPostTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ProofPostTable>? orderBy,
+    _is.OrderByListBuilder<ProofPostTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ProofPost>(
       where: where?.call(ProofPost.t),
       orderBy: orderBy?.call(ProofPost.t),
       orderByList: orderByList?.call(ProofPost.t),
-      orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -400,11 +393,11 @@ class ProofPostRepository {
 
   /// Finds a single [ProofPost] by its [id] or null if no such row exists.
   Future<ProofPost?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ProofPost>(
       id,
@@ -424,16 +417,22 @@ class ProofPostRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProofPost>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ProofPost> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<ProofPost>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -441,12 +440,81 @@ class ProofPostRepository {
   ///
   /// The returned [ProofPost] will have its `id` field set.
   Future<ProofPost> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ProofPost row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ProofPost>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [ProofPost]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [ProofPost]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<ProofPost>> upsert(
+    _is.DatabaseSession session,
+    List<ProofPost> rows, {
+    required _is.ColumnSelections<ProofPostTable> conflictColumns,
+    _is.ColumnSelections<ProofPostTable>? updateColumns,
+    _is.WhereExpressionBuilder<ProofPostTable>? updateWhere,
+    _is.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<ProofPost>(
+      rows,
+      conflictColumns: conflictColumns(ProofPost.t),
+      updateColumns: updateColumns?.call(ProofPost.t),
+      updateWhere: updateWhere?.call(ProofPost.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [ProofPost] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [ProofPost] will have its `id` field set.
+  Future<ProofPost?> upsertRow(
+    _is.DatabaseSession session,
+    ProofPost row, {
+    required _is.ColumnSelections<ProofPostTable> conflictColumns,
+    _is.ColumnSelections<ProofPostTable>? updateColumns,
+    _is.WhereExpressionBuilder<ProofPostTable>? updateWhere,
+    _is.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<ProofPost>(
+      row,
+      conflictColumns: conflictColumns(ProofPost.t),
+      updateColumns: updateColumns?.call(ProofPost.t),
+      updateWhere: updateWhere?.call(ProofPost.t),
       transaction: transaction,
     );
   }
@@ -456,16 +524,22 @@ class ProofPostRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProofPost>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ProofPost> rows, {
-    _i1.ColumnSelections<ProofPostTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ProofPostTable>? columns,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<ProofPost>(
       rows,
       columns: columns?.call(ProofPost.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -473,10 +547,10 @@ class ProofPostRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ProofPost> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ProofPost row, {
-    _i1.ColumnSelections<ProofPostTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ProofPostTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ProofPost>(
       row,
@@ -488,10 +562,10 @@ class ProofPostRepository {
   /// Updates a single [ProofPost] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ProofPost?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<ProofPostUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<ProofPostUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ProofPost>(
       id,
@@ -502,16 +576,20 @@ class ProofPostRepository {
 
   /// Updates all [ProofPost]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProofPost>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ProofPostUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<ProofPostTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ProofPostUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<ProofPostTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProofPostTable>? orderBy,
-    _i1.OrderByListBuilder<ProofPostTable>? orderByList,
-    bool orderDescending = false,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ProofPostTable>? orderBy,
+    _is.OrderByListBuilder<ProofPostTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<ProofPost>(
       columnValues: columnValues(ProofPost.t.updateTable),
@@ -520,30 +598,44 @@ class ProofPostRepository {
       offset: offset,
       orderBy: orderBy?.call(ProofPost.t),
       orderByList: orderByList?.call(ProofPost.t),
-      orderDescending: orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes all [ProofPost]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProofPost>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ProofPost> rows, {
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ProofPostTable>? orderBy,
+    _is.OrderByListBuilder<ProofPostTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<ProofPost>(
       rows,
+      orderBy: orderBy?.call(ProofPost.t),
+      orderByList: orderByList?.call(ProofPost.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Deletes a single [ProofPost].
   Future<ProofPost> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ProofPost row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ProofPost>(
       row,
@@ -552,24 +644,37 @@ class ProofPostRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProofPost>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ProofPostTable> where,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ProofPostTable> where,
+    _is.OrderByBuilder<ProofPostTable>? orderBy,
+    _is.OrderByListBuilder<ProofPostTable>? orderByList,
+    _is.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ProofPost>(
       where: where(ProofPost.t),
+      orderBy: orderBy?.call(ProofPost.t),
+      orderByList: orderByList?.call(ProofPost.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProofPostTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProofPostTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ProofPost>(
       where: where?.call(ProofPost.t),
@@ -580,11 +685,11 @@ class ProofPostRepository {
 
   /// Acquires row-level locks on [ProofPost] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ProofPostTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ProofPostTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ProofPost>(
       where: where(ProofPost.t),

@@ -14,12 +14,12 @@ import 'src/future_calls/escalation_call.dart';
 /// The starting point of the Serverpod server.
 void run(List<String> args) async {
   // Initialize Serverpod. The generated Serverpod class is already connected
-  // with your project's generated code.
+  // with your project's generate
+  // final pod = Circle(args);d code.
   final pod = Serverpod(args, Protocol(), Endpoints());
 
-
   // Initialize authentication services for the server.
-  // Token managers will be used to validate and issue authentication keys,
+  //  issue authentication keys,
   // and the identity providers will be the authentication options available for users.
   pod.initializeAuthServices(
     tokenManagerBuilders: [

@@ -1,11 +1,13 @@
 ﻿import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:serverpod/serverpod.dart';
+import '../generated/protocol.dart';
 
-class EscalationCall extends FutureCall<String> {
+class EscalationCall extends FutureCall<User> {
   @override
-  Future<void> invoke(Session session, String? phoneNumber) async {
-    if (phoneNumber == null) return;
+  Future<void> invoke(Session session, User? user) async {
+    if (user == null) return;
+    final phoneNumber = user.phoneNumber;
     
     // In a real app, ensure you load this from a .env file or server config
     const vapiKey = 'YOUR_VAPI_PRIVATE_KEY';

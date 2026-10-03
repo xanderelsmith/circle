@@ -19,9 +19,9 @@ class ChatEndpoint extends Endpoint {
     return await ChatMessage.db.find(
       session,
       where: (t) => t.groupId.equals(groupId),
-      orderBy: (t) => t.createdAt,
-      orderDescending: true,
+      orderByList: (t) => [Order(column: t.createdAt, orderDescending: true)],
       limit: 100,
     );
   }
 }
+
