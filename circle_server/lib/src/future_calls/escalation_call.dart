@@ -16,7 +16,7 @@ class EscalationCall extends FutureCall<String> {
       final response = await http.post(
         url,
         headers: {
-          'Authorization': 'Bearer \',
+          'Authorization': 'Bearer $vapiKey',
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
@@ -38,12 +38,12 @@ class EscalationCall extends FutureCall<String> {
       );
       
       if (response.statusCode == 201) {
-        session.log('Vapi escalation call initiated for \');
+        session.log('Vapi escalation call initiated for $phoneNumber');
       } else {
-        session.log('Failed to initiate Vapi call: \');
+        session.log('Failed to initiate Vapi call: ${response.body}');
       }
     } catch (e) {
-      session.log('Error triggering Vapi call: \');
+      session.log('Error triggering Vapi call: $e');
     }
   }
 }

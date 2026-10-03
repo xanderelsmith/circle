@@ -8,199 +8,316 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_type_check
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/protocol.dart' as _isp;
-import 'package:serverpod/serverpod.dart' as _is;
-import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _iacs;
+import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/protocol.dart' as _i2;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _iais;
-import 'circle_group.dart' as _ihsam5he;
-import 'greetings/greeting.dart' as _izw8z7ou;
-import 'proof_post.dart' as _i5883r2u;
-import 'reaction.dart' as _i3gtfqg5;
-import 'user.dart' as _iv73i78m;
+    as _i3;
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
+    as _i4;
+import 'chat_message.dart' as _i5;
+import 'circle_group.dart' as _i6;
+import 'greetings/greeting.dart' as _i7;
+import 'proof_post.dart' as _i8;
+import 'reaction.dart' as _i9;
+import 'user.dart' as _i10;
+import 'package:circle_server/src/generated/chat_message.dart' as _i11;
+import 'package:circle_server/src/generated/circle_group.dart' as _i12;
+import 'package:circle_server/src/generated/proof_post.dart' as _i13;
+import 'package:circle_server/src/generated/user.dart' as _i14;
+export 'chat_message.dart';
 export 'circle_group.dart';
 export 'greetings/greeting.dart';
 export 'proof_post.dart';
 export 'reaction.dart';
 export 'user.dart';
 
-class Protocol extends _is.DatabaseSerializationManager {
+class Protocol extends _i1.SerializationManagerServer {
   Protocol._();
 
   factory Protocol() => _instance;
 
-  static final Protocol _instance = Protocol._().._registerHostProtocols();
+  static final Protocol _instance = Protocol._();
 
-  static List<_isp.TableDefinition> get targetTableDefinitions => [
-    _isp.TableDefinition(
+  static final List<_i2.TableDefinition> targetTableDefinitions = [
+    _i2.TableDefinition(
+      name: 'chat_message',
+      dartName: 'ChatMessage',
+      schema: 'public',
+      module: 'circle',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'chat_message_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'groupId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'message',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'chat_message_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
       name: 'circle_group',
       dartName: 'CircleGroup',
       schema: 'public',
       module: 'circle',
       columns: [
-        _isp.ColumnDefinition(
+        _i2.ColumnDefinition(
           name: 'id',
-          columnType: _isp.ColumnType.bigint,
+          columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
-          columnDefault: 'serial',
+          columnDefault: 'nextval(\'circle_group_id_seq\'::regclass)',
         ),
-        _isp.ColumnDefinition(
+        _i2.ColumnDefinition(
           name: 'name',
-          columnType: _isp.ColumnType.text,
+          columnType: _i2.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _isp.ColumnDefinition(
+        _i2.ColumnDefinition(
           name: 'dailyDeadline',
-          columnType: _isp.ColumnType.timestampWithoutTimeZone,
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
         ),
       ],
       foreignKeys: [],
-      indexes: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'circle_group_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+      ],
       managed: true,
     ),
-    _isp.TableDefinition(
+    _i2.TableDefinition(
       name: 'proof_post',
       dartName: 'ProofPost',
       schema: 'public',
       module: 'circle',
       columns: [
-        _isp.ColumnDefinition(
+        _i2.ColumnDefinition(
           name: 'id',
-          columnType: _isp.ColumnType.bigint,
+          columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
-          columnDefault: 'serial',
+          columnDefault: 'nextval(\'proof_post_id_seq\'::regclass)',
         ),
-        _isp.ColumnDefinition(
+        _i2.ColumnDefinition(
           name: 'userId',
-          columnType: _isp.ColumnType.bigint,
+          columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int',
         ),
-        _isp.ColumnDefinition(
+        _i2.ColumnDefinition(
           name: 'circleId',
-          columnType: _isp.ColumnType.bigint,
+          columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int',
         ),
-        _isp.ColumnDefinition(
+        _i2.ColumnDefinition(
           name: 'imageUrl',
-          columnType: _isp.ColumnType.text,
+          columnType: _i2.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _isp.ColumnDefinition(
+        _i2.ColumnDefinition(
           name: 'caption',
-          columnType: _isp.ColumnType.text,
+          columnType: _i2.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _isp.ColumnDefinition(
+        _i2.ColumnDefinition(
           name: 'isVerified',
-          columnType: _isp.ColumnType.boolean,
+          columnType: _i2.ColumnType.boolean,
           isNullable: false,
           dartType: 'bool',
         ),
-        _isp.ColumnDefinition(
+        _i2.ColumnDefinition(
           name: 'createdAt',
-          columnType: _isp.ColumnType.timestampWithoutTimeZone,
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
         ),
       ],
       foreignKeys: [],
-      indexes: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'proof_post_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+      ],
       managed: true,
     ),
-    _isp.TableDefinition(
+    _i2.TableDefinition(
       name: 'reaction',
       dartName: 'Reaction',
       schema: 'public',
       module: 'circle',
       columns: [
-        _isp.ColumnDefinition(
+        _i2.ColumnDefinition(
           name: 'id',
-          columnType: _isp.ColumnType.bigint,
+          columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
-          columnDefault: 'serial',
+          columnDefault: 'nextval(\'reaction_id_seq\'::regclass)',
         ),
-        _isp.ColumnDefinition(
+        _i2.ColumnDefinition(
           name: 'postId',
-          columnType: _isp.ColumnType.bigint,
+          columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int',
         ),
-        _isp.ColumnDefinition(
+        _i2.ColumnDefinition(
           name: 'userId',
-          columnType: _isp.ColumnType.bigint,
+          columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int',
         ),
-        _isp.ColumnDefinition(
+        _i2.ColumnDefinition(
           name: 'emoji',
-          columnType: _isp.ColumnType.text,
+          columnType: _i2.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
       ],
       foreignKeys: [],
-      indexes: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'reaction_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+      ],
       managed: true,
     ),
-    _isp.TableDefinition(
+    _i2.TableDefinition(
       name: 'user',
       dartName: 'User',
       schema: 'public',
       module: 'circle',
       columns: [
-        _isp.ColumnDefinition(
+        _i2.ColumnDefinition(
           name: 'id',
-          columnType: _isp.ColumnType.bigint,
+          columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
-          columnDefault: 'serial',
+          columnDefault: 'nextval(\'user_id_seq\'::regclass)',
         ),
-        _isp.ColumnDefinition(
+        _i2.ColumnDefinition(
           name: 'username',
-          columnType: _isp.ColumnType.text,
+          columnType: _i2.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _isp.ColumnDefinition(
+        _i2.ColumnDefinition(
           name: 'phoneNumber',
-          columnType: _isp.ColumnType.text,
+          columnType: _i2.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _isp.ColumnDefinition(
+        _i2.ColumnDefinition(
           name: 'streakCount',
-          columnType: _isp.ColumnType.bigint,
+          columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int',
         ),
-        _isp.ColumnDefinition(
+        _i2.ColumnDefinition(
           name: 'rankColor',
-          columnType: _isp.ColumnType.text,
+          columnType: _i2.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
       ],
       foreignKeys: [],
-      indexes: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'user_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+      ],
       managed: true,
     ),
-    ..._iais.Protocol.targetTableDefinitions,
-    ..._iacs.Protocol.targetTableDefinitions,
-    ..._isp.Protocol.targetTableDefinitions,
+    ..._i3.Protocol.targetTableDefinitions,
+    ..._i4.Protocol.targetTableDefinitions,
+    ..._i2.Protocol.targetTableDefinitions,
   ];
 
   static String? getClassNameFromObjectJson(dynamic data) {
@@ -223,62 +340,88 @@ class Protocol extends _is.DatabaseSerializationManager {
           'className': dataClassName,
           'data': data,
         });
-      } on _is.DeserializationClassNameNotFoundException catch (_) {
+      } on FormatException catch (_) {
         // If the className is not recognized (e.g., older client receiving
         // data with a new subtype), fall back to deserializing without the
         // className, using the expected type T.
       }
     }
 
-    if (t == _ihsam5he.CircleGroup) {
-      return _ihsam5he.CircleGroup.fromJson(data) as T;
+    if (t == _i5.ChatMessage) {
+      return _i5.ChatMessage.fromJson(data) as T;
     }
-    if (t == _izw8z7ou.Greeting) {
-      return _izw8z7ou.Greeting.fromJson(data) as T;
+    if (t == _i6.CircleGroup) {
+      return _i6.CircleGroup.fromJson(data) as T;
     }
-    if (t == _i5883r2u.ProofPost) {
-      return _i5883r2u.ProofPost.fromJson(data) as T;
+    if (t == _i7.Greeting) {
+      return _i7.Greeting.fromJson(data) as T;
     }
-    if (t == _i3gtfqg5.Reaction) {
-      return _i3gtfqg5.Reaction.fromJson(data) as T;
+    if (t == _i8.ProofPost) {
+      return _i8.ProofPost.fromJson(data) as T;
     }
-    if (t == _iv73i78m.User) {
-      return _iv73i78m.User.fromJson(data) as T;
+    if (t == _i9.Reaction) {
+      return _i9.Reaction.fromJson(data) as T;
     }
-    if (t == _is.getType<_ihsam5he.CircleGroup?>()) {
-      return (data != null ? _ihsam5he.CircleGroup.fromJson(data) : null) as T;
+    if (t == _i10.User) {
+      return _i10.User.fromJson(data) as T;
     }
-    if (t == _is.getType<_izw8z7ou.Greeting?>()) {
-      return (data != null ? _izw8z7ou.Greeting.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i5.ChatMessage?>()) {
+      return (data != null ? _i5.ChatMessage.fromJson(data) : null) as T;
     }
-    if (t == _is.getType<_i5883r2u.ProofPost?>()) {
-      return (data != null ? _i5883r2u.ProofPost.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i6.CircleGroup?>()) {
+      return (data != null ? _i6.CircleGroup.fromJson(data) : null) as T;
     }
-    if (t == _is.getType<_i3gtfqg5.Reaction?>()) {
-      return (data != null ? _i3gtfqg5.Reaction.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i7.Greeting?>()) {
+      return (data != null ? _i7.Greeting.fromJson(data) : null) as T;
     }
-    if (t == _is.getType<_iv73i78m.User?>()) {
-      return (data != null ? _iv73i78m.User.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i8.ProofPost?>()) {
+      return (data != null ? _i8.ProofPost.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i9.Reaction?>()) {
+      return (data != null ? _i9.Reaction.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i10.User?>()) {
+      return (data != null ? _i10.User.fromJson(data) : null) as T;
+    }
+    if (t == List<_i11.ChatMessage>) {
+      return (data as List)
+              .map((e) => deserialize<_i11.ChatMessage>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i12.CircleGroup>) {
+      return (data as List)
+              .map((e) => deserialize<_i12.CircleGroup>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i13.ProofPost>) {
+      return (data as List).map((e) => deserialize<_i13.ProofPost>(e)).toList()
+          as T;
+    }
+    if (t == List<_i14.User>) {
+      return (data as List).map((e) => deserialize<_i14.User>(e)).toList() as T;
     }
     try {
-      return _iais.Protocol().deserialize<T>(data, t);
-    } on _is.DeserializationTypeNotFoundException catch (_) {}
+      return _i3.Protocol().deserialize<T>(data, t);
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _iacs.Protocol().deserialize<T>(data, t);
-    } on _is.DeserializationTypeNotFoundException catch (_) {}
+      return _i4.Protocol().deserialize<T>(data, t);
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _isp.Protocol().deserialize<T>(data, t);
-    } on _is.DeserializationTypeNotFoundException catch (_) {}
+      return _i2.Protocol().deserialize<T>(data, t);
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _ihsam5he.CircleGroup => 'CircleGroup',
-      _izw8z7ou.Greeting => 'Greeting',
-      _i5883r2u.ProofPost => 'ProofPost',
-      _i3gtfqg5.Reaction => 'Reaction',
-      _iv73i78m.User => 'User',
+      _i5.ChatMessage => 'ChatMessage',
+      _i6.CircleGroup => 'CircleGroup',
+      _i7.Greeting => 'Greeting',
+      _i8.ProofPost => 'ProofPost',
+      _i9.Reaction => 'Reaction',
+      _i10.User => 'User',
       _ => null,
     };
   }
@@ -293,32 +436,30 @@ class Protocol extends _is.DatabaseSerializationManager {
     }
 
     switch (data) {
-      case _ihsam5he.CircleGroup():
+      case _i5.ChatMessage():
+        return 'ChatMessage';
+      case _i6.CircleGroup():
         return 'CircleGroup';
-      case _izw8z7ou.Greeting():
+      case _i7.Greeting():
         return 'Greeting';
-      case _i5883r2u.ProofPost():
+      case _i8.ProofPost():
         return 'ProofPost';
-      case _i3gtfqg5.Reaction():
+      case _i9.Reaction():
         return 'Reaction';
-      case _iv73i78m.User():
+      case _i10.User():
         return 'User';
     }
-    className = _iais.Protocol().getClassNameForObject(data);
+    className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return className.contains('.')
-          ? className
-          : 'serverpod_auth_idp.$className';
+      return 'serverpod.$className';
     }
-    className = _iacs.Protocol().getClassNameForObject(data);
+    className = _i3.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return className.contains('.')
-          ? className
-          : 'serverpod_auth_core.$className';
+      return 'serverpod_auth_idp.$className';
     }
-    className = _isp.Protocol().getClassNameForObject(data);
+    className = _i4.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return className.contains('.') ? className : 'serverpod.$className';
+      return 'serverpod_auth_core.$className';
     }
     return null;
   }
@@ -329,76 +470,76 @@ class Protocol extends _is.DatabaseSerializationManager {
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
+    if (dataClassName == 'ChatMessage') {
+      return deserialize<_i5.ChatMessage>(data['data']);
+    }
     if (dataClassName == 'CircleGroup') {
-      return deserialize<_ihsam5he.CircleGroup>(data['data']);
+      return deserialize<_i6.CircleGroup>(data['data']);
     }
     if (dataClassName == 'Greeting') {
-      return deserialize<_izw8z7ou.Greeting>(data['data']);
+      return deserialize<_i7.Greeting>(data['data']);
     }
     if (dataClassName == 'ProofPost') {
-      return deserialize<_i5883r2u.ProofPost>(data['data']);
+      return deserialize<_i8.ProofPost>(data['data']);
     }
     if (dataClassName == 'Reaction') {
-      return deserialize<_i3gtfqg5.Reaction>(data['data']);
+      return deserialize<_i9.Reaction>(data['data']);
     }
     if (dataClassName == 'User') {
-      return deserialize<_iv73i78m.User>(data['data']);
-    }
-    if (dataClassName.startsWith('serverpod_auth_idp.')) {
-      data['className'] = dataClassName.substring(19);
-      return _iais.Protocol().deserializeByClassName(data);
-    }
-    if (dataClassName.startsWith('serverpod_auth_core.')) {
-      data['className'] = dataClassName.substring(20);
-      return _iacs.Protocol().deserializeByClassName(data);
+      return deserialize<_i10.User>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
-      return _isp.Protocol().deserializeByClassName(data);
+      return _i2.Protocol().deserializeByClassName(data);
+    }
+    if (dataClassName.startsWith('serverpod_auth_idp.')) {
+      data['className'] = dataClassName.substring(19);
+      return _i3.Protocol().deserializeByClassName(data);
+    }
+    if (dataClassName.startsWith('serverpod_auth_core.')) {
+      data['className'] = dataClassName.substring(20);
+      return _i4.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
 
-  void _registerHostProtocols() {
-    _iais.Protocol().registerHostProtocol('circle', this);
-    _iacs.Protocol().registerHostProtocol('circle', this);
-  }
-
   @override
-  _is.Table? getTableForType(Type t) {
+  _i1.Table? getTableForType(Type t) {
     {
-      var table = _iais.Protocol().getTableForType(t);
+      var table = _i3.Protocol().getTableForType(t);
       if (table != null) {
         return table;
       }
     }
     {
-      var table = _iacs.Protocol().getTableForType(t);
+      var table = _i4.Protocol().getTableForType(t);
       if (table != null) {
         return table;
       }
     }
     {
-      var table = _isp.Protocol().getTableForType(t);
+      var table = _i2.Protocol().getTableForType(t);
       if (table != null) {
         return table;
       }
     }
     switch (t) {
-      case _ihsam5he.CircleGroup:
-        return _ihsam5he.CircleGroup.t;
-      case _i5883r2u.ProofPost:
-        return _i5883r2u.ProofPost.t;
-      case _i3gtfqg5.Reaction:
-        return _i3gtfqg5.Reaction.t;
-      case _iv73i78m.User:
-        return _iv73i78m.User.t;
+      case _i5.ChatMessage:
+        return _i5.ChatMessage.t;
+      case _i6.CircleGroup:
+        return _i6.CircleGroup.t;
+      case _i8.ProofPost:
+        return _i8.ProofPost.t;
+      case _i9.Reaction:
+        return _i9.Reaction.t;
+      case _i10.User:
+        return _i10.User.t;
     }
     return null;
   }
 
   @override
-  List<_isp.TableDefinition> getTargetTableDefinitions() =>
+  List<_i2.TableDefinition> getTargetTableDefinitions() =>
       targetTableDefinitions;
 
   @override
@@ -414,10 +555,10 @@ class Protocol extends _is.DatabaseSerializationManager {
       return null;
     }
     try {
-      return _iais.Protocol().mapRecordToJson(record);
+      return _i3.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _iacs.Protocol().mapRecordToJson(record);
+      return _i4.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

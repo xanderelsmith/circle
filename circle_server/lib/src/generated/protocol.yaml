@@ -9,5 +9,19 @@ emailIdp:
   - hasAccount:
 jwtRefresh:
   - refreshAccessToken:
+chat:
+  - postMessage:
+  - getMessages:
+circle:
+  - getCircles:
+  - createCircle:
+  - createProofPost:
+  - getFeed:
+  - verifyPost:
+user:
+  - getOrCreateUser:
+  - getLeaderboard:
+vapi:
+  - initiateCall:
 greeting:
   - hello:

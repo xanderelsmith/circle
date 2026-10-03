@@ -9,7 +9,7 @@ class ChatEndpoint extends Endpoint {
     final savedMessage = await ChatMessage.db.insertRow(session, message);
     
     // Broadcast the message to a channel for the group
-    session.messages.postMessage('chat_\', savedMessage);
+    session.messages.postMessage('chat_${message.groupId}', savedMessage);
     
     return savedMessage;
   }
@@ -23,16 +23,5 @@ class ChatEndpoint extends Endpoint {
       orderDescending: true,
       limit: 100,
     );
-  }
-  
-  // Real-time stream handling
-  @override
-  Future<void> streamOpened(StreamingSession session) async {
-    // When a client opens a stream, they can start listening to channels
-  }
-  
-  @override
-  Future<void> handleStreamMessage(StreamingSession session, SerializableEntity message) async {
-    // Handle incoming streaming messages if needed
   }
 }

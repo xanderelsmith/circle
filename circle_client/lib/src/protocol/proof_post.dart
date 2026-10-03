@@ -10,10 +10,9 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class ProofPost
-    implements _isc.SerializableModel, _isc.ProtocolSerialization {
+abstract class ProofPost implements _i1.SerializableModel {
   ProofPost._({
     this.id,
     required this.userId,
@@ -41,10 +40,10 @@ abstract class ProofPost
       circleId: jsonSerialization['circleId'] as int,
       imageUrl: jsonSerialization['imageUrl'] as String,
       caption: jsonSerialization['caption'] as String,
-      isVerified: _isc.BoolJsonExtension.fromJson(
+      isVerified: _i1.BoolJsonExtension.fromJson(
         jsonSerialization['isVerified'],
       ),
-      createdAt: _isc.DateTimeJsonExtension.fromJson(
+      createdAt: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['createdAt'],
       ),
     );
@@ -69,7 +68,7 @@ abstract class ProofPost
 
   /// Returns a shallow copy of this [ProofPost]
   /// with some or all fields replaced by the given arguments.
-  @_isc.useResult
+  @_i1.useResult
   ProofPost copyWith({
     int? id,
     int? userId,
@@ -94,22 +93,8 @@ abstract class ProofPost
   }
 
   @override
-  Map<String, dynamic> toJsonForProtocol() {
-    return {
-      '__className__': 'ProofPost',
-      if (id != null) 'id': id,
-      'userId': userId,
-      'circleId': circleId,
-      'imageUrl': imageUrl,
-      'caption': caption,
-      'isVerified': isVerified,
-      'createdAt': createdAt.toJson(),
-    };
-  }
-
-  @override
   String toString() {
-    return _isc.SerializationManager.encode(this);
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -136,7 +121,7 @@ class _ProofPostImpl extends ProofPost {
 
   /// Returns a shallow copy of this [ProofPost]
   /// with some or all fields replaced by the given arguments.
-  @_isc.useResult
+  @_i1.useResult
   @override
   ProofPost copyWith({
     Object? id = _Undefined,

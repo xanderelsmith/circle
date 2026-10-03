@@ -108,8 +108,8 @@ class _BottomNav extends StatelessWidget {
             label: 'Circles',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.insert_chart_rounded),
-            activeIcon: Icon(Icons.insert_chart_rounded),
+            icon: Icon(Icons.bar_chart_outlined),
+            activeIcon: Icon(Icons.bar_chart),
             label: 'Statistics',
           ),
           BottomNavigationBarItem(

@@ -4,9 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'client.dart';
 import 'theme.dart';
 import 'main_shell.dart';
-import 'main_layout.dart';
-import 'screens/main_shell.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,7 +25,7 @@ class MyApp extends StatelessWidget {
         decoration: const BoxDecoration(
           gradient: AppTheme.atmosphericBackground,
         ),
-        child: const MainLayout(),
+
         child: const MainShell(), // ← was HomeScreen
       ),
     );

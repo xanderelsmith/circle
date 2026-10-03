@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class Reaction
-    implements _is.TableRow<int?>, _is.ProtocolSerialization {
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Reaction._({
     this.id,
     required this.postId,
@@ -51,11 +51,11 @@ abstract class Reaction
   String emoji;
 
   @override
-  _is.Table<int?> get table => t;
+  _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Reaction]
   /// with some or all fields replaced by the given arguments.
-  @_is.useResult
+  @_i1.useResult
   Reaction copyWith({
     int? id,
     int? postId,
@@ -89,11 +89,12 @@ abstract class Reaction
   }
 
   static ReactionIncludeList includeList({
-    _is.WhereExpressionBuilder<ReactionTable>? where,
+    _i1.WhereExpressionBuilder<ReactionTable>? where,
     int? limit,
     int? offset,
-    _is.OrderByBuilder<ReactionTable>? orderBy,
-    _is.OrderByListBuilder<ReactionTable>? orderByList,
+    _i1.OrderByBuilder<ReactionTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ReactionTable>? orderByList,
     ReactionInclude? include,
   }) {
     return ReactionIncludeList._(
@@ -101,6 +102,7 @@ abstract class Reaction
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Reaction.t),
+      orderDescending: orderDescending,
       orderByList: orderByList?.call(Reaction.t),
       include: include,
     );
@@ -108,7 +110,7 @@ abstract class Reaction
 
   @override
   String toString() {
-    return _is.SerializationManager.encode(this);
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -129,7 +131,7 @@ class _ReactionImpl extends Reaction {
 
   /// Returns a shallow copy of this [Reaction]
   /// with some or all fields replaced by the given arguments.
-  @_is.useResult
+  @_i1.useResult
   @override
   Reaction copyWith({
     Object? id = _Undefined,
@@ -146,37 +148,37 @@ class _ReactionImpl extends Reaction {
   }
 }
 
-class ReactionUpdateTable extends _is.UpdateTable<ReactionTable> {
+class ReactionUpdateTable extends _i1.UpdateTable<ReactionTable> {
   ReactionUpdateTable(super.table);
 
-  _is.ColumnValue<int, int> postId(int value) => _is.ColumnValue(
+  _i1.ColumnValue<int, int> postId(int value) => _i1.ColumnValue(
     table.postId,
     value,
   );
 
-  _is.ColumnValue<int, int> userId(int value) => _is.ColumnValue(
+  _i1.ColumnValue<int, int> userId(int value) => _i1.ColumnValue(
     table.userId,
     value,
   );
 
-  _is.ColumnValue<String, String> emoji(String value) => _is.ColumnValue(
+  _i1.ColumnValue<String, String> emoji(String value) => _i1.ColumnValue(
     table.emoji,
     value,
   );
 }
 
-class ReactionTable extends _is.Table<int?> {
+class ReactionTable extends _i1.Table<int?> {
   ReactionTable({super.tableRelation}) : super(tableName: 'reaction') {
     updateTable = ReactionUpdateTable(this);
-    postId = _is.ColumnInt(
+    postId = _i1.ColumnInt(
       'postId',
       this,
     );
-    userId = _is.ColumnInt(
+    userId = _i1.ColumnInt(
       'userId',
       this,
     );
-    emoji = _is.ColumnString(
+    emoji = _i1.ColumnString(
       'emoji',
       this,
     );
@@ -184,14 +186,14 @@ class ReactionTable extends _is.Table<int?> {
 
   late final ReactionUpdateTable updateTable;
 
-  late final _is.ColumnInt postId;
+  late final _i1.ColumnInt postId;
 
-  late final _is.ColumnInt userId;
+  late final _i1.ColumnInt userId;
 
-  late final _is.ColumnString emoji;
+  late final _i1.ColumnString emoji;
 
   @override
-  List<_is.Column> get columns => [
+  List<_i1.Column> get columns => [
     id,
     postId,
     userId,
@@ -199,22 +201,23 @@ class ReactionTable extends _is.Table<int?> {
   ];
 }
 
-class ReactionInclude extends _is.IncludeObject {
+class ReactionInclude extends _i1.IncludeObject {
   ReactionInclude._();
 
   @override
-  Map<String, _is.Include?> get includes => {};
+  Map<String, _i1.Include?> get includes => {};
 
   @override
-  _is.Table<int?> get table => Reaction.t;
+  _i1.Table<int?> get table => Reaction.t;
 }
 
-class ReactionIncludeList extends _is.IncludeList {
+class ReactionIncludeList extends _i1.IncludeList {
   ReactionIncludeList._({
-    _is.WhereExpressionBuilder<ReactionTable>? where,
+    _i1.WhereExpressionBuilder<ReactionTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
+    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -222,10 +225,10 @@ class ReactionIncludeList extends _is.IncludeList {
   }
 
   @override
-  Map<String, _is.Include?> get includes => include?.includes ?? {};
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _is.Table<int?> get table => Reaction.t;
+  _i1.Table<int?> get table => Reaction.t;
 }
 
 class ReactionRepository {
@@ -254,20 +257,22 @@ class ReactionRepository {
   /// );
   /// ```
   Future<List<Reaction>> find(
-    _is.DatabaseSession session, {
-    _is.WhereExpressionBuilder<ReactionTable>? where,
+    _i1.DatabaseSession session, {
+    _i1.WhereExpressionBuilder<ReactionTable>? where,
     int? limit,
     int? offset,
-    _is.OrderByBuilder<ReactionTable>? orderBy,
-    _is.OrderByListBuilder<ReactionTable>? orderByList,
-    _is.Transaction? transaction,
-    _is.LockMode? lockMode,
-    _is.LockBehavior? lockBehavior,
+    _i1.OrderByBuilder<ReactionTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ReactionTable>? orderByList,
+    _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Reaction>(
       where: where?.call(Reaction.t),
       orderBy: orderBy?.call(Reaction.t),
       orderByList: orderByList?.call(Reaction.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -294,19 +299,21 @@ class ReactionRepository {
   /// );
   /// ```
   Future<Reaction?> findFirstRow(
-    _is.DatabaseSession session, {
-    _is.WhereExpressionBuilder<ReactionTable>? where,
+    _i1.DatabaseSession session, {
+    _i1.WhereExpressionBuilder<ReactionTable>? where,
     int? offset,
-    _is.OrderByBuilder<ReactionTable>? orderBy,
-    _is.OrderByListBuilder<ReactionTable>? orderByList,
-    _is.Transaction? transaction,
-    _is.LockMode? lockMode,
-    _is.LockBehavior? lockBehavior,
+    _i1.OrderByBuilder<ReactionTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ReactionTable>? orderByList,
+    _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Reaction>(
       where: where?.call(Reaction.t),
       orderBy: orderBy?.call(Reaction.t),
       orderByList: orderByList?.call(Reaction.t),
+      orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -316,11 +323,11 @@ class ReactionRepository {
 
   /// Finds a single [Reaction] by its [id] or null if no such row exists.
   Future<Reaction?> findById(
-    _is.DatabaseSession session,
+    _i1.DatabaseSession session,
     int id, {
-    _is.Transaction? transaction,
-    _is.LockMode? lockMode,
-    _is.LockBehavior? lockBehavior,
+    _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<Reaction>(
       id,
@@ -340,22 +347,16 @@ class ReactionRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
-  ///
-  /// If [noReturn] is set to `true`, the inserted rows are not read back from
-  /// the database and an empty list is returned. This avoids the overhead of
-  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Reaction>> insert(
-    _is.DatabaseSession session,
+    _i1.DatabaseSession session,
     List<Reaction> rows, {
-    _is.Transaction? transaction,
+    _i1.Transaction? transaction,
     bool ignoreConflicts = false,
-    bool noReturn = false,
   }) async {
     return session.db.insert<Reaction>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
-      noReturn: noReturn,
     );
   }
 
@@ -363,81 +364,12 @@ class ReactionRepository {
   ///
   /// The returned [Reaction] will have its `id` field set.
   Future<Reaction> insertRow(
-    _is.DatabaseSession session,
+    _i1.DatabaseSession session,
     Reaction row, {
-    _is.Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.insertRow<Reaction>(
       row,
-      transaction: transaction,
-    );
-  }
-
-  /// Upserts all [Reaction]s in the list and returns the resulting rows.
-  ///
-  /// If a row conflicts on the given [conflictColumns], the existing row is
-  /// updated with the new values. Otherwise, a new row is inserted.
-  ///
-  /// If [updateColumns] is provided, only those columns will be updated on
-  /// conflict. If null, all non-conflict, non-id columns are updated.
-  ///
-  /// If [updateWhere] is provided, the update only applies to rows matching the
-  /// given expression. Conflicting rows that don't match are skipped and not
-  /// returned, so the resulting list may be shorter than [rows].
-  ///
-  /// The returned [Reaction]s will have their `id` fields set.
-  ///
-  /// This is an atomic operation, meaning that if one of the rows fails,
-  /// none of the rows will be affected.
-  ///
-  /// If [noReturn] is set to `true`, the resulting rows are not read back from
-  /// the database and an empty list is returned. This avoids the overhead of
-  /// transferring and deserializing the rows when the result is not needed.
-  Future<List<Reaction>> upsert(
-    _is.DatabaseSession session,
-    List<Reaction> rows, {
-    required _is.ColumnSelections<ReactionTable> conflictColumns,
-    _is.ColumnSelections<ReactionTable>? updateColumns,
-    _is.WhereExpressionBuilder<ReactionTable>? updateWhere,
-    _is.Transaction? transaction,
-    bool noReturn = false,
-  }) async {
-    return session.db.upsert<Reaction>(
-      rows,
-      conflictColumns: conflictColumns(Reaction.t),
-      updateColumns: updateColumns?.call(Reaction.t),
-      updateWhere: updateWhere?.call(Reaction.t),
-      transaction: transaction,
-      noReturn: noReturn,
-    );
-  }
-
-  /// Upserts a single [Reaction] and returns the resulting row.
-  ///
-  /// If the row conflicts on the given [conflictColumns], the existing row is
-  /// updated. Otherwise, a new row is inserted.
-  ///
-  /// If [updateColumns] is provided, only those columns will be updated on
-  /// conflict. If null, all non-conflict, non-id columns are updated.
-  ///
-  /// If [updateWhere] is provided, the update only applies when the existing
-  /// row matches the expression. Returns `null` if no row was affected — for
-  /// example when [updateWhere] does not match the conflicting row.
-  ///
-  /// The returned [Reaction] will have its `id` field set.
-  Future<Reaction?> upsertRow(
-    _is.DatabaseSession session,
-    Reaction row, {
-    required _is.ColumnSelections<ReactionTable> conflictColumns,
-    _is.ColumnSelections<ReactionTable>? updateColumns,
-    _is.WhereExpressionBuilder<ReactionTable>? updateWhere,
-    _is.Transaction? transaction,
-  }) async {
-    return session.db.upsertRow<Reaction>(
-      row,
-      conflictColumns: conflictColumns(Reaction.t),
-      updateColumns: updateColumns?.call(Reaction.t),
-      updateWhere: updateWhere?.call(Reaction.t),
       transaction: transaction,
     );
   }
@@ -447,22 +379,16 @@ class ReactionRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
-  ///
-  /// If [noReturn] is set to `true`, the updated rows are not read back from
-  /// the database and an empty list is returned. This avoids the overhead of
-  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Reaction>> update(
-    _is.DatabaseSession session,
+    _i1.DatabaseSession session,
     List<Reaction> rows, {
-    _is.ColumnSelections<ReactionTable>? columns,
-    _is.Transaction? transaction,
-    bool noReturn = false,
+    _i1.ColumnSelections<ReactionTable>? columns,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.update<Reaction>(
       rows,
       columns: columns?.call(Reaction.t),
       transaction: transaction,
-      noReturn: noReturn,
     );
   }
 
@@ -470,10 +396,10 @@ class ReactionRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<Reaction> updateRow(
-    _is.DatabaseSession session,
+    _i1.DatabaseSession session,
     Reaction row, {
-    _is.ColumnSelections<ReactionTable>? columns,
-    _is.Transaction? transaction,
+    _i1.ColumnSelections<ReactionTable>? columns,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.updateRow<Reaction>(
       row,
@@ -485,10 +411,10 @@ class ReactionRepository {
   /// Updates a single [Reaction] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Reaction?> updateById(
-    _is.DatabaseSession session,
+    _i1.DatabaseSession session,
     int id, {
-    required _is.ColumnValueListBuilder<ReactionUpdateTable> columnValues,
-    _is.Transaction? transaction,
+    required _i1.ColumnValueListBuilder<ReactionUpdateTable> columnValues,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<Reaction>(
       id,
@@ -499,20 +425,16 @@ class ReactionRepository {
 
   /// Updates all [Reaction]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
-  ///
-  /// If [noReturn] is set to `true`, the updated rows are not read back from
-  /// the database and an empty list is returned. This avoids the overhead of
-  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Reaction>> updateWhere(
-    _is.DatabaseSession session, {
-    required _is.ColumnValueListBuilder<ReactionUpdateTable> columnValues,
-    required _is.WhereExpressionBuilder<ReactionTable> where,
+    _i1.DatabaseSession session, {
+    required _i1.ColumnValueListBuilder<ReactionUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<ReactionTable> where,
     int? limit,
     int? offset,
-    _is.OrderByBuilder<ReactionTable>? orderBy,
-    _is.OrderByListBuilder<ReactionTable>? orderByList,
-    _is.Transaction? transaction,
-    bool noReturn = false,
+    _i1.OrderByBuilder<ReactionTable>? orderBy,
+    _i1.OrderByListBuilder<ReactionTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Reaction>(
       columnValues: columnValues(Reaction.t.updateTable),
@@ -521,44 +443,30 @@ class ReactionRepository {
       offset: offset,
       orderBy: orderBy?.call(Reaction.t),
       orderByList: orderByList?.call(Reaction.t),
+      orderDescending: orderDescending,
       transaction: transaction,
-      noReturn: noReturn,
     );
   }
 
   /// Deletes all [Reaction]s in the list and returns the deleted rows.
-  ///
-  /// To specify the order of the returned rows use [orderBy] or [orderByList]
-  /// when sorting by multiple columns.
-  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
-  ///
-  /// If [noReturn] is set to `true`, the deleted rows are not read back from
-  /// the database and an empty list is returned. This avoids the overhead of
-  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Reaction>> delete(
-    _is.DatabaseSession session,
+    _i1.DatabaseSession session,
     List<Reaction> rows, {
-    _is.OrderByBuilder<ReactionTable>? orderBy,
-    _is.OrderByListBuilder<ReactionTable>? orderByList,
-    _is.Transaction? transaction,
-    bool noReturn = false,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.delete<Reaction>(
       rows,
-      orderBy: orderBy?.call(Reaction.t),
-      orderByList: orderByList?.call(Reaction.t),
       transaction: transaction,
-      noReturn: noReturn,
     );
   }
 
   /// Deletes a single [Reaction].
   Future<Reaction> deleteRow(
-    _is.DatabaseSession session,
+    _i1.DatabaseSession session,
     Reaction row, {
-    _is.Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.deleteRow<Reaction>(
       row,
@@ -567,37 +475,24 @@ class ReactionRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
-  ///
-  /// To specify the order of the returned rows use [orderBy] or [orderByList]
-  /// when sorting by multiple columns.
-  ///
-  /// If [noReturn] is set to `true`, the deleted rows are not read back from
-  /// the database and an empty list is returned. This avoids the overhead of
-  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Reaction>> deleteWhere(
-    _is.DatabaseSession session, {
-    required _is.WhereExpressionBuilder<ReactionTable> where,
-    _is.OrderByBuilder<ReactionTable>? orderBy,
-    _is.OrderByListBuilder<ReactionTable>? orderByList,
-    _is.Transaction? transaction,
-    bool noReturn = false,
+    _i1.DatabaseSession session, {
+    required _i1.WhereExpressionBuilder<ReactionTable> where,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<Reaction>(
       where: where(Reaction.t),
-      orderBy: orderBy?.call(Reaction.t),
-      orderByList: orderByList?.call(Reaction.t),
       transaction: transaction,
-      noReturn: noReturn,
     );
   }
 
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _is.DatabaseSession session, {
-    _is.WhereExpressionBuilder<ReactionTable>? where,
+    _i1.DatabaseSession session, {
+    _i1.WhereExpressionBuilder<ReactionTable>? where,
     int? limit,
-    _is.Transaction? transaction,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.count<Reaction>(
       where: where?.call(Reaction.t),
@@ -608,11 +503,11 @@ class ReactionRepository {
 
   /// Acquires row-level locks on [Reaction] rows matching the [where] expression.
   Future<void> lockRows(
-    _is.DatabaseSession session, {
-    required _is.WhereExpressionBuilder<ReactionTable> where,
-    required _is.LockMode lockMode,
-    required _is.Transaction transaction,
-    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
+    _i1.DatabaseSession session, {
+    required _i1.WhereExpressionBuilder<ReactionTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Reaction>(
       where: where(Reaction.t),

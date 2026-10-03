@@ -10,10 +10,9 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class Reaction
-    implements _isc.SerializableModel, _isc.ProtocolSerialization {
+abstract class Reaction implements _i1.SerializableModel {
   Reaction._({
     this.id,
     required this.postId,
@@ -50,7 +49,7 @@ abstract class Reaction
 
   /// Returns a shallow copy of this [Reaction]
   /// with some or all fields replaced by the given arguments.
-  @_isc.useResult
+  @_i1.useResult
   Reaction copyWith({
     int? id,
     int? postId,
@@ -69,19 +68,8 @@ abstract class Reaction
   }
 
   @override
-  Map<String, dynamic> toJsonForProtocol() {
-    return {
-      '__className__': 'Reaction',
-      if (id != null) 'id': id,
-      'postId': postId,
-      'userId': userId,
-      'emoji': emoji,
-    };
-  }
-
-  @override
   String toString() {
-    return _isc.SerializationManager.encode(this);
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -102,7 +90,7 @@ class _ReactionImpl extends Reaction {
 
   /// Returns a shallow copy of this [Reaction]
   /// with some or all fields replaced by the given arguments.
-  @_isc.useResult
+  @_i1.useResult
   @override
   Reaction copyWith({
     Object? id = _Undefined,

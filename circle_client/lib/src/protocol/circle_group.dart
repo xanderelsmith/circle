@@ -10,10 +10,9 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class CircleGroup
-    implements _isc.SerializableModel, _isc.ProtocolSerialization {
+abstract class CircleGroup implements _i1.SerializableModel {
   CircleGroup._({
     this.id,
     required this.name,
@@ -30,7 +29,7 @@ abstract class CircleGroup
     return CircleGroup(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      dailyDeadline: _isc.DateTimeJsonExtension.fromJson(
+      dailyDeadline: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['dailyDeadline'],
       ),
     );
@@ -47,7 +46,7 @@ abstract class CircleGroup
 
   /// Returns a shallow copy of this [CircleGroup]
   /// with some or all fields replaced by the given arguments.
-  @_isc.useResult
+  @_i1.useResult
   CircleGroup copyWith({
     int? id,
     String? name,
@@ -64,18 +63,8 @@ abstract class CircleGroup
   }
 
   @override
-  Map<String, dynamic> toJsonForProtocol() {
-    return {
-      '__className__': 'CircleGroup',
-      if (id != null) 'id': id,
-      'name': name,
-      'dailyDeadline': dailyDeadline.toJson(),
-    };
-  }
-
-  @override
   String toString() {
-    return _isc.SerializationManager.encode(this);
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -94,7 +83,7 @@ class _CircleGroupImpl extends CircleGroup {
 
   /// Returns a shallow copy of this [CircleGroup]
   /// with some or all fields replaced by the given arguments.
-  @_isc.useResult
+  @_i1.useResult
   @override
   CircleGroup copyWith({
     Object? id = _Undefined,

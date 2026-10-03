@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
@@ -16,7 +16,7 @@ void run(List<String> args) async {
   final pod = Serverpod(args);
 
   // Register the Vapi Escalation Call as a FutureCall
-  pod.registerFutureCall(EscalationCall(), 'escalationCall');
+  pod.futureCallManager?.registerFutureCall(EscalationCall(), 'escalationCall');
 
   // Initialize authentication services for the server.
   // Token managers will be used to validate and issue authentication keys,

@@ -8,19 +8,24 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_type_check
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _iacc;
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'chat_message.dart' as _i2;
+import 'circle_group.dart' as _i3;
+import 'greetings/greeting.dart' as _i4;
+import 'proof_post.dart' as _i5;
+import 'reaction.dart' as _i6;
+import 'user.dart' as _i7;
+import 'package:circle_client/src/protocol/chat_message.dart' as _i8;
+import 'package:circle_client/src/protocol/circle_group.dart' as _i9;
+import 'package:circle_client/src/protocol/proof_post.dart' as _i10;
+import 'package:circle_client/src/protocol/user.dart' as _i11;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _iaic;
-import 'package:serverpod_client/serverpod_client.dart' as _isc;
-import 'circle_group.dart' as _ihsam5he;
-import 'greetings/greeting.dart' as _izw8z7ou;
-import 'proof_post.dart' as _i5883r2u;
-import 'reaction.dart' as _i3gtfqg5;
-import 'user.dart' as _iv73i78m;
+    as _i12;
+import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
+    as _i13;
+export 'chat_message.dart';
 export 'circle_group.dart';
 export 'greetings/greeting.dart';
 export 'proof_post.dart';
@@ -28,12 +33,12 @@ export 'reaction.dart';
 export 'user.dart';
 export 'client.dart';
 
-class Protocol extends _isc.SerializationManager {
+class Protocol extends _i1.SerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;
 
-  static final Protocol _instance = Protocol._().._registerHostProtocols();
+  static final Protocol _instance = Protocol._();
 
   static String? getClassNameFromObjectJson(dynamic data) {
     if (data is! Map) return null;
@@ -55,59 +60,81 @@ class Protocol extends _isc.SerializationManager {
           'className': dataClassName,
           'data': data,
         });
-      } on _isc.DeserializationClassNameNotFoundException catch (_) {
+      } on FormatException catch (_) {
         // If the className is not recognized (e.g., older client receiving
         // data with a new subtype), fall back to deserializing without the
         // className, using the expected type T.
       }
     }
 
-    if (t == _ihsam5he.CircleGroup) {
-      return _ihsam5he.CircleGroup.fromJson(data) as T;
+    if (t == _i2.ChatMessage) {
+      return _i2.ChatMessage.fromJson(data) as T;
     }
-    if (t == _izw8z7ou.Greeting) {
-      return _izw8z7ou.Greeting.fromJson(data) as T;
+    if (t == _i3.CircleGroup) {
+      return _i3.CircleGroup.fromJson(data) as T;
     }
-    if (t == _i5883r2u.ProofPost) {
-      return _i5883r2u.ProofPost.fromJson(data) as T;
+    if (t == _i4.Greeting) {
+      return _i4.Greeting.fromJson(data) as T;
     }
-    if (t == _i3gtfqg5.Reaction) {
-      return _i3gtfqg5.Reaction.fromJson(data) as T;
+    if (t == _i5.ProofPost) {
+      return _i5.ProofPost.fromJson(data) as T;
     }
-    if (t == _iv73i78m.User) {
-      return _iv73i78m.User.fromJson(data) as T;
+    if (t == _i6.Reaction) {
+      return _i6.Reaction.fromJson(data) as T;
     }
-    if (t == _isc.getType<_ihsam5he.CircleGroup?>()) {
-      return (data != null ? _ihsam5he.CircleGroup.fromJson(data) : null) as T;
+    if (t == _i7.User) {
+      return _i7.User.fromJson(data) as T;
     }
-    if (t == _isc.getType<_izw8z7ou.Greeting?>()) {
-      return (data != null ? _izw8z7ou.Greeting.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i2.ChatMessage?>()) {
+      return (data != null ? _i2.ChatMessage.fromJson(data) : null) as T;
     }
-    if (t == _isc.getType<_i5883r2u.ProofPost?>()) {
-      return (data != null ? _i5883r2u.ProofPost.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i3.CircleGroup?>()) {
+      return (data != null ? _i3.CircleGroup.fromJson(data) : null) as T;
     }
-    if (t == _isc.getType<_i3gtfqg5.Reaction?>()) {
-      return (data != null ? _i3gtfqg5.Reaction.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i4.Greeting?>()) {
+      return (data != null ? _i4.Greeting.fromJson(data) : null) as T;
     }
-    if (t == _isc.getType<_iv73i78m.User?>()) {
-      return (data != null ? _iv73i78m.User.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i5.ProofPost?>()) {
+      return (data != null ? _i5.ProofPost.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i6.Reaction?>()) {
+      return (data != null ? _i6.Reaction.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i7.User?>()) {
+      return (data != null ? _i7.User.fromJson(data) : null) as T;
+    }
+    if (t == List<_i8.ChatMessage>) {
+      return (data as List).map((e) => deserialize<_i8.ChatMessage>(e)).toList()
+          as T;
+    }
+    if (t == List<_i9.CircleGroup>) {
+      return (data as List).map((e) => deserialize<_i9.CircleGroup>(e)).toList()
+          as T;
+    }
+    if (t == List<_i10.ProofPost>) {
+      return (data as List).map((e) => deserialize<_i10.ProofPost>(e)).toList()
+          as T;
+    }
+    if (t == List<_i11.User>) {
+      return (data as List).map((e) => deserialize<_i11.User>(e)).toList() as T;
     }
     try {
-      return _iaic.Protocol().deserialize<T>(data, t);
-    } on _isc.DeserializationTypeNotFoundException catch (_) {}
+      return _i12.Protocol().deserialize<T>(data, t);
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _iacc.Protocol().deserialize<T>(data, t);
-    } on _isc.DeserializationTypeNotFoundException catch (_) {}
+      return _i13.Protocol().deserialize<T>(data, t);
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _ihsam5he.CircleGroup => 'CircleGroup',
-      _izw8z7ou.Greeting => 'Greeting',
-      _i5883r2u.ProofPost => 'ProofPost',
-      _i3gtfqg5.Reaction => 'Reaction',
-      _iv73i78m.User => 'User',
+      _i2.ChatMessage => 'ChatMessage',
+      _i3.CircleGroup => 'CircleGroup',
+      _i4.Greeting => 'Greeting',
+      _i5.ProofPost => 'ProofPost',
+      _i6.Reaction => 'Reaction',
+      _i7.User => 'User',
       _ => null,
     };
   }
@@ -122,28 +149,26 @@ class Protocol extends _isc.SerializationManager {
     }
 
     switch (data) {
-      case _ihsam5he.CircleGroup():
+      case _i2.ChatMessage():
+        return 'ChatMessage';
+      case _i3.CircleGroup():
         return 'CircleGroup';
-      case _izw8z7ou.Greeting():
+      case _i4.Greeting():
         return 'Greeting';
-      case _i5883r2u.ProofPost():
+      case _i5.ProofPost():
         return 'ProofPost';
-      case _i3gtfqg5.Reaction():
+      case _i6.Reaction():
         return 'Reaction';
-      case _iv73i78m.User():
+      case _i7.User():
         return 'User';
     }
-    className = _iaic.Protocol().getClassNameForObject(data);
+    className = _i12.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return className.contains('.')
-          ? className
-          : 'serverpod_auth_idp.$className';
+      return 'serverpod_auth_idp.$className';
     }
-    className = _iacc.Protocol().getClassNameForObject(data);
+    className = _i13.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return className.contains('.')
-          ? className
-          : 'serverpod_auth_core.$className';
+      return 'serverpod_auth_core.$className';
     }
     return null;
   }
@@ -154,39 +179,34 @@ class Protocol extends _isc.SerializationManager {
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
+    if (dataClassName == 'ChatMessage') {
+      return deserialize<_i2.ChatMessage>(data['data']);
+    }
     if (dataClassName == 'CircleGroup') {
-      return deserialize<_ihsam5he.CircleGroup>(data['data']);
+      return deserialize<_i3.CircleGroup>(data['data']);
     }
     if (dataClassName == 'Greeting') {
-      return deserialize<_izw8z7ou.Greeting>(data['data']);
+      return deserialize<_i4.Greeting>(data['data']);
     }
     if (dataClassName == 'ProofPost') {
-      return deserialize<_i5883r2u.ProofPost>(data['data']);
+      return deserialize<_i5.ProofPost>(data['data']);
     }
     if (dataClassName == 'Reaction') {
-      return deserialize<_i3gtfqg5.Reaction>(data['data']);
+      return deserialize<_i6.Reaction>(data['data']);
     }
     if (dataClassName == 'User') {
-      return deserialize<_iv73i78m.User>(data['data']);
+      return deserialize<_i7.User>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth_idp.')) {
       data['className'] = dataClassName.substring(19);
-      return _iaic.Protocol().deserializeByClassName(data);
+      return _i12.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _iacc.Protocol().deserializeByClassName(data);
+      return _i13.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
-
-  void _registerHostProtocols() {
-    _iaic.Protocol().registerHostProtocol('circle', this);
-    _iacc.Protocol().registerHostProtocol('circle', this);
-  }
-
-  @override
-  String getModuleName() => 'circle';
 
   /// Maps any `Record`s known to this [Protocol] to their JSON representation
   ///
@@ -198,10 +218,10 @@ class Protocol extends _isc.SerializationManager {
       return null;
     }
     try {
-      return _iaic.Protocol().mapRecordToJson(record);
+      return _i12.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _iacc.Protocol().mapRecordToJson(record);
+      return _i13.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }
