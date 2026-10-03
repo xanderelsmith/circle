@@ -1,11 +1,13 @@
-import 'dart:io';
+﻿import 'dart:io';
 
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_cloud_storage/serverpod_cloud_storage.dart';
 
 import 'src/cache_busting.dart';
-import 'src/generated/serverpod.dart';
+import 'package:serverpod/serverpod.dart';
+import 'src/generated/protocol.dart';
+import 'src/generated/endpoints.dart';
 import 'src/web/routes/app_config_route.dart';
 import 'src/future_calls/escalation_call.dart';
 
@@ -13,7 +15,7 @@ import 'src/future_calls/escalation_call.dart';
 void run(List<String> args) async {
   // Initialize Serverpod. The generated Serverpod class is already connected
   // with your project's generated code.
-  final pod = Serverpod(args);
+  final pod = Serverpod(args, Protocol(), Endpoints());
 
 
   // Initialize authentication services for the server.
