@@ -1,99 +1,30 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../theme.dart';
 import '../../../../core/widgets/circle_logo.dart';
+import '../../../../core/providers/current_user_provider.dart';
 import '../../domain/leaderboard_entry.dart';
 import '../../widgets/leaderboard_tile.dart';
 import '../../widgets/segmented_pill_bar.dart';
 import '../../widgets/streak_hero_card.dart';
+import '../../data/leaderboard_provider.dart';
+import 'package:circle_client/circle_client.dart';
 
-class LeaderboardScreen extends StatefulWidget {
+class LeaderboardScreen extends ConsumerStatefulWidget {
   const LeaderboardScreen({super.key});
 
   @override
-  State<LeaderboardScreen> createState() => _LeaderboardScreenState();
+  ConsumerState<LeaderboardScreen> createState() => _LeaderboardScreenState();
 }
 
-class _LeaderboardScreenState extends State<LeaderboardScreen> {
+class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
   LeaderboardPeriod _period = LeaderboardPeriod.circle;
-
-  static const _me = StreakSummary(
-    currentStreak: 18,
-    rank: 3,
-    xp: 2480,
-    xpGoal: 4000,
-    badgeLabel: 'Top 3 in your circle',
-  );
-
-  static const _entries = <LeaderboardEntry>[
-    LeaderboardEntry(
-      rank: 1,
-      name: 'Sarah',
-      avatarUrl: 'https://i.pravatar.cc/150?img=47',
-      streakDays: 26,
-      xp: 3420,
-      rankDelta: 2,
-    ),
-    LeaderboardEntry(
-      rank: 2,
-      name: 'David',
-      avatarUrl: 'https://i.pravatar.cc/150?img=12',
-      streakDays: 21,
-      xp: 2980,
-      rankDelta: 1,
-    ),
-    LeaderboardEntry(
-      rank: 3,
-      name: 'Emmanuel',
-      avatarUrl: 'https://i.pravatar.cc/150?img=68',
-      streakDays: 18,
-      xp: 2480,
-      rankDelta: 0,
-      isCurrentUser: true,
-    ),
-    LeaderboardEntry(
-      rank: 4,
-      name: 'John',
-      avatarUrl: 'https://i.pravatar.cc/150?img=33',
-      streakDays: 12,
-      xp: 1920,
-      rankDelta: 1,
-    ),
-    LeaderboardEntry(
-      rank: 5,
-      name: 'Chisom',
-      avatarUrl: 'https://i.pravatar.cc/150?img=45',
-      streakDays: 11,
-      xp: 1760,
-      rankDelta: -1,
-    ),
-    LeaderboardEntry(
-      rank: 6,
-      name: 'Kelvin',
-      avatarUrl: 'https://i.pravatar.cc/150?img=15',
-      streakDays: 9,
-      xp: 1430,
-      rankDelta: 0,
-    ),
-    LeaderboardEntry(
-      rank: 7,
-      name: 'Blessing',
-      avatarUrl: 'https://i.pravatar.cc/150?img=32',
-      streakDays: 7,
-      xp: 1120,
-      rankDelta: 1,
-    ),
-    LeaderboardEntry(
-      rank: 8,
-      name: 'Tobi',
-      avatarUrl: 'https://i.pravatar.cc/150?img=59',
-      streakDays: 5,
-      xp: 980,
-      rankDelta: -1,
-    ),
-  ];
 
   @override
   Widget build(BuildContext context) {
+    final leaderboardAsync = ref.watch(leaderboardProvider);
+    final currentUserAsync = ref.watch(currentUserProvider);
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
@@ -102,44 +33,90 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
           color: AppTheme.primaryBright,
           backgroundColor: AppTheme.surfaceLight,
           onRefresh: () async {
-            await Future<void>.delayed(const Duration(milliseconds: 600));
+            // ignore: unused_result
+            ref.refresh(leaderboardProvider);
+            return await ref.read(leaderboardProvider.future);
           },
-          child: CustomScrollView(
-            physics: const AlwaysScrollableScrollPhysics(
-              parent: BouncingScrollPhysics(),
-            ),
-            slivers: [
-              const SliverToBoxAdapter(child: _LeaderboardHeader()),
+          child: leaderboardAsync.when(
+            loading: () => const Center(child: CircularProgressIndicator(color: AppTheme.primaryBright)),
+            error: (err, stack) => Center(child: Text('Error loading leaderboard: $err', style: const TextStyle(color: Colors.red))),
+            data: (users) {
+              
+              final currentUser = currentUserAsync.valueOrNull;
+              
+              // Map backend Users to LeaderboardEntry for the UI
+              final entries = List.generate(users.length, (i) {
+                final user = users[i];
+                return LeaderboardEntry(
+                  rank: i + 1,
+                  name: user.username,
+                  avatarUrl: 'https://i.pravatar.cc/150?u=${user.id}',
+                  streakDays: user.streakCount,
+                  xp: user.streakCount * 100, // Derived XP
+                  rankDelta: 0,
+                  isCurrentUser: currentUser?.id == user.id,
+                );
+              });
+              
+              StreakSummary? meSummary;
+              if (currentUser != null) {
+                final myIndex = entries.indexWhere((e) => e.isCurrentUser);
+                if (myIndex != -1) {
+                  final myEntry = entries[myIndex];
+                  meSummary = StreakSummary(
+                    currentStreak: myEntry.streakDays,
+                    rank: myEntry.rank,
+                    xp: myEntry.xp,
+                    xpGoal: (myEntry.xp ~/ 1000 + 1) * 1000,
+                    badgeLabel: 'Rank ${myEntry.rank} in your circle',
+                  );
+                }
+              }
 
-              const SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(16, 4, 16, 0),
-                  child: StreakHeroCard(summary: _me),
+              return CustomScrollView(
+                physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(),
                 ),
-              ),
+                slivers: [
+                  const SliverToBoxAdapter(child: _LeaderboardHeader()),
 
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 20, 16, 14),
-                  child: SegmentedPillBar(
-                    value: _period,
-                    onChanged: (LeaderboardPeriod p) =>
-                        setState(() => _period = p),
+                  if (meSummary != null)
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+                        child: StreakHeroCard(summary: meSummary),
+                      ),
+                    ),
+
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 20, 16, 14),
+                      child: SegmentedPillBar(
+                        value: _period,
+                        onChanged: (LeaderboardPeriod p) =>
+                            setState(() => _period = p),
+                      ),
+                    ),
                   ),
-                ),
-              ),
 
-              SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                sliver: SliverList.separated(
-                  itemCount: _entries.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 10),
-                  itemBuilder: (_, i) => LeaderboardTile(entry: _entries[i]),
-                ),
-              ),
+                  if (entries.isEmpty)
+                    const SliverFillRemaining(
+                      child: Center(child: Text('No users in leaderboard yet', style: TextStyle(color: AppTheme.textMuted))),
+                    )
+                  else
+                    SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      sliver: SliverList.separated(
+                        itemCount: entries.length,
+                        separatorBuilder: (_, _) => const SizedBox(height: 10),
+                        itemBuilder: (_, i) => LeaderboardTile(entry: entries[i]),
+                      ),
+                    ),
 
-              const SliverToBoxAdapter(child: SizedBox(height: 120)),
-            ],
+                  const SliverToBoxAdapter(child: SizedBox(height: 120)),
+                ],
+              );
+            },
           ),
         ),
       ),
@@ -148,7 +125,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 }
 
 // -----------------------------------------------------------------------------
-// Header — logo + "Circle / Stronger together." + notification bell
+// Header
 // -----------------------------------------------------------------------------
 class _LeaderboardHeader extends StatelessWidget {
   const _LeaderboardHeader();

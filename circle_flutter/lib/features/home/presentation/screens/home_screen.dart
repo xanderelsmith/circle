@@ -1,16 +1,19 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../theme.dart';
 import '../../../../core/widgets/circle_logo.dart';
 import '../widgets/custom_tab_bar.dart';
 import '../widgets/proof_card.dart';
+import '../data/home_feed_provider.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final feedAsync = ref.watch(homeFeedProvider);
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
@@ -69,17 +72,47 @@ class HomeScreen extends ConsumerWidget {
               child: CustomTabBar(),
             ),
           ),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            sliver: SliverMasonryGrid.extent(
-              maxCrossAxisExtent: 380,
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              childCount: dummyPosts.length,
-              itemBuilder: (context, index) {
-                return ProofCard(post: dummyPosts[index]);
-              },
+          feedAsync.when(
+            loading: () => const SliverFillRemaining(
+              child: Center(child: CircularProgressIndicator(color: AppTheme.primaryBright)),
             ),
+            error: (err, stack) => SliverFillRemaining(
+              child: Center(child: Text('Error: $err', style: const TextStyle(color: Colors.red))),
+            ),
+            data: (posts) {
+              if (posts.isEmpty) {
+                return const SliverFillRemaining(
+                  child: Center(child: Text('No proof posts yet in this circle', style: TextStyle(color: AppTheme.textMuted))),
+                );
+              }
+              
+              return SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                sliver: SliverMasonryGrid.extent(
+                  maxCrossAxisExtent: 380,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
+                  childCount: posts.length,
+                  itemBuilder: (context, index) {
+                    final p = posts[index];
+                    final uiData = ProofPostData(
+                      imageUrl: p.imageUrl.isEmpty 
+                          ? 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=500&q=80'
+                          : p.imageUrl,
+                      username: 'User ${p.userId}',
+                      timeAgo: '${DateTime.now().difference(p.createdAt).inHours}h ago',
+                      habitName: 'Habit challenge',
+                      caption: p.caption,
+                      streak: 0,
+                      flames: 0,
+                      comments: 0,
+                      cardHeight: 280,
+                    );
+                    return ProofCard(post: uiData);
+                  },
+                ),
+              );
+            }
           ),
           const SliverToBoxAdapter(
             child: SizedBox(height: 100),
@@ -91,7 +124,7 @@ class HomeScreen extends ConsumerWidget {
 }
 
 // -----------------------------------------------------------------------------
-// Dummy data
+// Dummy data mapping
 // -----------------------------------------------------------------------------
 class ProofPostData {
   final String imageUrl;
@@ -116,54 +149,3 @@ class ProofPostData {
     required this.cardHeight,
   });
 }
-
-final dummyPosts = [
-  ProofPostData(
-    imageUrl:
-        'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=500&q=80',
-    username: 'Emmanuel',
-    timeAgo: '2h ago',
-    habitName: 'Run 5km',
-    caption: 'Finally got it done. No excuses this time. 💪',
-    streak: 18,
-    flames: 42,
-    comments: 6,
-    cardHeight: 320,
-  ),
-  ProofPostData(
-    imageUrl:
-        'https://images.unsplash.com/photo-1456324504439-367cee3b3c32?w=500&q=80',
-    username: 'Sarah',
-    timeAgo: '4h ago',
-    habitName: 'Read 20 pages',
-    caption: 'Small steps, big dreams. 📚',
-    streak: 7,
-    flames: 28,
-    comments: 3,
-    cardHeight: 260,
-  ),
-  ProofPostData(
-    imageUrl:
-        'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=500&q=80',
-    username: 'Chioma',
-    timeAgo: '6h ago',
-    habitName: 'Eat healthy',
-    caption: 'Clean food, better mood. 🌱',
-    streak: 3,
-    flames: 16,
-    comments: 1,
-    cardHeight: 280,
-  ),
-  ProofPostData(
-    imageUrl:
-        'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500&q=80',
-    username: 'David',
-    timeAgo: '5h ago',
-    habitName: 'Gym Workout',
-    caption: 'Leg day done 💪',
-    streak: 11,
-    flames: 21,
-    comments: 2,
-    cardHeight: 260,
-  ),
-];
