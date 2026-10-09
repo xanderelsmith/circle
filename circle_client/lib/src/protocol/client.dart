@@ -280,6 +280,12 @@ class EndpointCircle extends _isc.EndpointRef {
   @override
   String get name => 'circle';
 
+  _ida.Future<bool> seedDummyData() => caller.callServerEndpoint<bool>(
+    'circle',
+    'seedDummyData',
+    {},
+  );
+
   _ida.Future<List<_ix4qfs8g.CircleGroup>> getCircles() =>
       caller.callServerEndpoint<List<_ix4qfs8g.CircleGroup>>(
         'circle',
@@ -323,12 +329,31 @@ class EndpointUser extends _isc.EndpointRef {
   @override
   String get name => 'user';
 
-  _ida.Future<_irryv4ps.User> getOrCreateUser(
+  _ida.Future<_irryv4ps.User?> getCurrentUser() =>
+      caller.callServerEndpoint<_irryv4ps.User?>(
+        'user',
+        'getCurrentUser',
+        {},
+      );
+
+  _ida.Future<_irryv4ps.User> signUp(
     String username,
     String phoneNumber,
   ) => caller.callServerEndpoint<_irryv4ps.User>(
     'user',
-    'getOrCreateUser',
+    'signUp',
+    {
+      'username': username,
+      'phoneNumber': phoneNumber,
+    },
+  );
+
+  _ida.Future<_irryv4ps.User> createUser(
+    String username,
+    String phoneNumber,
+  ) => caller.callServerEndpoint<_irryv4ps.User>(
+    'user',
+    'createUser',
     {
       'username': username,
       'phoneNumber': phoneNumber,

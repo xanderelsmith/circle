@@ -2,7 +2,6 @@
 import 'package:circle_flutter/features/home/presentation/screens/home_screen.dart';
 import 'package:circle_flutter/features/circles/presentation/screens/circles_screen.dart';
 import 'package:circle_flutter/features/leaderboard/presentation/screens/leaderboard_screen.dart';
-import 'package:circle_flutter/features/profile/presentation/screens/profile_screen.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});

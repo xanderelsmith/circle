@@ -4,14 +4,13 @@ import 'package:serverpod/serverpod.dart';
 import '../generated/protocol.dart';
 
 class EscalationCall extends FutureCall<User> {
-  @override
   Future<void> invoke(Session session, User? user) async {
     if (user == null) return;
     final phoneNumber = user.phoneNumber;
-    
+
     // In a real app, ensure you load this from a .env file or server config
     const vapiKey = 'YOUR_VAPI_PRIVATE_KEY';
-    
+
     // Call Vapi to initiate the AI drill sergeant
     final url = Uri.parse('https://api.vapi.ai/call/phone');
     try {
@@ -23,22 +22,23 @@ class EscalationCall extends FutureCall<User> {
         },
         body: jsonEncode({
           'assistant': {
-            'firstMessage': 'Where is your proof? Why haven\'t you finished your habit?!',
+            'firstMessage':
+                'Where is your proof? Why haven\'t you finished your habit?!',
             'model': {
               'provider': 'openai',
               'model': 'gpt-4o-mini',
             },
             'voice': {
               'provider': '11labs',
-              'voiceId': 'drill_sergeant_voice_id'
-            }
+              'voiceId': 'drill_sergeant_voice_id',
+            },
           },
           'customer': {
             'number': phoneNumber,
           },
         }),
       );
-      
+
       if (response.statusCode == 201) {
         session.log('Vapi escalation call initiated for $phoneNumber');
       } else {

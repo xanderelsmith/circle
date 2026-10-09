@@ -2,15 +2,14 @@
 import '../generated/protocol.dart';
 
 class ChatEndpoint extends Endpoint {
-  
   // Post a message
   Future<ChatMessage> postMessage(Session session, ChatMessage message) async {
     message.createdAt = DateTime.now();
     final savedMessage = await ChatMessage.db.insertRow(session, message);
-    
+
     // Broadcast the message to a channel for the group
-    session.messages.postMessage('chat_${message.groupId}', savedMessage);
-    
+    await session.messages.postMessage('chat_${message.groupId}', savedMessage);
+
     return savedMessage;
   }
 
@@ -24,5 +23,3 @@ class ChatEndpoint extends Endpoint {
     );
   }
 }
-
-

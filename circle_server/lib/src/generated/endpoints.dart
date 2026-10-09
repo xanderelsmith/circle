@@ -329,6 +329,16 @@ class Endpoints extends _is.EndpointDispatch {
       name: 'circle',
       endpoint: endpoints['circle']!,
       methodConnectors: {
+        'seedDummyData': _is.MethodConnector(
+          name: 'seedDummyData',
+          params: {},
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['circle'] as _i35yc453.CircleEndpoint)
+                  .seedDummyData(session),
+        ),
         'getCircles': _is.MethodConnector(
           name: 'getCircles',
           params: {},
@@ -421,8 +431,42 @@ class Endpoints extends _is.EndpointDispatch {
       name: 'user',
       endpoint: endpoints['user']!,
       methodConnectors: {
-        'getOrCreateUser': _is.MethodConnector(
-          name: 'getOrCreateUser',
+        'getCurrentUser': _is.MethodConnector(
+          name: 'getCurrentUser',
+          params: {},
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['user'] as _iymy5306.UserEndpoint)
+                  .getCurrentUser(session),
+        ),
+        'signUp': _is.MethodConnector(
+          name: 'signUp',
+          params: {
+            'username': _is.ParameterDescription(
+              name: 'username',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+            'phoneNumber': _is.ParameterDescription(
+              name: 'phoneNumber',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['user'] as _iymy5306.UserEndpoint).signUp(
+                session,
+                params['username'],
+                params['phoneNumber'],
+              ),
+        ),
+        'createUser': _is.MethodConnector(
+          name: 'createUser',
           params: {
             'username': _is.ParameterDescription(
               name: 'username',
@@ -440,7 +484,7 @@ class Endpoints extends _is.EndpointDispatch {
                 _is.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['user'] as _iymy5306.UserEndpoint).getOrCreateUser(
+                  (endpoints['user'] as _iymy5306.UserEndpoint).createUser(
                     session,
                     params['username'],
                     params['phoneNumber'],

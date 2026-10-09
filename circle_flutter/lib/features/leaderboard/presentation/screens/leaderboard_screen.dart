@@ -8,7 +8,6 @@ import '../../widgets/leaderboard_tile.dart';
 import '../../widgets/segmented_pill_bar.dart';
 import '../../widgets/streak_hero_card.dart';
 import '../../data/leaderboard_provider.dart';
-import 'package:circle_client/circle_client.dart';
 
 class LeaderboardScreen extends ConsumerStatefulWidget {
   const LeaderboardScreen({super.key});

@@ -13,13 +13,16 @@ chat:
   - postMessage:
   - getMessages:
 circle:
+  - seedDummyData:
   - getCircles:
   - createCircle:
   - createProofPost:
   - getFeed:
   - verifyPost:
 user:
-  - getOrCreateUser:
+  - getCurrentUser:
+  - signUp:
+  - createUser:
   - getLeaderboard:
 vapi:
   - initiateCall:

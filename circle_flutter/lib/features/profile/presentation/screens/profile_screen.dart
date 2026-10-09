@@ -1,6 +1,5 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/providers/current_user_provider.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -312,9 +311,9 @@ class ProfileScreen extends ConsumerWidget {
                           // Randomize green shades for heatmap effect
                           final intensity = (index % 5) + (index % 3);
                           Color boxColor = const Color(0xFF1B2339);
-                          if (intensity > 4)
+                          if (intensity > 4) {
                             boxColor = const Color(0xFF35D49A);
-                          else if (intensity > 2)
+                          } else if (intensity > 2)
                             boxColor = const Color(0xFF2EA076);
                           else if (intensity > 0)
                             boxColor = const Color(0xFF1B6B50);
@@ -753,4 +752,3 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 }
-

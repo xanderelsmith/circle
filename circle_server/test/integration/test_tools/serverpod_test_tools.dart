@@ -612,6 +612,36 @@ class _CircleEndpoint {
 
   final _is.SerializationManager _serializationManager;
 
+  _ida.Future<bool> seedDummyData(
+    _ist.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'circle',
+            method: 'seedDummyData',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'circle',
+          methodName: 'seedDummyData',
+          parameters: _ist.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<bool>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
   _ida.Future<List<_imhv1m7j.CircleGroup>> getCircles(
     _ist.TestSessionBuilder sessionBuilder,
   ) async {
@@ -777,7 +807,37 @@ class _UserEndpoint {
 
   final _is.SerializationManager _serializationManager;
 
-  _ida.Future<_iauvhat4.User> getOrCreateUser(
+  _ida.Future<_iauvhat4.User?> getCurrentUser(
+    _ist.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'user',
+            method: 'getCurrentUser',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'user',
+          methodName: 'getCurrentUser',
+          parameters: _ist.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<_iauvhat4.User?>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<_iauvhat4.User> signUp(
     _ist.TestSessionBuilder sessionBuilder,
     String username,
     String phoneNumber,
@@ -786,13 +846,48 @@ class _UserEndpoint {
       var _localUniqueSession =
           (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'user',
-            method: 'getOrCreateUser',
+            method: 'signUp',
           );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'user',
-          methodName: 'getOrCreateUser',
+          methodName: 'signUp',
+          parameters: _ist.testObjectToJson({
+            'username': username,
+            'phoneNumber': phoneNumber,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<_iauvhat4.User>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<_iauvhat4.User> createUser(
+    _ist.TestSessionBuilder sessionBuilder,
+    String username,
+    String phoneNumber,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'user',
+            method: 'createUser',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'user',
+          methodName: 'createUser',
           parameters: _ist.testObjectToJson({
             'username': username,
             'phoneNumber': phoneNumber,
