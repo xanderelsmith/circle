@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+
+import 'features/activity/domain/activity.dart';
+import 'features/activity/presentation/screens/activity_thread_screen.dart';
+import 'features/activity/create_activity/presentation/screens/create_activity_screen.dart';
 import 'features/circles/presentation/screens/circles_screen.dart';
-import 'features/create_habit/presentation/screens/create_habit_screen.dart';
 import 'features/home/presentation/screens/home_screen.dart';
 import 'features/leaderboard/presentation/screens/leaderboard_screen.dart';
 import 'features/profile/presentation/screens/profile_screen.dart';
@@ -23,11 +26,23 @@ class _MainShellState extends State<MainShell> {
     ProfileScreen(),
   ];
 
-  void _openCreateHabit() {
-    Navigator.of(context).push(
+  // ---------------------------------------------------------------------------
+  // FAB → create activity → open its thread
+  // ---------------------------------------------------------------------------
+  Future<void> _openCreateActivity() async {
+    final created = await Navigator.of(context).push<Activity>(
       MaterialPageRoute(
-        builder: (_) => const CreateHabitScreen(),
+        builder: (_) => const CreateActivityScreen(),
         fullscreenDialog: true,
+      ),
+    );
+
+    if (created == null || !mounted) return;
+
+    // Land the user in the thread of the activity they just created.
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ActivityThreadScreen(activity: created),
       ),
     );
   }
@@ -49,16 +64,21 @@ class _MainShellState extends State<MainShell> {
           child: IgnorePointer(
             ignoring: !showFab,
             child: FloatingActionButton(
-              onPressed: _openCreateHabit, // ← wired up
+              onPressed: _openCreateActivity,
               backgroundColor: const Color(0xFF7C4DFF),
               elevation: 8,
               shape: const CircleBorder(),
-              child: const Icon(Icons.add, size: 30, color: Colors.white),
+              child: const Icon(
+                Icons.add,
+                size: 30,
+                color: Colors.white,
+              ),
             ),
           ),
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButtonLocation:
+          FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: _BottomNav(
         currentIndex: _index,
         onTap: (i) => setState(() => _index = i),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/widgets/circle_logo.dart';
 import '../../../../theme.dart';
+import '../../../activity/domain/activity.dart';
+import '../../../activity/presentation/screens/activity_thread_screen.dart';
 
 class CirclesScreen extends StatelessWidget {
   const CirclesScreen({super.key});
@@ -54,7 +56,8 @@ class CirclesScreen extends StatelessWidget {
           TextField(
             decoration: InputDecoration(
               hintText: 'Search your circles...',
-              prefixIcon: const Icon(Icons.search, color: AppTheme.textMuted),
+              prefixIcon:
+                  const Icon(Icons.search, color: AppTheme.textMuted),
               filled: true,
               fillColor: AppTheme.surfaceLight,
               border: OutlineInputBorder(
@@ -77,8 +80,9 @@ class CirclesScreen extends StatelessWidget {
           ),
           const SizedBox(height: 24),
 
-          // Circle cards
+          // Circle cards — each one opens the activity thread
           _buildCircleCard(
+            context,
             'Flutter Builders',
             'Build. Ship. Grow. 🚀',
             AppTheme.primaryBright,
@@ -87,6 +91,7 @@ class CirclesScreen extends StatelessWidget {
             Icons.landscape,
           ),
           _buildCircleCard(
+            context,
             'Fitness Bros',
             'Better men. Better habits. 💪',
             AppTheme.success,
@@ -95,6 +100,7 @@ class CirclesScreen extends StatelessWidget {
             Icons.fitness_center,
           ),
           _buildCircleCard(
+            context,
             'Study Squad',
             'Discipline today, freedom tomorrow.',
             AppTheme.accent,
@@ -103,6 +109,7 @@ class CirclesScreen extends StatelessWidget {
             Icons.book,
           ),
           _buildCircleCard(
+            context,
             'Build & Flow',
             'Code • Create • Level Up',
             AppTheme.cyan,
@@ -131,8 +138,20 @@ class CirclesScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           _buildStatsRow(),
-          const SizedBox(height: 80),
+          const SizedBox(height: 120), // room for bottom nav + FAB
         ],
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Tap a circle card → push the activity thread
+  // ---------------------------------------------------------------------------
+  void _openThread(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) =>
+            const ActivityThreadScreen(activity: sampleActivity),
       ),
     );
   }
@@ -168,6 +187,7 @@ class CirclesScreen extends StatelessWidget {
   }
 
   Widget _buildCircleCard(
+    BuildContext context,
     String name,
     String tagline,
     Color color,
@@ -175,96 +195,105 @@ class CirclesScreen extends StatelessWidget {
     int members,
     IconData icon,
   ) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: AppTheme.card,
-        borderRadius: BorderRadius.circular(20),
-        border: Border(left: BorderSide(color: color, width: 4)),
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CircleAvatar(
-            radius: 24,
-            backgroundColor: color.withValues(alpha: 0.2),
-            child: Icon(icon, color: color, size: 28),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: const TextStyle(
-                    color: AppTheme.textPrimary,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+    return GestureDetector(
+      onTap: () => _openThread(context),
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        decoration: BoxDecoration(
+          color: AppTheme.card,
+          borderRadius: BorderRadius.circular(20),
+          border: Border(left: BorderSide(color: color, width: 4)),
+        ),
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CircleAvatar(
+              radius: 24,
+              backgroundColor: color.withValues(alpha: 0.2),
+              child: Icon(icon, color: color, size: 28),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: const TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  tagline,
-                  style: const TextStyle(
-                    color: AppTheme.textMuted,
-                    fontSize: 12,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.group,
-                      size: 14,
+                  const SizedBox(height: 4),
+                  Text(
+                    tagline,
+                    style: const TextStyle(
                       color: AppTheme.textMuted,
+                      fontSize: 12,
                     ),
-                    const SizedBox(width: 4),
-                    Text(
-                      '$members members',
-                      style: const TextStyle(
-                        color: AppTheme.textMuted,
-                        fontSize: 12,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    const Icon(Icons.circle, size: 8, color: AppTheme.success),
-                    const SizedBox(width: 4),
-                    const Text(
-                      'Active today',
-                      style: TextStyle(
-                        color: AppTheme.textMuted,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: AppTheme.surfaceLight,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              children: [
-                const Text('🔥', style: TextStyle(fontSize: 12)),
-                const SizedBox(width: 4),
-                Text(
-                  '$streak day streak',
-                  style: const TextStyle(
-                    color: AppTheme.fire,
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
                   ),
-                ),
-              ],
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.group,
+                        size: 14,
+                        color: AppTheme.textMuted,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '$members members',
+                        style: const TextStyle(
+                          color: AppTheme.textMuted,
+                          fontSize: 12,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Icon(
+                        Icons.circle,
+                        size: 8,
+                        color: AppTheme.success,
+                      ),
+                      const SizedBox(width: 4),
+                      const Text(
+                        'Active today',
+                        style: TextStyle(
+                          color: AppTheme.textMuted,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppTheme.surfaceLight,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  const Text('🔥', style: TextStyle(fontSize: 12)),
+                  const SizedBox(width: 4),
+                  Text(
+                    '$streak day streak',
+                    style: const TextStyle(
+                      color: AppTheme.fire,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -279,15 +308,18 @@ class CirclesScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildStatItem(Icons.group, '4', 'Circles', AppTheme.primaryBright),
+          _buildStatItem(
+              Icons.group, '4', 'Circles', AppTheme.primaryBright),
           _buildStatItem(
             Icons.local_fire_department,
             '32',
             'Total Streak Days',
             AppTheme.fire,
           ),
-          _buildStatItem(Icons.emoji_events, '1', 'Top 3 Ranks', AppTheme.gold),
-          _buildStatItem(Icons.star, '5', 'Achievements', AppTheme.success),
+          _buildStatItem(
+              Icons.emoji_events, '1', 'Top 3 Ranks', AppTheme.gold),
+          _buildStatItem(
+              Icons.star, '5', 'Achievements', AppTheme.success),
         ],
       ),
     );

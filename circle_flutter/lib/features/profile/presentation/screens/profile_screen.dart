@@ -313,10 +313,11 @@ class ProfileScreen extends ConsumerWidget {
                           Color boxColor = const Color(0xFF1B2339);
                           if (intensity > 4) {
                             boxColor = const Color(0xFF35D49A);
-                          } else if (intensity > 2)
+                          } else if (intensity > 2) {
                             boxColor = const Color(0xFF2EA076);
-                          else if (intensity > 0)
+                          } else if (intensity > 0) {
                             boxColor = const Color(0xFF1B6B50);
+                          }
 
                           return Container(
                             decoration: BoxDecoration(
@@ -680,7 +681,7 @@ class ProfileScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               CircleAvatar(
-                backgroundColor: color.withOpacity(0.15),
+                backgroundColor: color.withValues(alpha: 0.15),
                 radius: 18,
                 child: Icon(icon, color: color, size: 20),
               ),
