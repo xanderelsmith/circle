@@ -69,14 +69,17 @@ class CirclesScreen extends StatelessWidget {
           const SizedBox(height: 16),
 
           // Tabs
-          Row(
-            children: [
-              _buildTab('My Circles', '4', true),
-              const SizedBox(width: 8),
-              _buildTab('Invites', '2', false),
-              const SizedBox(width: 8),
-              _buildTab('Suggested', '3', false),
-            ],
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _buildTab('My Circles', '4', true),
+                const SizedBox(width: 8),
+                _buildTab('Invites', '2', false),
+                const SizedBox(width: 8),
+                _buildTab('Suggested', '3', false),
+              ],
+            ),
           ),
           const SizedBox(height: 24),
 
@@ -236,34 +239,45 @@ class CirclesScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Row(
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 4,
                     children: [
-                      const Icon(
-                        Icons.group,
-                        size: 14,
-                        color: AppTheme.textMuted,
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.group,
+                            size: 14,
+                            color: AppTheme.textMuted,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '$members members',
+                            style: const TextStyle(
+                              color: AppTheme.textMuted,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '$members members',
-                        style: const TextStyle(
-                          color: AppTheme.textMuted,
-                          fontSize: 12,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      const Icon(
-                        Icons.circle,
-                        size: 8,
-                        color: AppTheme.success,
-                      ),
-                      const SizedBox(width: 4),
-                      const Text(
-                        'Active today',
-                        style: TextStyle(
-                          color: AppTheme.textMuted,
-                          fontSize: 12,
-                        ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.circle,
+                            size: 8,
+                            color: AppTheme.success,
+                          ),
+                          const SizedBox(width: 4),
+                          const Text(
+                            'Active today',
+                            style: TextStyle(
+                              color: AppTheme.textMuted,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

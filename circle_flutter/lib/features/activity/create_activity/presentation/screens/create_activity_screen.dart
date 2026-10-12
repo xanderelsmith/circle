@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:circle_flutter/theme.dart';
 import 'package:circle_flutter/features/activity/domain/activity.dart';
+import 'package:image_picker/image_picker.dart';
 
 class CreateActivityScreen extends StatefulWidget {
   const CreateActivityScreen({super.key});
@@ -12,6 +14,9 @@ class CreateActivityScreen extends StatefulWidget {
 class _CreateActivityScreenState extends State<CreateActivityScreen> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _picker = ImagePicker();
+
+  XFile? _coverImage;
 
   ActivityType _type = ActivityType.habit;
   DurationOption _duration = DurationOption.thirtyDays;
@@ -26,6 +31,39 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
     super.initState();
     _titleController.addListener(() => setState(() {}));
     _descriptionController.addListener(() => setState(() {}));
+  }
+
+  Future<void> _pickCoverImage(ImageSource source) async {
+    try {
+      final file = await _picker.pickImage(
+        source: source,
+        imageQuality: 85,
+        maxWidth: 1600,
+      );
+      if (file == null || !mounted) return;
+      setState(() => _coverImage = file);
+    } catch (e) {
+      if (mounted) {
+        _showError('Could not pick image: $e');
+      }
+    }
+  }
+
+  void _clearCoverImage() {
+    setState(() => _coverImage = null);
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: AppTheme.danger,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+    );
   }
 
   @override
@@ -86,8 +124,18 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
 
   String _formatDate(DateTime d) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${d.day} ${months[d.month - 1]} ${d.year}';
   }
@@ -123,6 +171,7 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
       isJoined: true,
       currentDay: 0,
       totalDays: _computeTotalDays(),
+      coverImageUrl: _coverImage?.path,
     );
 
     // Pops with the new Activity so the caller can act on it.
@@ -158,8 +207,7 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor:
-            isError ? AppTheme.danger : AppTheme.primaryBright,
+        backgroundColor: isError ? AppTheme.danger : AppTheme.primaryBright,
         behavior: SnackBarBehavior.floating,
         duration: const Duration(milliseconds: 900),
         shape: RoundedRectangleBorder(
@@ -222,8 +270,7 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                         return Expanded(
                           child: Padding(
                             padding: EdgeInsets.only(
-                              right:
-                                  t == ActivityType.groupActivity ? 0 : 8,
+                              right: t == ActivityType.groupActivity ? 0 : 8,
                             ),
                             child: _TypeChip(
                               label: labelForType(t),
@@ -271,8 +318,7 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                                 startDate: _startDate,
                                 endDate: _endDate,
                                 formatDate: _formatDate,
-                                onPickStart: () =>
-                                    _pickDate(isStart: true),
+                                onPickStart: () => _pickDate(isStart: true),
                                 onPickEnd: () => _pickDate(isStart: false),
                               ),
                             )
@@ -320,15 +366,13 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                         return Expanded(
                           child: Padding(
                             padding: EdgeInsets.only(
-                              right:
-                                  v == VisibilityScope.onlyInCircle ? 0 : 10,
+                              right: v == VisibilityScope.onlyInCircle ? 0 : 10,
                             ),
                             child: _VisibilityTile(
                               label: labelForVisibility(v),
                               icon: iconForVisibility(v),
                               selected: _visibility == v,
-                              onTap: () =>
-                                  setState(() => _visibility = v),
+                              onTap: () => setState(() => _visibility = v),
                             ),
                           ),
                         );
@@ -342,7 +386,11 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                       optional: true,
                     ),
                     const SizedBox(height: 10),
-                    _CoverImagePicker(onTap: () {}),
+                    _CoverImagePicker(
+                      coverImage: _coverImage,
+                      onPickImage: _pickCoverImage,
+                      onClearImage: _clearCoverImage,
+                    ),
                     const SizedBox(height: 28),
                   ],
                 ),
@@ -428,8 +476,7 @@ class _SparkleBadge extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          Icon(Icons.auto_awesome,
-              size: 26, color: AppTheme.primaryBright),
+          Icon(Icons.auto_awesome, size: 26, color: AppTheme.primaryBright),
           Positioned(
             top: 6,
             right: 8,
@@ -692,9 +739,7 @@ class _DateField extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
-                      color: filled
-                          ? AppTheme.textPrimary
-                          : AppTheme.textMuted,
+                      color: filled ? AppTheme.textPrimary : AppTheme.textMuted,
                     ),
                   ),
                 ],
@@ -840,8 +885,7 @@ class _SimpleChip extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
-                color:
-                    selected ? AppTheme.textPrimary : AppTheme.textSecondary,
+                color: selected ? AppTheme.textPrimary : AppTheme.textSecondary,
               ),
             ),
           ],
@@ -899,8 +943,7 @@ class _ProofTile extends StatelessWidget {
             Icon(
               icon,
               size: 20,
-              color:
-                  selected ? AppTheme.primaryBright : AppTheme.textSecondary,
+              color: selected ? AppTheme.primaryBright : AppTheme.textSecondary,
             ),
             const SizedBox(height: 6),
             Text(
@@ -908,8 +951,7 @@ class _ProofTile extends StatelessWidget {
               style: TextStyle(
                 fontSize: 11.5,
                 fontWeight: FontWeight.w600,
-                color:
-                    selected ? AppTheme.textPrimary : AppTheme.textSecondary,
+                color: selected ? AppTheme.textPrimary : AppTheme.textSecondary,
               ),
             ),
           ],
@@ -991,8 +1033,7 @@ class _ProofPreview extends StatelessWidget {
           decoration: BoxDecoration(
             color: const Color(0xFF050A16),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-                color: Colors.white.withValues(alpha: 0.06)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
           ),
           child: const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1233,8 +1274,7 @@ class _VisibilityTile extends StatelessWidget {
             Icon(
               icon,
               size: 18,
-              color:
-                  selected ? AppTheme.primaryBright : AppTheme.textSecondary,
+              color: selected ? AppTheme.primaryBright : AppTheme.textSecondary,
             ),
             const SizedBox(width: 8),
             Text(
@@ -1242,8 +1282,7 @@ class _VisibilityTile extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color:
-                    selected ? AppTheme.textPrimary : AppTheme.textSecondary,
+                color: selected ? AppTheme.textPrimary : AppTheme.textSecondary,
               ),
             ),
           ],
@@ -1256,9 +1295,188 @@ class _VisibilityTile extends StatelessWidget {
 // =============================================================================
 // Cover image picker
 // =============================================================================
-class _CoverImagePicker extends StatelessWidget {
-  const _CoverImagePicker({required this.onTap});
+class _CoverImagePicker extends StatefulWidget {
+  const _CoverImagePicker({
+    required this.coverImage,
+    required this.onPickImage,
+    required this.onClearImage,
+  });
 
+  final XFile? coverImage;
+  final Function(ImageSource) onPickImage;
+  final VoidCallback onClearImage;
+
+  @override
+  State<_CoverImagePicker> createState() => _CoverImagePickerState();
+}
+
+class _CoverImagePickerState extends State<_CoverImagePicker> {
+  bool _showOptions = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final hasImage = widget.coverImage != null;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Preview or picker
+        GestureDetector(
+          onTap: () {
+            if (hasImage) {
+              return;
+            }
+            widget.onPickImage(ImageSource.gallery);
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            height: hasImage ? 160 : 90,
+            padding: const EdgeInsets.symmetric(horizontal: 18),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: hasImage
+                    ? AppTheme.primaryBright.withValues(alpha: 0.4)
+                    : Colors.white.withValues(alpha: 0.15),
+                width: hasImage ? 1.5 : 1,
+              ),
+            ),
+            child: hasImage
+                ? Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.file(
+                          File(widget.coverImage!.path),
+                          width: double.infinity,
+                          height: 160,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      Positioned(
+                        right: 12,
+                        top: 12,
+                        child: GestureDetector(
+                          onTap: widget.onClearImage,
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: 0.6),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.close_rounded,
+                              size: 16,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : Row(
+                    children: [
+                      Container(
+                        width: 42,
+                        height: 42,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF0B1224),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.08),
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.image_outlined,
+                          size: 20,
+                          color: AppTheme.textSecondary,
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      const Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Tap to add a cover photo',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.textSecondary,
+                              ),
+                            ),
+                            SizedBox(height: 3),
+                            Text(
+                              'or choose from gallery',
+                              style: TextStyle(
+                                fontSize: 11.5,
+                                color: AppTheme.textMuted,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+          ),
+        ),
+
+        // Camera/Gallery options (shown when no image selected and tapped)
+        if (!hasImage && _showOptions) ...[
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                child: _SourceButton(
+                  label: 'Camera',
+                  icon: Icons.camera_alt_rounded,
+                  onTap: () {
+                    setState(() => _showOptions = false);
+                    _pickImage(ImageSource.camera);
+                  },
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _SourceButton(
+                  label: 'Gallery',
+                  icon: Icons.image_outlined,
+                  onTap: () {
+                    setState(() => _showOptions = false);
+                    _pickImage(ImageSource.gallery);
+                  },
+                ),
+              ),
+            ],
+          ),
+        ],
+
+        // Tap area to show options
+        if (!hasImage && !_showOptions)
+          GestureDetector(
+            onTap: () => setState(() => _showOptions = true),
+            child: const SizedBox(height: 10),
+          ),
+      ],
+    );
+  }
+
+  void _pickImage(ImageSource source) {
+    widget.onPickImage(source);
+  }
+}
+
+class _SourceButton extends StatelessWidget {
+  const _SourceButton({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+  });
+
+  final String label;
+  final IconData icon;
   final VoidCallback onTap;
 
   @override
@@ -1266,57 +1484,29 @@ class _CoverImagePicker extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 90,
-        padding: const EdgeInsets.symmetric(horizontal: 18),
+        height: 48,
         decoration: BoxDecoration(
+          color: const Color(0xFF0B1224),
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: Colors.white.withValues(alpha: 0.15),
-            style: BorderStyle.solid,
+            color: Colors.white.withValues(alpha: 0.06),
           ),
         ),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              width: 42,
-              height: 42,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: const Color(0xFF0B1224),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.08),
-                ),
-              ),
-              child: const Icon(
-                Icons.image_outlined,
-                size: 20,
-                color: AppTheme.textSecondary,
-              ),
+            Icon(
+              icon,
+              size: 18,
+              color: AppTheme.textSecondary,
             ),
-            const SizedBox(width: 14),
-            const Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Tap to add a cover photo',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: AppTheme.textSecondary,
-                    ),
-                  ),
-                  SizedBox(height: 3),
-                  Text(
-                    'or choose from gallery',
-                    style: TextStyle(
-                      fontSize: 11.5,
-                      color: AppTheme.textMuted,
-                    ),
-                  ),
-                ],
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.textSecondary,
               ),
             ),
           ],
