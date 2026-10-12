@@ -86,8 +86,18 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
 
   String _formatDate(DateTime d) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${d.day} ${months[d.month - 1]} ${d.year}';
   }
@@ -158,8 +168,7 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor:
-            isError ? AppTheme.danger : AppTheme.primaryBright,
+        backgroundColor: isError ? AppTheme.danger : AppTheme.primaryBright,
         behavior: SnackBarBehavior.floating,
         duration: const Duration(milliseconds: 900),
         shape: RoundedRectangleBorder(
@@ -222,8 +231,7 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                         return Expanded(
                           child: Padding(
                             padding: EdgeInsets.only(
-                              right:
-                                  t == ActivityType.groupActivity ? 0 : 8,
+                              right: t == ActivityType.groupActivity ? 0 : 8,
                             ),
                             child: _TypeChip(
                               label: labelForType(t),
@@ -271,8 +279,7 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                                 startDate: _startDate,
                                 endDate: _endDate,
                                 formatDate: _formatDate,
-                                onPickStart: () =>
-                                    _pickDate(isStart: true),
+                                onPickStart: () => _pickDate(isStart: true),
                                 onPickEnd: () => _pickDate(isStart: false),
                               ),
                             )
@@ -320,15 +327,13 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                         return Expanded(
                           child: Padding(
                             padding: EdgeInsets.only(
-                              right:
-                                  v == VisibilityScope.onlyInCircle ? 0 : 10,
+                              right: v == VisibilityScope.onlyInCircle ? 0 : 10,
                             ),
                             child: _VisibilityTile(
                               label: labelForVisibility(v),
                               icon: iconForVisibility(v),
                               selected: _visibility == v,
-                              onTap: () =>
-                                  setState(() => _visibility = v),
+                              onTap: () => setState(() => _visibility = v),
                             ),
                           ),
                         );
@@ -428,8 +433,7 @@ class _SparkleBadge extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          Icon(Icons.auto_awesome,
-              size: 26, color: AppTheme.primaryBright),
+          Icon(Icons.auto_awesome, size: 26, color: AppTheme.primaryBright),
           Positioned(
             top: 6,
             right: 8,
@@ -692,9 +696,7 @@ class _DateField extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
-                      color: filled
-                          ? AppTheme.textPrimary
-                          : AppTheme.textMuted,
+                      color: filled ? AppTheme.textPrimary : AppTheme.textMuted,
                     ),
                   ),
                 ],
@@ -840,8 +842,7 @@ class _SimpleChip extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
-                color:
-                    selected ? AppTheme.textPrimary : AppTheme.textSecondary,
+                color: selected ? AppTheme.textPrimary : AppTheme.textSecondary,
               ),
             ),
           ],
@@ -899,8 +900,7 @@ class _ProofTile extends StatelessWidget {
             Icon(
               icon,
               size: 20,
-              color:
-                  selected ? AppTheme.primaryBright : AppTheme.textSecondary,
+              color: selected ? AppTheme.primaryBright : AppTheme.textSecondary,
             ),
             const SizedBox(height: 6),
             Text(
@@ -908,8 +908,7 @@ class _ProofTile extends StatelessWidget {
               style: TextStyle(
                 fontSize: 11.5,
                 fontWeight: FontWeight.w600,
-                color:
-                    selected ? AppTheme.textPrimary : AppTheme.textSecondary,
+                color: selected ? AppTheme.textPrimary : AppTheme.textSecondary,
               ),
             ),
           ],
@@ -991,8 +990,7 @@ class _ProofPreview extends StatelessWidget {
           decoration: BoxDecoration(
             color: const Color(0xFF050A16),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-                color: Colors.white.withValues(alpha: 0.06)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
           ),
           child: const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1233,8 +1231,7 @@ class _VisibilityTile extends StatelessWidget {
             Icon(
               icon,
               size: 18,
-              color:
-                  selected ? AppTheme.primaryBright : AppTheme.textSecondary,
+              color: selected ? AppTheme.primaryBright : AppTheme.textSecondary,
             ),
             const SizedBox(width: 8),
             Text(
@@ -1242,8 +1239,7 @@ class _VisibilityTile extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color:
-                    selected ? AppTheme.textPrimary : AppTheme.textSecondary,
+                color: selected ? AppTheme.textPrimary : AppTheme.textSecondary,
               ),
             ),
           ],

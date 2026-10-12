@@ -41,8 +41,7 @@ class ThreadPostTile extends StatelessWidget {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: AppTheme.primaryBright
-                            .withValues(alpha: 0.55),
+                        color: AppTheme.primaryBright.withValues(alpha: 0.55),
                         blurRadius: 8,
                         spreadRadius: 1,
                       ),
@@ -233,8 +232,7 @@ class _PostBody extends StatelessWidget {
       );
     }
 
-    final isRemote =
-        url.startsWith('http://') || url.startsWith('https://');
+    final isRemote = url.startsWith('http://') || url.startsWith('https://');
     if (isRemote) {
       return Image.network(
         url,
@@ -253,7 +251,8 @@ class _PostBody extends StatelessWidget {
 
     // Local file — detect video by extension
     final lower = url.toLowerCase();
-    final isVideo = lower.endsWith('.mp4') ||
+    final isVideo =
+        lower.endsWith('.mp4') ||
         lower.endsWith('.mov') ||
         lower.endsWith('.avi') ||
         lower.endsWith('.mkv');

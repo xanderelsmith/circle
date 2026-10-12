@@ -77,8 +77,7 @@ class _MainShellState extends State<MainShell> {
           ),
         ),
       ),
-      floatingActionButtonLocation:
-          FloatingActionButtonLocation.centerDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: _BottomNav(
         currentIndex: _index,
         onTap: (i) => setState(() => _index = i),

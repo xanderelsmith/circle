@@ -1,13 +1,27 @@
 import 'package:circle_client/circle_client.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../client.dart';
 
 class AuthController extends Notifier<User?> {
   Future<void> signUp(String username, String phoneNumber) async {
-    // Implementation for signing up a new user
+    try {
+      final user = await client.user.signUp(username, phoneNumber);
+      state = user;
+    } catch (_) {
+      // Allow error handling in caller
+      rethrow;
+    }
   }
 
   Future<User?> getCurrentUser() async {
-    return state;
+    if (state != null) return state;
+    try {
+      final user = await client.user.getCurrentUser();
+      state = user;
+      return user;
+    } catch (_) {
+      return null;
+    }
   }
 
   Future<void> assignUser(User user) async {
@@ -19,3 +33,7 @@ class AuthController extends Notifier<User?> {
     return null;
   }
 }
+
+final authControllerProvider = NotifierProvider<AuthController, User?>(
+  AuthController.new,
+);

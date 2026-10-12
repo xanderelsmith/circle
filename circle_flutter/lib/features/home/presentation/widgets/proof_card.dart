@@ -27,7 +27,9 @@ class ProofCard extends StatelessWidget {
             height: post.cardHeight * 0.6,
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: const BorderRadius.vertical(bottom: Radius.circular(20)),
+                borderRadius: const BorderRadius.vertical(
+                  bottom: Radius.circular(20),
+                ),
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
@@ -39,7 +41,7 @@ class ProofCard extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // Streak Badge Top Left
           Positioned(
             top: 12,
@@ -83,7 +85,11 @@ class ProofCard extends StatelessWidget {
                     CircleAvatar(
                       radius: 16,
                       backgroundColor: const Color(0xFF42D9FF),
-                      child: const Icon(Icons.person, size: 20, color: Colors.white),
+                      child: const Icon(
+                        Icons.person,
+                        size: 20,
+                        color: Colors.white,
+                      ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
@@ -111,18 +117,27 @@ class ProofCard extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 12),
-                
+
                 // Habit Tag
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF3D7BFF).withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFF3D7BFF).withValues(alpha: 0.3)),
+                    border: Border.all(
+                      color: const Color(0xFF3D7BFF).withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.fitness_center, size: 14, color: Color(0xFF7C4DFF)),
+                      const Icon(
+                        Icons.fitness_center,
+                        size: 14,
+                        color: Color(0xFF7C4DFF),
+                      ),
                       const SizedBox(width: 6),
                       Text(
                         post.habitName,
@@ -133,7 +148,11 @@ class ProofCard extends StatelessWidget {
                         ),
                       ),
                       const Spacer(),
-                      const Icon(Icons.chevron_right, size: 16, color: Colors.white54),
+                      const Icon(
+                        Icons.chevron_right,
+                        size: 16,
+                        color: Colors.white54,
+                      ),
                     ],
                   ),
                 ),
@@ -154,26 +173,57 @@ class ProofCard extends StatelessWidget {
                 // Action Row
                 Row(
                   children: [
-                    Text('🔥 ${post.flames}', style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                    Text(
+                      '🔥 ${post.flames}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     const SizedBox(width: 12),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFF3D7BFF).withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Row(
                         children: [
-                          Icon(Icons.handshake, size: 12, color: Color(0xFF42D9FF)),
+                          Icon(
+                            Icons.handshake,
+                            size: 12,
+                            color: Color(0xFF42D9FF),
+                          ),
                           SizedBox(width: 4),
-                          Text('Respect', style: TextStyle(color: Color(0xFF42D9FF), fontSize: 10, fontWeight: FontWeight.bold)),
+                          Text(
+                            'Respect',
+                            style: TextStyle(
+                              color: Color(0xFF42D9FF),
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ],
                       ),
                     ),
                     const Spacer(),
-                    Icon(Icons.chat_bubble_outline, size: 14, color: Colors.white.withValues(alpha: 0.6)),
+                    Icon(
+                      Icons.chat_bubble_outline,
+                      size: 14,
+                      color: Colors.white.withValues(alpha: 0.6),
+                    ),
                     const SizedBox(width: 4),
-                    Text('${post.comments}', style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 12)),
+                    Text(
+                      '${post.comments}',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.6),
+                        fontSize: 12,
+                      ),
+                    ),
                   ],
                 ),
               ],
