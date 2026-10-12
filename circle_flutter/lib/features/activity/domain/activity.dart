@@ -8,7 +8,6 @@ enum ProofRequirement { photo, video, text, any }
 
 enum VisibilityScope { public, onlyInCircle }
 
-
 class Activity {
   const Activity({
     required this.id,
@@ -78,7 +77,6 @@ class ActivityPost {
   final bool pushedByMe;
 }
 
-
 const sampleActivity = Activity(
   id: 'a1',
   title: '30 Day Reading Challenge',
@@ -142,46 +140,45 @@ const samplePosts = <ActivityPost>[
   ),
 ];
 
-
 // Helpers
 String labelForType(ActivityType t) => switch (t) {
-      ActivityType.habit => 'Habit',
-      ActivityType.challenge => 'Challenge',
-      ActivityType.groupActivity => 'Group Activity',
-    };
+  ActivityType.habit => 'Habit',
+  ActivityType.challenge => 'Challenge',
+  ActivityType.groupActivity => 'Group Activity',
+};
 
 IconData iconForType(ActivityType t) => switch (t) {
-      ActivityType.habit => Icons.bolt_rounded,
-      ActivityType.challenge => Icons.emoji_events_outlined,
-      ActivityType.groupActivity => Icons.groups_2_outlined,
-    };
+  ActivityType.habit => Icons.bolt_rounded,
+  ActivityType.challenge => Icons.emoji_events_outlined,
+  ActivityType.groupActivity => Icons.groups_2_outlined,
+};
 
 String labelForDuration(DurationOption d) => switch (d) {
-      DurationOption.sevenDays => '7 Days',
-      DurationOption.thirtyDays => '30 Days',
-      DurationOption.custom => 'Custom',
-    };
+  DurationOption.sevenDays => '7 Days',
+  DurationOption.thirtyDays => '30 Days',
+  DurationOption.custom => 'Custom',
+};
 
 String labelForProof(ProofRequirement p) => switch (p) {
-      ProofRequirement.photo => 'Photo',
-      ProofRequirement.video => 'Video',
-      ProofRequirement.text => 'Text',
-      ProofRequirement.any => 'Any',
-    };
+  ProofRequirement.photo => 'Photo',
+  ProofRequirement.video => 'Video',
+  ProofRequirement.text => 'Text',
+  ProofRequirement.any => 'Any',
+};
 
 IconData iconForProof(ProofRequirement p) => switch (p) {
-      ProofRequirement.photo => Icons.camera_alt_outlined,
-      ProofRequirement.video => Icons.videocam_outlined,
-      ProofRequirement.text => Icons.description_outlined,
-      ProofRequirement.any => Icons.more_horiz_rounded,
-    };
+  ProofRequirement.photo => Icons.camera_alt_outlined,
+  ProofRequirement.video => Icons.videocam_outlined,
+  ProofRequirement.text => Icons.description_outlined,
+  ProofRequirement.any => Icons.more_horiz_rounded,
+};
 
 String labelForVisibility(VisibilityScope v) => switch (v) {
-      VisibilityScope.public => 'Public',
-      VisibilityScope.onlyInCircle => 'Only in Circle',
-    };
+  VisibilityScope.public => 'Public',
+  VisibilityScope.onlyInCircle => 'Only in Circle',
+};
 
 IconData iconForVisibility(VisibilityScope v) => switch (v) {
-      VisibilityScope.public => Icons.public_rounded,
-      VisibilityScope.onlyInCircle => Icons.groups_outlined,
-    };
+  VisibilityScope.public => Icons.public_rounded,
+  VisibilityScope.onlyInCircle => Icons.groups_outlined,
+};

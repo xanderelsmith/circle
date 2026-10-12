@@ -1,4 +1,4 @@
-﻿import 'package:circle_flutter/features/home/data/home_feed_provider.dart';
+import 'package:circle_flutter/features/home/data/home_feed_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,14 +7,19 @@ import '../../../../core/widgets/circle_logo.dart';
 import '../widgets/custom_tab_bar.dart';
 import '../widgets/proof_card.dart';
 
-// import '../data/home_feed_provider.dart';
-
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final feedAsync = ref.watch(homeFeedProvider);
+    final usersMap = ref.watch(usersMapProvider).value ?? {};
+    final circles = ref.watch(circlesProvider).value ?? [];
+    final currentCircleId = ref.watch(selectedCircleIdProvider);
+    final circleMatch = circles.where((c) => c.id == currentCircleId);
+    final currentCircleName = circleMatch.isNotEmpty
+        ? circleMatch.first.name
+        : 'Alpha Circle';
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -27,8 +32,8 @@ class HomeScreen extends ConsumerWidget {
             const SizedBox(width: 12),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text(
+              children: [
+                const Text(
                   'Circle',
                   style: TextStyle(
                     fontSize: 22,
@@ -39,13 +44,13 @@ class HomeScreen extends ConsumerWidget {
                 Row(
                   children: [
                     Text(
-                      'My Circle',
-                      style: TextStyle(
+                      currentCircleName,
+                      style: const TextStyle(
                         fontSize: 14,
                         color: AppTheme.textMuted,
                       ),
                     ),
-                    Icon(
+                    const Icon(
                       Icons.keyboard_arrow_down,
                       size: 16,
                       color: AppTheme.textMuted,
@@ -109,19 +114,31 @@ class HomeScreen extends ConsumerWidget {
                   childCount: posts.length,
                   itemBuilder: (context, index) {
                     final p = posts[index];
+                    final author = usersMap[p.userId];
+                    final username = author?.username ?? 'User ${p.userId}';
+                    final streak = author?.streakCount ?? 1;
+                    final hoursAgo = DateTime.now()
+                        .difference(p.createdAt)
+                        .inHours;
+                    final timeAgo = hoursAgo <= 0
+                        ? 'Just now'
+                        : '${hoursAgo}h ago';
+
                     final uiData = ProofPostData(
                       imageUrl: p.imageUrl.isEmpty
                           ? 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=500&q=80'
                           : p.imageUrl,
-                      username: 'User ${p.userId}',
-                      timeAgo:
-                          '${DateTime.now().difference(p.createdAt).inHours}h ago',
-                      habitName: 'Habit challenge',
+                      username: username,
+                      timeAgo: timeAgo,
+                      habitName:
+                          (p.activityName != null && p.activityName!.isNotEmpty)
+                          ? p.activityName!
+                          : 'Daily Habit',
                       caption: p.caption,
-                      streak: 0,
-                      flames: 0,
-                      comments: 0,
-                      cardHeight: 280,
+                      streak: streak,
+                      flames: p.flameCount ?? 0,
+                      comments: p.commentCount ?? 0,
+                      cardHeight: index.isEven ? 280 : 320,
                     );
                     return ProofCard(post: uiData);
                   },

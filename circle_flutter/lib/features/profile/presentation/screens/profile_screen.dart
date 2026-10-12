@@ -1,11 +1,19 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/providers/current_user_provider.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final userAsync = ref.watch(currentUserProvider);
+    final user = userAsync.value;
+    final username = user?.username ?? 'Emmanuel';
+    final rank = user?.rankColor ?? 'Rookie';
+    final streak = user?.streakCount ?? 18;
+    final xp = streak * 100;
+    final xpProgress = ((xp % 1000) / 1000.0).clamp(0.0, 1.0);
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
@@ -91,9 +99,9 @@ class ProfileScreen extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Emmanuel',
-                        style: TextStyle(
+                      Text(
+                        username,
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
@@ -101,16 +109,16 @@ class ProfileScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 4),
                       Row(
-                        children: const [
-                          Icon(
+                        children: [
+                          const Icon(
                             Icons.workspace_premium,
                             color: Color(0xFF7B4DFF),
                             size: 16,
                           ),
-                          SizedBox(width: 4),
+                          const SizedBox(width: 4),
                           Text(
-                            'Rookie',
-                            style: TextStyle(
+                            rank,
+                            style: const TextStyle(
                               color: Color(0xFF7B4DFF),
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
@@ -124,10 +132,10 @@ class ProfileScreen extends ConsumerWidget {
                           Expanded(
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(4),
-                              child: const LinearProgressIndicator(
-                                value: 0.62,
-                                backgroundColor: Color(0xFF1B2339),
-                                valueColor: AlwaysStoppedAnimation<Color>(
+                              child: LinearProgressIndicator(
+                                value: xpProgress,
+                                backgroundColor: const Color(0xFF1B2339),
+                                valueColor: const AlwaysStoppedAnimation<Color>(
                                   Color(0xFF7B4DFF),
                                 ),
                                 minHeight: 6,
@@ -135,9 +143,9 @@ class ProfileScreen extends ConsumerWidget {
                             ),
                           ),
                           const SizedBox(width: 12),
-                          const Text(
-                            '620 / 1,000 XP',
-                            style: TextStyle(
+                          Text(
+                            '${xp % 1000} / 1,000 XP',
+                            style: const TextStyle(
                               color: Colors.grey,
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
@@ -523,21 +531,21 @@ class ProfileScreen extends ConsumerWidget {
                                   Icons.local_fire_department,
                                   Colors.orange,
                                   'Longest streak',
-                                  '24 days',
+                                  '$streak days',
                                 ),
                                 const SizedBox(height: 8),
                                 _buildProgressStat(
                                   Icons.check,
                                   const Color(0xFF35D49A),
                                   'Habits completed',
-                                  '47',
+                                  '${streak * 2 + 11}',
                                 ),
                                 const SizedBox(height: 8),
                                 _buildProgressStat(
                                   Icons.bolt,
                                   const Color(0xFF42D9FF),
                                   'Total XP',
-                                  '4,320',
+                                  '$xp',
                                 ),
                               ],
                             ),
@@ -591,19 +599,22 @@ class ProfileScreen extends ConsumerWidget {
                       const SizedBox(height: 12),
                       ClipRRect(
                         borderRadius: BorderRadius.circular(4),
-                        child: const LinearProgressIndicator(
-                          value: 0.62,
-                          backgroundColor: Color(0xFF1B2339),
-                          valueColor: AlwaysStoppedAnimation<Color>(
+                        child: LinearProgressIndicator(
+                          value: xpProgress,
+                          backgroundColor: const Color(0xFF1B2339),
+                          valueColor: const AlwaysStoppedAnimation<Color>(
                             Color(0xFF9B5CFF),
                           ),
                           minHeight: 6,
                         ),
                       ),
                       const SizedBox(height: 8),
-                      const Text(
-                        '620 / 1,000 XP',
-                        style: TextStyle(color: Colors.grey, fontSize: 10),
+                      Text(
+                        '${xp % 1000} / 1,000 XP',
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 10,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       const Row(

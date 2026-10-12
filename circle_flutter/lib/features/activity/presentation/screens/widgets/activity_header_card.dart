@@ -32,8 +32,7 @@ class ActivityHeaderCard extends StatelessWidget {
                   gradient: AppTheme.primaryGradient,
                   boxShadow: [
                     BoxShadow(
-                      color:
-                          AppTheme.primaryBright.withValues(alpha: 0.35),
+                      color: AppTheme.primaryBright.withValues(alpha: 0.35),
                       blurRadius: 14,
                       offset: const Offset(0, 4),
                     ),

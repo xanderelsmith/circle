@@ -1,32 +1,43 @@
 import 'package:flutter/material.dart';
-import 'package:circle_flutter/theme.dart';
-import '../../domain/activity.dart';
-import '.../../widgets/activity_header_card.dart';
-import '.../../widgets/composer_bar.dart';
-import '.../../widgets/thread_post_tile.dart';
-import '../screens/add_proof_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:circle_client/circle_client.dart';
 
-class ActivityThreadScreen extends StatefulWidget {
+import '../../../../client.dart';
+import '../../../../core/providers/current_user_provider.dart';
+import '../../../../theme.dart';
+import '../../../leaderboard/data/leaderboard_provider.dart';
+import '../../../leaderboard/widgets/leaderboard_tile.dart';
+import '../../../leaderboard/domain/leaderboard_entry.dart';
+import '../../data/chat_provider.dart';
+import '../../domain/activity.dart';
+import '../screens/add_proof_screen.dart';
+import '../screens/widgets/activity_header_card.dart';
+import '../screens/widgets/composer_bar.dart';
+import '../screens/widgets/thread_post_tile.dart';
+
+class ActivityThreadScreen extends ConsumerStatefulWidget {
   const ActivityThreadScreen({super.key, required this.activity});
 
   final Activity activity;
 
   @override
-  State<ActivityThreadScreen> createState() => _ActivityThreadScreenState();
+  ConsumerState<ActivityThreadScreen> createState() =>
+      _ActivityThreadScreenState();
 }
 
-class _ActivityThreadScreenState extends State<ActivityThreadScreen>
+class _ActivityThreadScreenState extends ConsumerState<ActivityThreadScreen>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
   final _commentController = TextEditingController();
 
   // Local mutable copy so newly posted proofs appear immediately.
-  final List<ActivityPost> _posts = List.of(samplePosts);
+  late final List<ActivityPost> _posts;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _posts = List.of(samplePosts);
   }
 
   @override
@@ -62,6 +73,53 @@ class _ActivityThreadScreenState extends State<ActivityThreadScreen>
         ),
       ),
     );
+  }
+
+  Future<void> _handleSendComment() async {
+    final text = _commentController.text.trim();
+    if (text.isEmpty) return;
+
+    final currentUser = ref.read(currentUserProvider).value;
+    final groupId = int.tryParse(widget.activity.id) ?? 1;
+
+    final msg = ChatMessage(
+      userId: currentUser?.id ?? 1,
+      groupId: groupId,
+      message: text,
+      createdAt: DateTime.now(),
+    );
+
+    _commentController.clear();
+    FocusScope.of(context).unfocus();
+
+    // Immediately reflect comment locally in the thread
+    setState(() {
+      _posts.insert(
+        0,
+        ActivityPost(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          authorName: currentUser?.username ?? 'You',
+          authorAvatarUrl:
+              'https://i.pravatar.cc/150?u=${currentUser?.id ?? 1}',
+          timeAgo: 'Just now',
+          imageUrl: '',
+          imageBadge: 'Comment',
+          caption: text,
+          fireCount: 0,
+          respectCount: 0,
+          pushCount: 0,
+          commentCount: 0,
+        ),
+      );
+      _tabController.animateTo(0);
+    });
+
+    try {
+      await client.chat.postMessage(msg);
+      ref.invalidate(groupChatMessagesProvider(groupId));
+    } catch (_) {
+      // Backend gracefully handled
+    }
   }
 
   @override
@@ -108,14 +166,11 @@ class _ActivityThreadScreenState extends State<ActivityThreadScreen>
                 ),
               ),
 
-              // Composer — camera wired, send wired
+              // Composer — camera wired, send wired to Serverpod chat
               ComposerBar(
                 controller: _commentController,
                 onCameraTap: _openAddProof,
-                onSend: () {
-                  _commentController.clear();
-                  FocusScope.of(context).unfocus();
-                },
+                onSend: _handleSendComment,
               ),
             ],
           ),
@@ -124,7 +179,6 @@ class _ActivityThreadScreenState extends State<ActivityThreadScreen>
     );
   }
 }
-
 
 class _ThreadHeader extends StatelessWidget {
   const _ThreadHeader();
@@ -162,7 +216,6 @@ class _ThreadHeader extends StatelessWidget {
   }
 }
 
-
 class _InnerTabs extends StatelessWidget {
   const _InnerTabs({required this.controller});
 
@@ -198,8 +251,9 @@ class _InnerTabs extends StatelessWidget {
                       boxShadow: selected
                           ? [
                               BoxShadow(
-                                color: AppTheme.primaryBright
-                                    .withValues(alpha: 0.35),
+                                color: AppTheme.primaryBright.withValues(
+                                  alpha: 0.35,
+                                ),
                                 blurRadius: 12,
                                 offset: const Offset(0, 4),
                               ),
@@ -212,9 +266,7 @@ class _InnerTabs extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12.5,
                         fontWeight: FontWeight.w700,
-                        color: selected
-                            ? Colors.white
-                            : AppTheme.textSecondary,
+                        color: selected ? Colors.white : AppTheme.textMuted,
                       ),
                     ),
                   ),
@@ -228,7 +280,6 @@ class _InnerTabs extends StatelessWidget {
   }
 }
 
-
 class _ThreadTab extends StatelessWidget {
   const _ThreadTab({required this.posts});
 
@@ -236,14 +287,6 @@ class _ThreadTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (posts.isEmpty) {
-      return const Center(
-        child: Text(
-          'No posts yet. Be the first!',
-          style: TextStyle(color: AppTheme.textMuted, fontSize: 13),
-        ),
-      );
-    }
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
       itemCount: posts.length,
@@ -258,91 +301,154 @@ class _ThreadTab extends StatelessWidget {
   }
 }
 
-class _MembersTab extends StatelessWidget {
+class _MembersTab extends ConsumerWidget {
   const _MembersTab();
 
   @override
-  Widget build(BuildContext context) {
-    return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
-      itemCount: 6,
-      separatorBuilder: (_, _) => const SizedBox(height: 10),
-      itemBuilder: (context, i) {
-        return Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: const Color(0xFF0B1224),
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
-          ),
-          child: Row(
-            children: [
-              ClipOval(
-                child: Image.network(
-                  'https://i.pravatar.cc/100?img=${10 + i}',
-                  width: 40,
-                  height: 40,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, _, _) => Container(
-                    width: 40,
-                    height: 40,
-                    color: AppTheme.surfaceLight,
-                    alignment: Alignment.center,
-                    child: const Icon(
-                      Icons.person,
-                      size: 20,
-                      color: AppTheme.textMuted,
+  Widget build(BuildContext context, WidgetRef ref) {
+    final usersAsync = ref.watch(leaderboardProvider);
+
+    return usersAsync.when(
+      loading: () => const Center(
+        child: CircularProgressIndicator(color: AppTheme.primaryBright),
+      ),
+      error: (err, _) => Center(
+        child: Text(
+          'Could not load members: $err',
+          style: const TextStyle(color: AppTheme.danger),
+        ),
+      ),
+      data: (users) {
+        if (users.isEmpty) {
+          return const Center(
+            child: Text(
+              'No members in this circle yet',
+              style: TextStyle(color: AppTheme.textMuted, fontSize: 13),
+            ),
+          );
+        }
+
+        return ListView.separated(
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+          itemCount: users.length,
+          separatorBuilder: (_, _) => const SizedBox(height: 10),
+          itemBuilder: (context, i) {
+            final user = users[i];
+            return Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF0B1224),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+              ),
+              child: Row(
+                children: [
+                  ClipOval(
+                    child: Image.network(
+                      'https://i.pravatar.cc/100?u=${user.id}',
+                      width: 40,
+                      height: 40,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, _, _) => Container(
+                        width: 40,
+                        height: 40,
+                        color: AppTheme.surfaceLight,
+                        alignment: Alignment.center,
+                        child: const Icon(
+                          Icons.person,
+                          size: 20,
+                          color: AppTheme.textMuted,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Member ${i + 1}',
-                      style: const TextStyle(
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w700,
-                        color: AppTheme.textPrimary,
-                      ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          user.username,
+                          style: const TextStyle(
+                            fontSize: 13.5,
+                            fontWeight: FontWeight.w700,
+                            color: AppTheme.textPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          '${user.streakCount} day streak · ${user.rankColor ?? 'Rookie'}',
+                          style: const TextStyle(
+                            fontSize: 11.5,
+                            color: AppTheme.textMuted,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      '${(i + 1) * 5} day streak',
-                      style: const TextStyle(
-                        fontSize: 11.5,
-                        color: AppTheme.textMuted,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                  const Icon(
+                    Icons.chevron_right_rounded,
+                    size: 18,
+                    color: AppTheme.textMuted,
+                  ),
+                ],
               ),
-              const Icon(
-                Icons.chevron_right_rounded,
-                size: 18,
-                color: AppTheme.textMuted,
-              ),
-            ],
-          ),
+            );
+          },
         );
       },
     );
   }
 }
 
-class _LeaderboardTab extends StatelessWidget {
+class _LeaderboardTab extends ConsumerWidget {
   const _LeaderboardTab();
 
   @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        'Activity leaderboard',
-        style: TextStyle(color: AppTheme.textMuted, fontSize: 13),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final usersAsync = ref.watch(leaderboardProvider);
+    final currentUser = ref.watch(currentUserProvider).value;
+
+    return usersAsync.when(
+      loading: () => const Center(
+        child: CircularProgressIndicator(color: AppTheme.primaryBright),
       ),
+      error: (err, _) => Center(
+        child: Text(
+          'Could not load leaderboard: $err',
+          style: const TextStyle(color: AppTheme.danger),
+        ),
+      ),
+      data: (users) {
+        if (users.isEmpty) {
+          return const Center(
+            child: Text(
+              'No leaderboard entries yet',
+              style: TextStyle(color: AppTheme.textMuted, fontSize: 13),
+            ),
+          );
+        }
+
+        final entries = List.generate(users.length, (i) {
+          final u = users[i];
+          return LeaderboardEntry(
+            rank: i + 1,
+            name: u.username,
+            avatarUrl: 'https://i.pravatar.cc/150?u=${u.id}',
+            streakDays: u.streakCount,
+            xp: u.streakCount * 100,
+            rankDelta: 0,
+            isCurrentUser: currentUser?.id == u.id,
+          );
+        });
+
+        return ListView.separated(
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+          itemCount: entries.length,
+          separatorBuilder: (_, _) => const SizedBox(height: 10),
+          itemBuilder: (_, i) => LeaderboardTile(entry: entries[i]),
+        );
+      },
     );
   }
 }

@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:circle_flutter/theme.dart';
 import 'package:circle_flutter/features/activity/domain/activity.dart';
-import 'package:image_picker/image_picker.dart';
 
 class CreateActivityScreen extends StatefulWidget {
   const CreateActivityScreen({super.key});
@@ -16,8 +16,6 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
   final _descriptionController = TextEditingController();
   final _picker = ImagePicker();
 
-  XFile? _coverImage;
-
   ActivityType _type = ActivityType.habit;
   DurationOption _duration = DurationOption.thirtyDays;
   ProofRequirement _proof = ProofRequirement.photo;
@@ -25,6 +23,8 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
 
   DateTime? _startDate;
   DateTime? _endDate;
+  XFile? _coverImage;
+  bool _isPickingCover = false;
 
   @override
   void initState() {
@@ -33,44 +33,39 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
     _descriptionController.addListener(() => setState(() {}));
   }
 
-  Future<void> _pickCoverImage(ImageSource source) async {
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickCoverImage() async {
+    if (_isPickingCover) return;
+
+    // Show source-selection sheet; returns the chosen ImageSource or null.
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const _CoverSourceSheet(),
+    );
+    if (source == null || !mounted) return;
+
+    setState(() => _isPickingCover = true);
     try {
       final file = await _picker.pickImage(
         source: source,
         imageQuality: 85,
         maxWidth: 1600,
       );
-      if (file == null || !mounted) return;
-      setState(() => _coverImage = file);
+      if (!mounted) return;
+      setState(() {
+        if (file != null) _coverImage = file;
+        _isPickingCover = false;
+      });
     } catch (e) {
-      if (mounted) {
-        _showError('Could not pick image: $e');
-      }
+      if (mounted) setState(() => _isPickingCover = false);
     }
-  }
-
-  void _clearCoverImage() {
-    setState(() => _coverImage = null);
-  }
-
-  void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: AppTheme.danger,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    _titleController.dispose();
-    _descriptionController.dispose();
-    super.dispose();
   }
 
   // ---------------------------------------------------------------------------
@@ -171,7 +166,6 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
       isJoined: true,
       currentDay: 0,
       totalDays: _computeTotalDays(),
-      coverImageUrl: _coverImage?.path,
     );
 
     // Pops with the new Activity so the caller can act on it.
@@ -387,9 +381,9 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                     ),
                     const SizedBox(height: 10),
                     _CoverImagePicker(
-                      coverImage: _coverImage,
-                      onPickImage: _pickCoverImage,
-                      onClearImage: _clearCoverImage,
+                      image: _coverImage,
+                      busy: _isPickingCover,
+                      onTap: _pickCoverImage,
                     ),
                     const SizedBox(height: 28),
                   ],
@@ -1295,86 +1289,86 @@ class _VisibilityTile extends StatelessWidget {
 // =============================================================================
 // Cover image picker
 // =============================================================================
-class _CoverImagePicker extends StatefulWidget {
+class _CoverImagePicker extends StatelessWidget {
   const _CoverImagePicker({
-    required this.coverImage,
-    required this.onPickImage,
-    required this.onClearImage,
+    required this.onTap,
+    this.image,
+    this.busy = false,
   });
 
-  final XFile? coverImage;
-  final Function(ImageSource) onPickImage;
-  final VoidCallback onClearImage;
-
-  @override
-  State<_CoverImagePicker> createState() => _CoverImagePickerState();
-}
-
-class _CoverImagePickerState extends State<_CoverImagePicker> {
-  bool _showOptions = false;
+  final VoidCallback onTap;
+  final XFile? image;
+  final bool busy;
 
   @override
   Widget build(BuildContext context) {
-    final hasImage = widget.coverImage != null;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Preview or picker
-        GestureDetector(
-          onTap: () {
-            if (hasImage) {
-              return;
-            }
-            widget.onPickImage(ImageSource.gallery);
-          },
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            height: hasImage ? 160 : 90,
-            padding: const EdgeInsets.symmetric(horizontal: 18),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: hasImage
-                    ? AppTheme.primaryBright.withValues(alpha: 0.4)
-                    : Colors.white.withValues(alpha: 0.15),
-                width: hasImage ? 1.5 : 1,
-              ),
-            ),
-            child: hasImage
-                ? Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.file(
-                          File(widget.coverImage!.path),
-                          width: double.infinity,
-                          height: 160,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      Positioned(
-                        right: 12,
-                        top: 12,
-                        child: GestureDetector(
-                          onTap: widget.onClearImage,
-                          child: Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withValues(alpha: 0.6),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.close_rounded,
-                              size: 16,
-                              color: Colors.white,
-                            ),
+    final hasCover = image != null;
+    return GestureDetector(
+      onTap: busy ? null : onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        height: hasCover ? 160 : 90,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: hasCover
+                ? AppTheme.primaryBright.withValues(alpha: 0.5)
+                : Colors.white.withValues(alpha: 0.15),
+            width: hasCover ? 1.5 : 1,
+          ),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(13),
+          child: hasCover
+              ? Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Image.file(
+                      File(image!.path),
+                      fit: BoxFit.cover,
+                    ),
+                    // Overlay with change button
+                    Positioned(
+                      bottom: 8,
+                      right: 8,
+                      child: GestureDetector(
+                        onTap: onTap,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.65),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.edit_outlined,
+                                size: 13,
+                                color: Colors.white,
+                              ),
+                              SizedBox(width: 4),
+                              Text(
+                                'Change',
+                                style: TextStyle(
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                    ],
-                  )
-                : Row(
+                    ),
+                  ],
+                )
+              : Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 18),
+                  child: Row(
                     children: [
                       Container(
                         width: 42,
@@ -1387,11 +1381,22 @@ class _CoverImagePickerState extends State<_CoverImagePicker> {
                             color: Colors.white.withValues(alpha: 0.08),
                           ),
                         ),
-                        child: const Icon(
-                          Icons.image_outlined,
-                          size: 20,
-                          color: AppTheme.textSecondary,
-                        ),
+                        child: busy
+                            ? const SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation(
+                                    AppTheme.primaryBright,
+                                  ),
+                                ),
+                              )
+                            : const Icon(
+                                Icons.image_outlined,
+                                size: 20,
+                                color: AppTheme.textSecondary,
+                              ),
                       ),
                       const SizedBox(width: 14),
                       const Expanded(
@@ -1409,7 +1414,7 @@ class _CoverImagePickerState extends State<_CoverImagePicker> {
                             ),
                             SizedBox(height: 3),
                             Text(
-                              'or choose from gallery',
+                              'Choose from gallery',
                               style: TextStyle(
                                 fontSize: 11.5,
                                 color: AppTheme.textMuted,
@@ -1418,98 +1423,14 @@ class _CoverImagePickerState extends State<_CoverImagePicker> {
                           ],
                         ),
                       ),
+                      const Icon(
+                        Icons.chevron_right_rounded,
+                        size: 20,
+                        color: AppTheme.textMuted,
+                      ),
                     ],
                   ),
-          ),
-        ),
-
-        // Camera/Gallery options (shown when no image selected and tapped)
-        if (!hasImage && _showOptions) ...[
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              Expanded(
-                child: _SourceButton(
-                  label: 'Camera',
-                  icon: Icons.camera_alt_rounded,
-                  onTap: () {
-                    setState(() => _showOptions = false);
-                    _pickImage(ImageSource.camera);
-                  },
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _SourceButton(
-                  label: 'Gallery',
-                  icon: Icons.image_outlined,
-                  onTap: () {
-                    setState(() => _showOptions = false);
-                    _pickImage(ImageSource.gallery);
-                  },
-                ),
-              ),
-            ],
-          ),
-        ],
-
-        // Tap area to show options
-        if (!hasImage && !_showOptions)
-          GestureDetector(
-            onTap: () => setState(() => _showOptions = true),
-            child: const SizedBox(height: 10),
-          ),
-      ],
-    );
-  }
-
-  void _pickImage(ImageSource source) {
-    widget.onPickImage(source);
-  }
-}
-
-class _SourceButton extends StatelessWidget {
-  const _SourceButton({
-    required this.label,
-    required this.icon,
-    required this.onTap,
-  });
-
-  final String label;
-  final IconData icon;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 48,
-        decoration: BoxDecoration(
-          color: const Color(0xFF0B1224),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: Colors.white.withValues(alpha: 0.06),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              size: 18,
-              color: AppTheme.textSecondary,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: AppTheme.textSecondary,
-              ),
-            ),
-          ],
         ),
       ),
     );
@@ -1564,6 +1485,184 @@ class _CreateButton extends StatelessWidget {
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+// =============================================================================
+// Cover source sheet — Camera vs Gallery picker
+// =============================================================================
+class _CoverSourceSheet extends StatelessWidget {
+  const _CoverSourceSheet();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0D1526),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Drag handle
+          Padding(
+            padding: const EdgeInsets.only(top: 12, bottom: 8),
+            child: Container(
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.18),
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(20, 4, 20, 16),
+            child: Text(
+              'Add Cover Photo',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.textPrimary,
+              ),
+            ),
+          ),
+
+          // Camera option
+          _SourceOption(
+            icon: Icons.camera_alt_rounded,
+            iconColor: AppTheme.primaryBright,
+            iconBg: Color(0xFF1A1040),
+            label: 'Take a Photo',
+            subtitle: 'Use your camera',
+            onTap: () => Navigator.of(context).pop(ImageSource.camera),
+          ),
+          Divider(
+            height: 1,
+            indent: 20,
+            endIndent: 20,
+            color: Colors.white.withValues(alpha: 0.06),
+          ),
+
+          // Gallery option
+          _SourceOption(
+            icon: Icons.image_outlined,
+            iconColor: AppTheme.cyan,
+            iconBg: Color(0xFF0A1A2A),
+            label: 'Choose from Gallery',
+            subtitle: 'Pick an existing photo',
+            onTap: () => Navigator.of(context).pop(ImageSource.gallery),
+          ),
+
+          const SizedBox(height: 12),
+
+          // Cancel
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: SizedBox(
+              width: double.infinity,
+              child: TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    side: BorderSide(
+                      color: Colors.white.withValues(alpha: 0.08),
+                    ),
+                  ),
+                ),
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.textSecondary,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SourceOption extends StatelessWidget {
+  const _SourceOption({
+    required this.icon,
+    required this.iconColor,
+    required this.iconBg,
+    required this.label,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final Color iconColor;
+  final Color iconBg;
+  final String label;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        child: Row(
+          children: [
+            Container(
+              width: 46,
+              height: 46,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: iconBg,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: iconColor.withValues(alpha: 0.25),
+                ),
+              ),
+              child: Icon(icon, size: 22, color: iconColor),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppTheme.textMuted,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.chevron_right_rounded,
+              size: 20,
+              color: AppTheme.textMuted.withValues(alpha: 0.5),
+            ),
+          ],
         ),
       ),
     );

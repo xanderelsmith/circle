@@ -1,21 +1,27 @@
-import 'package:flutter/material.dart';
-import '../../../../theme.dart';
-import '../../domain/activity.dart';
 import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:circle_client/circle_client.dart';
+
+import '../../../../client.dart';
+import '../../../../core/providers/current_user_provider.dart';
+import '../../../../theme.dart';
+import '../../../home/data/home_feed_provider.dart';
+import '../../domain/activity.dart';
 
 enum _MediaKind { none, image, video }
 
-class AddProofScreen extends StatefulWidget {
+class AddProofScreen extends ConsumerStatefulWidget {
   const AddProofScreen({super.key, required this.activity});
 
   final Activity activity;
 
   @override
-  State<AddProofScreen> createState() => _AddProofScreenState();
+  ConsumerState<AddProofScreen> createState() => _AddProofScreenState();
 }
 
-class _AddProofScreenState extends State<AddProofScreen> {
+class _AddProofScreenState extends ConsumerState<AddProofScreen> {
   final _captionController = TextEditingController();
   final _picker = ImagePicker();
 
@@ -112,13 +118,12 @@ class _AddProofScreenState extends State<AddProofScreen> {
   // ---------------------------------------------------------------------------
   // Submit
   // ---------------------------------------------------------------------------
-  void _handlePost() {
+  Future<void> _handlePost() async {
     final requirement = widget.activity.proofRequirement;
     final caption = _captionController.text.trim();
 
     // Require media for photo/video/any.
-    if (requirement != ProofRequirement.text &&
-        _kind == _MediaKind.none) {
+    if (requirement != ProofRequirement.text && _kind == _MediaKind.none) {
       _showError('Add a ${labelForProof(requirement).toLowerCase()} first');
       return;
     }
@@ -129,16 +134,40 @@ class _AddProofScreenState extends State<AddProofScreen> {
       return;
     }
 
+    final currentUser = ref.read(currentUserProvider).value;
+    final int circleId =
+        int.tryParse(widget.activity.id) ?? ref.read(selectedCircleIdProvider);
+    final imagePath = _media?.path.isNotEmpty == true
+        ? _media!.path
+        : 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=500&q=80';
+
+    final proofPost = ProofPost(
+      userId: currentUser?.id ?? 1,
+      circleId: circleId,
+      imageUrl: imagePath,
+      caption: caption.isEmpty ? 'Done for the day! ✅' : caption,
+      isVerified: true,
+      createdAt: DateTime.now(),
+      flameCount: 0,
+      commentCount: 0,
+      activityName: widget.activity.title,
+    );
+
+    try {
+      await client.circle.createProofPost(proofPost);
+      ref.invalidate(homeFeedProvider);
+    } catch (_) {
+      // Continue so local preview works
+    }
+
     final newPost = ActivityPost(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
-      authorName: 'Emmanuel',
-      authorAvatarUrl: 'https://i.pravatar.cc/150?img=68',
+      authorName: currentUser?.username ?? 'Emmanuel',
+      authorAvatarUrl: 'https://i.pravatar.cc/150?u=${currentUser?.id ?? 1}',
       timeAgo: 'Just now',
       // Local file path is used until backend upload is wired.
       imageUrl: _media?.path ?? '',
-      imageBadge: _kind == _MediaKind.video
-          ? 'Video · 60s max'
-          : 'Photo proof',
+      imageBadge: _kind == _MediaKind.video ? 'Video · 60s max' : 'Photo proof',
       caption: caption.isEmpty ? 'Done for the day! ✅' : caption,
       fireCount: 0,
       respectCount: 0,
@@ -146,7 +175,9 @@ class _AddProofScreenState extends State<AddProofScreen> {
       commentCount: 0,
     );
 
-    Navigator.of(context).pop(newPost);
+    if (mounted) {
+      Navigator.of(context).pop(newPost);
+    }
   }
 
   @override
@@ -166,8 +197,7 @@ class _AddProofScreenState extends State<AddProofScreen> {
               const _ProofHeader(),
               Expanded(
                 child: ListView(
-                  padding:
-                      EdgeInsets.fromLTRB(20, 4, 20, 24 + bottomInset),
+                  padding: EdgeInsets.fromLTRB(20, 4, 20, 24 + bottomInset),
                   children: [
                     _ActivitySummaryCard(activity: widget.activity),
                     const SizedBox(height: 16),
@@ -177,14 +207,10 @@ class _AddProofScreenState extends State<AddProofScreen> {
                       _SourcePicker(
                         requirement: requirement,
                         isPicking: _isPicking,
-                        onCameraPhoto: () =>
-                            _pickImage(ImageSource.camera),
-                        onGalleryPhoto: () =>
-                            _pickImage(ImageSource.gallery),
-                        onCameraVideo: () =>
-                            _pickVideo(ImageSource.camera),
-                        onGalleryVideo: () =>
-                            _pickVideo(ImageSource.gallery),
+                        onCameraPhoto: () => _pickImage(ImageSource.camera),
+                        onGalleryPhoto: () => _pickImage(ImageSource.gallery),
+                        onCameraVideo: () => _pickVideo(ImageSource.camera),
+                        onGalleryVideo: () => _pickVideo(ImageSource.gallery),
                       ),
                       const SizedBox(height: 16),
                       _MediaPreview(
@@ -194,8 +220,8 @@ class _AddProofScreenState extends State<AddProofScreen> {
                         onReplace: _kind == _MediaKind.image
                             ? () => _pickImage(ImageSource.gallery)
                             : _kind == _MediaKind.video
-                                ? () => _pickVideo(ImageSource.gallery)
-                                : null,
+                            ? () => _pickVideo(ImageSource.gallery)
+                            : null,
                       ),
                       const SizedBox(height: 20),
                     ],
@@ -775,8 +801,9 @@ class _MediaPreview extends StatelessWidget {
                         gradient: AppTheme.primaryGradient,
                         boxShadow: [
                           BoxShadow(
-                            color: AppTheme.primaryBright
-                                .withValues(alpha: 0.55),
+                            color: AppTheme.primaryBright.withValues(
+                              alpha: 0.55,
+                            ),
                             blurRadius: 18,
                             offset: const Offset(0, 6),
                           ),
@@ -799,8 +826,7 @@ class _MediaPreview extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Padding(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 24),
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: Text(
                         media!.name,
                         maxLines: 1,
