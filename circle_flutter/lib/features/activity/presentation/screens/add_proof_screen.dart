@@ -148,6 +148,9 @@ class _AddProofScreenState extends ConsumerState<AddProofScreen> {
       caption: caption.isEmpty ? 'Done for the day! ✅' : caption,
       isVerified: true,
       createdAt: DateTime.now(),
+      flameCount: 0,
+      commentCount: 0,
+      activityName: widget.activity.title,
     );
 
     try {

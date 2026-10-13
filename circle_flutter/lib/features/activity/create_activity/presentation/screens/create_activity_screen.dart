@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:circle_flutter/theme.dart';
 import 'package:circle_flutter/features/activity/domain/activity.dart';
 
@@ -12,6 +14,7 @@ class CreateActivityScreen extends StatefulWidget {
 class _CreateActivityScreenState extends State<CreateActivityScreen> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _picker = ImagePicker();
 
   ActivityType _type = ActivityType.habit;
   DurationOption _duration = DurationOption.thirtyDays;
@@ -20,6 +23,8 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
 
   DateTime? _startDate;
   DateTime? _endDate;
+  XFile? _coverImage;
+  bool _isPickingCover = false;
 
   @override
   void initState() {
@@ -33,6 +38,34 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
     _titleController.dispose();
     _descriptionController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickCoverImage() async {
+    if (_isPickingCover) return;
+
+    // Show source-selection sheet; returns the chosen ImageSource or null.
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const _CoverSourceSheet(),
+    );
+    if (source == null || !mounted) return;
+
+    setState(() => _isPickingCover = true);
+    try {
+      final file = await _picker.pickImage(
+        source: source,
+        imageQuality: 85,
+        maxWidth: 1600,
+      );
+      if (!mounted) return;
+      setState(() {
+        if (file != null) _coverImage = file;
+        _isPickingCover = false;
+      });
+    } catch (e) {
+      if (mounted) setState(() => _isPickingCover = false);
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -347,7 +380,11 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                       optional: true,
                     ),
                     const SizedBox(height: 10),
-                    _CoverImagePicker(onTap: () {}),
+                    _CoverImagePicker(
+                      image: _coverImage,
+                      busy: _isPickingCover,
+                      onTap: _pickCoverImage,
+                    ),
                     const SizedBox(height: 28),
                   ],
                 ),
@@ -1253,69 +1290,147 @@ class _VisibilityTile extends StatelessWidget {
 // Cover image picker
 // =============================================================================
 class _CoverImagePicker extends StatelessWidget {
-  const _CoverImagePicker({required this.onTap});
+  const _CoverImagePicker({
+    required this.onTap,
+    this.image,
+    this.busy = false,
+  });
 
   final VoidCallback onTap;
+  final XFile? image;
+  final bool busy;
 
   @override
   Widget build(BuildContext context) {
+    final hasCover = image != null;
     return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 90,
-        padding: const EdgeInsets.symmetric(horizontal: 18),
+      onTap: busy ? null : onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        height: hasCover ? 160 : 90,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: Colors.white.withValues(alpha: 0.15),
-            style: BorderStyle.solid,
+            color: hasCover
+                ? AppTheme.primaryBright.withValues(alpha: 0.5)
+                : Colors.white.withValues(alpha: 0.15),
+            width: hasCover ? 1.5 : 1,
           ),
         ),
-        child: Row(
-          children: [
-            Container(
-              width: 42,
-              height: 42,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: const Color(0xFF0B1224),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.08),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(13),
+          child: hasCover
+              ? Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Image.file(
+                      File(image!.path),
+                      fit: BoxFit.cover,
+                    ),
+                    // Overlay with change button
+                    Positioned(
+                      bottom: 8,
+                      right: 8,
+                      child: GestureDetector(
+                        onTap: onTap,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.65),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.edit_outlined,
+                                size: 13,
+                                color: Colors.white,
+                              ),
+                              SizedBox(width: 4),
+                              Text(
+                                'Change',
+                                style: TextStyle(
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              : Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 18),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 42,
+                        height: 42,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF0B1224),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.08),
+                          ),
+                        ),
+                        child: busy
+                            ? const SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation(
+                                    AppTheme.primaryBright,
+                                  ),
+                                ),
+                              )
+                            : const Icon(
+                                Icons.image_outlined,
+                                size: 20,
+                                color: AppTheme.textSecondary,
+                              ),
+                      ),
+                      const SizedBox(width: 14),
+                      const Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Tap to add a cover photo',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.textSecondary,
+                              ),
+                            ),
+                            SizedBox(height: 3),
+                            Text(
+                              'Choose from gallery',
+                              style: TextStyle(
+                                fontSize: 11.5,
+                                color: AppTheme.textMuted,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Icon(
+                        Icons.chevron_right_rounded,
+                        size: 20,
+                        color: AppTheme.textMuted,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              child: const Icon(
-                Icons.image_outlined,
-                size: 20,
-                color: AppTheme.textSecondary,
-              ),
-            ),
-            const SizedBox(width: 14),
-            const Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Tap to add a cover photo',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: AppTheme.textSecondary,
-                    ),
-                  ),
-                  SizedBox(height: 3),
-                  Text(
-                    'or choose from gallery',
-                    style: TextStyle(
-                      fontSize: 11.5,
-                      color: AppTheme.textMuted,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
         ),
       ),
     );
@@ -1370,6 +1485,184 @@ class _CreateButton extends StatelessWidget {
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+// =============================================================================
+// Cover source sheet — Camera vs Gallery picker
+// =============================================================================
+class _CoverSourceSheet extends StatelessWidget {
+  const _CoverSourceSheet();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0D1526),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Drag handle
+          Padding(
+            padding: const EdgeInsets.only(top: 12, bottom: 8),
+            child: Container(
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.18),
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(20, 4, 20, 16),
+            child: Text(
+              'Add Cover Photo',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.textPrimary,
+              ),
+            ),
+          ),
+
+          // Camera option
+          _SourceOption(
+            icon: Icons.camera_alt_rounded,
+            iconColor: AppTheme.primaryBright,
+            iconBg: Color(0xFF1A1040),
+            label: 'Take a Photo',
+            subtitle: 'Use your camera',
+            onTap: () => Navigator.of(context).pop(ImageSource.camera),
+          ),
+          Divider(
+            height: 1,
+            indent: 20,
+            endIndent: 20,
+            color: Colors.white.withValues(alpha: 0.06),
+          ),
+
+          // Gallery option
+          _SourceOption(
+            icon: Icons.image_outlined,
+            iconColor: AppTheme.cyan,
+            iconBg: Color(0xFF0A1A2A),
+            label: 'Choose from Gallery',
+            subtitle: 'Pick an existing photo',
+            onTap: () => Navigator.of(context).pop(ImageSource.gallery),
+          ),
+
+          const SizedBox(height: 12),
+
+          // Cancel
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: SizedBox(
+              width: double.infinity,
+              child: TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    side: BorderSide(
+                      color: Colors.white.withValues(alpha: 0.08),
+                    ),
+                  ),
+                ),
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.textSecondary,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SourceOption extends StatelessWidget {
+  const _SourceOption({
+    required this.icon,
+    required this.iconColor,
+    required this.iconBg,
+    required this.label,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final Color iconColor;
+  final Color iconBg;
+  final String label;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        child: Row(
+          children: [
+            Container(
+              width: 46,
+              height: 46,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: iconBg,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: iconColor.withValues(alpha: 0.25),
+                ),
+              ),
+              child: Icon(icon, size: 22, color: iconColor),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppTheme.textMuted,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.chevron_right_rounded,
+              size: 20,
+              color: AppTheme.textMuted.withValues(alpha: 0.5),
+            ),
+          ],
         ),
       ),
     );

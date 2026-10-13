@@ -130,12 +130,15 @@ class HomeScreen extends ConsumerWidget {
                           : p.imageUrl,
                       username: username,
                       timeAgo: timeAgo,
-                      habitName: 'Daily Habit',
+                      habitName:
+                          (p.activityName != null && p.activityName!.isNotEmpty)
+                          ? p.activityName!
+                          : 'Daily Habit',
                       caption: p.caption,
                       streak: streak,
-                      flames: 12,
-                      comments: 3,
-                      cardHeight: 280,
+                      flames: p.flameCount ?? 0,
+                      comments: p.commentCount ?? 0,
+                      cardHeight: index.isEven ? 280 : 320,
                     );
                     return ProofCard(post: uiData);
                   },
