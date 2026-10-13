@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:circle_flutter/firebase_options.dart';
@@ -8,15 +9,13 @@ import 'dart:developer';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  final NotificationService backgroundNotificationService =
-      NotificationService();
+  final NotificationService backgroundNotificationService = NotificationService();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   log('Handling background message: ${message.messageId}');
 
   await backgroundNotificationService.initialize();
   if (message.notification != null || message.data.isNotEmpty) {
-    final title =
-        message.notification?.title ?? message.data['title'] ?? 'Notification';
+    final title = message.notification?.title ?? message.data['title'] ?? 'Notification';
     final body = message.notification?.body ?? message.data['body'] ?? '';
     final data = message.data;
 
@@ -29,8 +28,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 class PushNotificationService {
-  static final PushNotificationService _instance =
-      PushNotificationService._internal();
+  static final PushNotificationService _instance = PushNotificationService._internal();
   factory PushNotificationService() => _instance;
   PushNotificationService._internal();
 
@@ -38,56 +36,38 @@ class PushNotificationService {
   final NotificationService _notificationService = NotificationService();
   String? _currentToken;
   bool _isInitialized = false;
+  GlobalKey<NavigatorState>? _navigatorKey;
 
-  /// Initialize push notification service
-  Future<void> initialize() async {
+  Future<void> initialize(GlobalKey<NavigatorState> navigatorKey) async {
     if (_isInitialized) return;
 
+    _navigatorKey = navigatorKey;
+
     try {
-      // Request permission
       NotificationSettings settings = await _messaging.requestPermission(
-        alert: true,
-        announcement: false,
-        badge: true,
-        carPlay: false,
-        criticalAlert: false,
-        provisional: false,
-        sound: true,
+        alert: true, announcement: false, badge: true, carPlay: false,
+        criticalAlert: false, provisional: false, sound: true,
       );
 
       if (settings.authorizationStatus == AuthorizationStatus.authorized) {
         log('User granted notification permission');
-      } else if (settings.authorizationStatus ==
-          AuthorizationStatus.provisional) {
+      } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
         log('User granted provisional notification permission');
       } else {
         log('User declined or has not accepted notification permission');
       }
 
-      // Handle foreground messages
       FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
-
-      // Handle background messages
-      FirebaseMessaging.onBackgroundMessage(
-        _firebaseMessagingBackgroundHandler,
-      );
-
-      // Handle notification taps when app is opened from background
+      FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
       FirebaseMessaging.onMessageOpenedApp.listen(_handleMessageOpenedApp);
 
-      // Check if app was opened from a terminated state via notification
       RemoteMessage? initialMessage = await _messaging.getInitialMessage();
       if (initialMessage != null) {
         _handleMessageOpenedApp(initialMessage);
       }
 
-      // Get and store FCM token
       await _getToken();
-
-      // Listen for token refresh
       _messaging.onTokenRefresh.listen(_onTokenRefresh);
-
-      // Subscribe to all_users topic
       await subscribeToTopic('all_users');
 
       _isInitialized = true;
@@ -97,14 +77,11 @@ class PushNotificationService {
     }
   }
 
-  /// Get FCM token
   Future<void> _getToken() async {
     try {
-      // For iOS, get APNs token first
       if (Platform.isIOS) {
         String? apnsToken = await _messaging.getAPNSToken();
         if (apnsToken == null) {
-          // Wait a bit and try again - APNs token might not be ready immediately
           await Future.delayed(const Duration(seconds: 2));
           apnsToken = await _messaging.getAPNSToken();
         }
@@ -121,146 +98,106 @@ class PushNotificationService {
     }
   }
 
-  /// Handle token refresh
   void _onTokenRefresh(String token) {
     log('FCM Token refreshed: $token');
     _currentToken = token;
     sendTokenToServer(token);
   }
 
-  /// Send token to server for storing
   Future<void> sendTokenToServer(String token) async {
     try {
-      // Get the platform
       final platform = Platform.isAndroid ? 'android' : 'ios';
-
-      // Send token to Serverpod server
       await client.notification.registerDeviceToken(token, platform);
-
       log('Successfully sent token to server: $token (platform: $platform)');
     } catch (e) {
       log('Error sending token to server: $e');
     }
   }
 
-  /// Handle foreground messages
   void _handleForegroundMessage(RemoteMessage message) {
     log('Received foreground message:');
     log('  Title: ${message.notification?.title}');
     log('  Body: ${message.notification?.body}');
     log('  Data: ${message.data}');
 
-    // Show local notification when app is in foreground
     if (message.notification != null) {
-      final title =
-          message.notification?.title ??
-          message.data['title'] ??
-          'Notification';
+      final title = message.notification?.title ?? message.data['title'] ?? 'Notification';
       final body = message.notification?.body ?? message.data['body'] ?? '';
-
       _showLocalNotification(title: title, body: body, data: message.data);
     }
   }
 
-  /// Handle when user taps notification to open app
   void _handleMessageOpenedApp(RemoteMessage message) {
     log('Message opened app:');
     log('  Data: ${message.data}');
-
-    // Navigate based on message data
-    handleNotificationNavigation(message.data);
+    _navigateFromData(message.data);
   }
 
-  /// Show local notification
   Future<void> _showLocalNotification({
-    required String title,
-    required String body,
-    Map<String, dynamic>? data,
+    required String title, required String body, Map<String, dynamic>? data,
   }) async {
     try {
-      // Use a unique ID based on current time
-      final id = DateTime.now().millisecondsSinceEpoch.remainder(100000);
-
-      await _notificationService.sendFcmNotification(
-        title: title,
-        body: body,
-        data: data,
-      );
+      await _notificationService.sendFcmNotification(title: title, body: body, data: data);
     } catch (e) {
       log('Error showing local notification: $e');
     }
   }
 
-  /// Handle navigation based on notification data
-  void handleNotificationNavigation(Map<String, dynamic> data) {
-    // Extract navigation info from data
+  void _navigateFromData(Map<String, dynamic> data) {
     final String? route = data['route'];
     final String? type = data['type'];
 
-    if (route != null) {
-      // Navigation would be handled by the app's router
-      log('Should navigate to: $route');
-    }
+    if (route != null) { _navigateToRoute(route); }
 
     if (type != null) {
       switch (type) {
-        case 'streak_reminder':
-          log('Navigate to circle: ${data['circleName']}');
-          break;
-        case 'deadline_reminder':
-          log('Navigate to circle: ${data['circleName']}');
-          break;
-        case 'streak_achieved':
-          log('Navigate to circle: ${data['circleName']}');
-          break;
-        case 'proof_posted':
-          log('Navigate to activity thread: ${data['circleName']}');
-          break;
-        case 'interaction':
-          log('Navigate to activity thread: ${data['circleName']}');
-          break;
-        case 'weekly_summary':
-          log('Navigate to profile/leaderboard');
-          break;
-        default:
-          log('Unknown notification type: $type');
+        case 'streak_reminder': case 'deadline_reminder': case 'streak_achieved':
+          _navigateToCircle(data['circleName'] ?? ''); break;
+        case 'proof_posted': case 'interaction':
+          _navigateToActivityThread(data['circleName'] ?? ''); break;
+        case 'weekly_summary': _navigateToProfile(); break;
+        default: log('Unknown notification type: $type');
       }
     }
   }
 
-  /// Subscribe to a topic
+  void _navigateToRoute(String route) {
+    final navigator = _navigatorKey?.currentState;
+    if (navigator != null) { navigator.pushNamed(route); }
+  }
+
+  void _navigateToCircle(String circleName) {
+    final navigator = _navigatorKey?.currentState;
+    if (navigator != null) { navigator.pushNamed('/circles'); }
+  }
+
+  void _navigateToActivityThread(String circleName) {
+    final navigator = _navigatorKey?.currentState;
+    if (navigator != null) { navigator.pushNamed('/circles'); }
+  }
+
+  void _navigateToProfile() {
+    final navigator = _navigatorKey?.currentState;
+    if (navigator != null) { navigator.pushNamed('/profile'); }
+  }
+
   Future<void> subscribeToTopic(String topic) async {
     try {
       await _messaging.subscribeToTopic(topic);
       log('Subscribed to topic: $topic');
-    } catch (e) {
-      log('Error subscribing to topic: $e');
-    }
+    } catch (e) { log('Error subscribing to topic: $e'); }
   }
 
-  /// Unsubscribe from a topic
   Future<void> unsubscribeFromTopic(String topic) async {
     try {
       await _messaging.unsubscribeFromTopic(topic);
       log('Unsubscribed from topic: $topic');
-    } catch (e) {
-      log('Error unsubscribing from topic: $e');
-    }
+    } catch (e) { log('Error unsubscribing from topic: $e'); }
   }
 
-  /// Subscribe to circle-specific topic
-  Future<void> subscribeToCircle(int circleId) async {
-    await subscribeToTopic('circle_$circleId');
-  }
+  Future<void> subscribeToCircle(int circleId) async { await subscribeToTopic('circle_$circleId'); }
+  Future<void> unsubscribeFromCircle(int circleId) async { await unsubscribeFromTopic('circle_$circleId'); }
 
-  /// Unsubscribe from circle-specific topic
-  Future<void> unsubscribeFromCircle(int circleId) async {
-    await unsubscribeFromTopic('circle_$circleId');
-  }
-
-  /// Get current FCM token
   String? get currentToken => _currentToken;
-
-  /// Check if service is initialized
   bool get isInitialized => _isInitialized;
 }

@@ -5,6 +5,14 @@ import 'package:circle_flutter/services/push_notification_service.dart';
 import 'client.dart';
 import 'theme.dart';
 import 'main_shell.dart';
+import 'features/activity/presentation/screens/activity_thread_screen.dart';
+import 'features/activity/domain/activity.dart';
+import 'features/circles/presentation/screens/circles_screen.dart';
+import 'features/profile/presentation/screens/profile_screen.dart';
+import 'features/leaderboard/presentation/screens/leaderboard_screen.dart';
+import 'features/notifications/presentation/screens/notifications_screen.dart';
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,7 +22,7 @@ void main() async {
 
   // Initialize notification services
   await NotificationService().initialize();
-  await PushNotificationService().initialize();
+  await PushNotificationService().initialize(navigatorKey);
 
   await initializeClient();
   runApp(const ProviderScope(child: MyApp()));
@@ -35,12 +43,54 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.darkTheme,
       themeMode: ThemeMode.dark,
       debugShowCheckedModeBanner: false,
+      navigatorKey: navigatorKey,
+      initialRoute: '/',
+      routes: {
+        '/': (context) => Container(
+              decoration: const BoxDecoration(
+                gradient: AppTheme.atmosphericBackground,
+              ),
+              child: const MainShell(),
+            ),
+        '/circles': (context) => Container(
+              decoration: const BoxDecoration(
+                gradient: AppTheme.atmosphericBackground,
+              ),
+              child: const CirclesScreen(),
+            ),
+        '/profile': (context) => Container(
+              decoration: const BoxDecoration(
+                gradient: AppTheme.atmosphericBackground,
+              ),
+              child: const ProfileScreen(),
+            ),
+        '/leaderboard': (context) => Container(
+              decoration: const BoxDecoration(
+                gradient: AppTheme.atmosphericBackground,
+              ),
+              child: const LeaderboardScreen(),
+            ),
+        '/activity': (context) {
+          final activity = ModalRoute.of(context)!.settings.arguments as Activity;
+          return Container(
+            decoration: const BoxDecoration(
+              gradient: AppTheme.atmosphericBackground,
+            ),
+            child: ActivityThreadScreen(activity: activity),
+          );
+        },
+        '/notifications': (context) => Container(
+              decoration: const BoxDecoration(
+                gradient: AppTheme.atmosphericBackground,
+              ),
+              child: const NotificationsScreen(),
+            ),
+      },
       home: Container(
         decoration: const BoxDecoration(
           gradient: AppTheme.atmosphericBackground,
         ),
-
-        child: const MainShell(), // ← was HomeScreen
+        child: const MainShell(),
       ),
     );
   }

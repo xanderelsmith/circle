@@ -50,7 +50,7 @@ class HomeScreen extends ConsumerWidget {
             icon: const Badge(
               child: Icon(Icons.notifications_none, size: 28),
             ),
-            onPressed: () {},
+            onPressed: () => Navigator.of(context).pushNamed('/notifications'),
           ),
           const SizedBox(width: 12),
         ],
