@@ -19,6 +19,13 @@ circle:
   - createProofPost:
   - getFeed:
   - verifyPost:
+notification:
+  - registerDeviceToken:
+  - unregisterDeviceToken:
+  - sendNotification:
+  - sendTopicNotification:
+  - subscribeToCircle:
+  - unsubscribeFromCircle:
 user:
   - getCurrentUser:
   - signUp:

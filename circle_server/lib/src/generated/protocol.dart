@@ -23,12 +23,14 @@ import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _iais;
 import 'chat_message.dart' as _ivuncx2e;
 import 'circle_group.dart' as _ihsam5he;
+import 'device_token.dart' as _ilggw95u;
 import 'greetings/greeting.dart' as _izw8z7ou;
 import 'proof_post.dart' as _i5883r2u;
 import 'reaction.dart' as _i3gtfqg5;
 import 'user.dart' as _iv73i78m;
 export 'chat_message.dart';
 export 'circle_group.dart';
+export 'device_token.dart';
 export 'greetings/greeting.dart';
 export 'proof_post.dart';
 export 'reaction.dart';
@@ -112,6 +114,67 @@ class Protocol extends _is.DatabaseSerializationManager {
       ],
       foreignKeys: [],
       indexes: [],
+      managed: true,
+    ),
+    _isp.TableDefinition(
+      name: 'device_token',
+      dartName: 'DeviceToken',
+      schema: 'public',
+      module: 'circle',
+      columns: [
+        _isp.ColumnDefinition(
+          name: 'id',
+          columnType: _isp.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'serial',
+        ),
+        _isp.ColumnDefinition(
+          name: 'userId',
+          columnType: _isp.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _isp.ColumnDefinition(
+          name: 'token',
+          columnType: _isp.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _isp.ColumnDefinition(
+          name: 'platform',
+          columnType: _isp.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _isp.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _isp.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+          columnDefault: 'now',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _isp.IndexDefinition(
+          indexName: 'device_token_user_platform_idx',
+          tableSpace: null,
+          elements: [
+            _isp.IndexElementDefinition(
+              type: _isp.IndexElementDefinitionType.column,
+              definition: 'userId',
+            ),
+            _isp.IndexElementDefinition(
+              type: _isp.IndexElementDefinitionType.column,
+              definition: 'platform',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
       managed: true,
     ),
     _isp.TableDefinition(
@@ -284,6 +347,9 @@ class Protocol extends _is.DatabaseSerializationManager {
     if (t == _ihsam5he.CircleGroup) {
       return _ihsam5he.CircleGroup.fromJson(data) as T;
     }
+    if (t == _ilggw95u.DeviceToken) {
+      return _ilggw95u.DeviceToken.fromJson(data) as T;
+    }
     if (t == _izw8z7ou.Greeting) {
       return _izw8z7ou.Greeting.fromJson(data) as T;
     }
@@ -301,6 +367,9 @@ class Protocol extends _is.DatabaseSerializationManager {
     }
     if (t == _is.getType<_ihsam5he.CircleGroup?>()) {
       return (data != null ? _ihsam5he.CircleGroup.fromJson(data) : null) as T;
+    }
+    if (t == _is.getType<_ilggw95u.DeviceToken?>()) {
+      return (data != null ? _ilggw95u.DeviceToken.fromJson(data) : null) as T;
     }
     if (t == _is.getType<_izw8z7ou.Greeting?>()) {
       return (data != null ? _izw8z7ou.Greeting.fromJson(data) : null) as T;
@@ -332,6 +401,21 @@ class Protocol extends _is.DatabaseSerializationManager {
               .toList()
           as T;
     }
+    if (t == Map<String, String>) {
+      return (data as Map).map(
+            (k, v) => MapEntry(deserialize<String>(k), deserialize<String>(v)),
+          )
+          as T;
+    }
+    if (t == _is.getType<Map<String, String>?>()) {
+      return (data != null
+              ? (data as Map).map(
+                  (k, v) =>
+                      MapEntry(deserialize<String>(k), deserialize<String>(v)),
+                )
+              : null)
+          as T;
+    }
     if (t == List<_iauvhat4.User>) {
       return (data as List).map((e) => deserialize<_iauvhat4.User>(e)).toList()
           as T;
@@ -352,6 +436,7 @@ class Protocol extends _is.DatabaseSerializationManager {
     return switch (type) {
       _ivuncx2e.ChatMessage => 'ChatMessage',
       _ihsam5he.CircleGroup => 'CircleGroup',
+      _ilggw95u.DeviceToken => 'DeviceToken',
       _izw8z7ou.Greeting => 'Greeting',
       _i5883r2u.ProofPost => 'ProofPost',
       _i3gtfqg5.Reaction => 'Reaction',
@@ -374,6 +459,8 @@ class Protocol extends _is.DatabaseSerializationManager {
         return 'ChatMessage';
       case _ihsam5he.CircleGroup():
         return 'CircleGroup';
+      case _ilggw95u.DeviceToken():
+        return 'DeviceToken';
       case _izw8z7ou.Greeting():
         return 'Greeting';
       case _i5883r2u.ProofPost():
@@ -413,6 +500,9 @@ class Protocol extends _is.DatabaseSerializationManager {
     }
     if (dataClassName == 'CircleGroup') {
       return deserialize<_ihsam5he.CircleGroup>(data['data']);
+    }
+    if (dataClassName == 'DeviceToken') {
+      return deserialize<_ilggw95u.DeviceToken>(data['data']);
     }
     if (dataClassName == 'Greeting') {
       return deserialize<_izw8z7ou.Greeting>(data['data']);
@@ -471,6 +561,8 @@ class Protocol extends _is.DatabaseSerializationManager {
         return _ivuncx2e.ChatMessage.t;
       case _ihsam5he.CircleGroup:
         return _ihsam5he.CircleGroup.t;
+      case _ilggw95u.DeviceToken:
+        return _ilggw95u.DeviceToken.t;
       case _i5883r2u.ProofPost:
         return _i5883r2u.ProofPost.t;
       case _i3gtfqg5.Reaction:

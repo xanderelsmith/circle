@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:circle_client/circle_client.dart';
 import '../../../../core/providers/current_user_provider.dart';
+import '../../../../features/home/data/home_feed_provider.dart';
+import '../../../../theme.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -8,12 +11,106 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userAsync = ref.watch(currentUserProvider);
-    final user = userAsync.value;
-    final username = user?.username ?? 'Emmanuel';
-    final rank = user?.rankColor ?? 'Rookie';
-    final streak = user?.streakCount ?? 18;
-    final xp = streak * 100;
-    final xpProgress = ((xp % 1000) / 1000.0).clamp(0.0, 1.0);
+    final circlesAsync = ref.watch(circlesProvider);
+
+    return userAsync.when(
+      loading: () => _buildLoadingSkeleton(context),
+      error: (err, _) => _buildError(context, err),
+      data: (user) {
+        if (user == null) {
+          return _buildNotLoggedIn(context);
+        }
+        final username = user.username;
+        final rank = user.rankColor;
+        final streak = user.streakCount;
+        final xp = streak * 100;
+        final xpProgress = ((xp % 1000) / 1000.0).clamp(0.0, 1.0);
+
+        return circlesAsync.when(
+          loading: () => _buildProfileContent(context, username, rank, streak, xp, xpProgress, null),
+          error: (_, _) => _buildProfileContent(context, username, rank, streak, xp, xpProgress, null),
+          data: (circles) => _buildProfileContent(context, username, rank, streak, xp, xpProgress, circles),
+        );
+      },
+    );
+  }
+
+  Widget _buildLoadingSkeleton(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          _buildSkeletonBox(height: 100),
+          const SizedBox(height: 20),
+          _buildSkeletonBox(height: 300),
+          const SizedBox(height: 20),
+          _buildSkeletonBox(height: 150),
+          const SizedBox(height: 20),
+          _buildSkeletonBox(height: 150),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSkeletonBox({required double height}) {
+    return Container(
+      height: height,
+      decoration: BoxDecoration(
+        color: const Color(0xFF0D162B),
+        borderRadius: BorderRadius.circular(20),
+      ),
+    );
+  }
+
+  Widget _buildError(BuildContext context, Object err) {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, color: Colors.red, size: 48),
+            const SizedBox(height: 16),
+            Text(
+              'Failed to load profile: $err',
+              style: const TextStyle(color: Colors.white),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNotLoggedIn(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.person_off, color: Colors.grey, size: 64),
+            const SizedBox(height: 16),
+            const Text(
+              'Not logged in',
+              style: TextStyle(color: Colors.white, fontSize: 18),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileContent(
+    BuildContext context,
+    String username,
+    String rank,
+    int streak,
+    int xp,
+    double xpProgress,
+    List<CircleGroup>? circles,
+  ) {
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
@@ -374,7 +471,7 @@ class ProfileScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 20),
 
-          // Your Habits
+          // Your Circles / Habits
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -384,9 +481,9 @@ class ProfileScreen extends ConsumerWidget {
                   const SizedBox(width: 8),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text(
-                        'Your Habits',
+                    children: [
+                      const Text(
+                        'Your Circles',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -394,60 +491,136 @@ class ProfileScreen extends ConsumerWidget {
                         ),
                       ),
                       Text(
-                        'Keep the streak alive',
-                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                        circles != null && circles.isNotEmpty
+                            ? '${circles.length} circle${circles.length == 1 ? '' : 's'} joined'
+                            : 'Join a circle to get started',
+                        style: const TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                     ],
                   ),
                 ],
               ),
-              const Row(
-                children: [
-                  Text(
-                    'View all',
-                    style: TextStyle(color: Colors.grey, fontSize: 12),
-                  ),
-                  Icon(Icons.chevron_right, color: Colors.grey, size: 16),
-                ],
-              ),
+              if (circles != null && circles.isNotEmpty)
+                const Row(
+                  children: [
+                    Text(
+                      'View all',
+                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                    ),
+                    Icon(Icons.chevron_right, color: Colors.grey, size: 16),
+                  ],
+                ),
             ],
           ),
           const SizedBox(height: 16),
           SizedBox(
             height: 130,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                _buildHabitCard(
-                  'Run 5km',
-                  '12 day streak',
-                  const Color(0xFF35D49A),
-                  Icons.directions_run,
-                  true,
-                ),
-                _buildHabitCard(
-                  'Read 20 pages',
-                  '8 day streak',
-                  const Color(0xFF9B5CFF),
-                  Icons.menu_book,
-                  true,
-                ),
-                _buildHabitCard(
-                  'Build Project',
-                  '5 day streak',
-                  const Color(0xFF42D9FF),
-                  Icons.code,
-                  false,
-                ),
-                _buildHabitCard(
-                  'Meditate',
-                  '3 day streak',
-                  Colors.orange,
-                  Icons.self_improvement,
-                  false,
-                ),
-              ],
-            ),
+            child: circles != null && circles.isNotEmpty
+                ? ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: circles.map((circle) {
+                      return Container(
+                        width: 130,
+                        margin: const EdgeInsets.only(right: 12),
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF0D162B),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border(
+                            left: BorderSide(
+                              color: AppTheme.primaryBright,
+                              width: 3,
+                            ),
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                CircleAvatar(
+                                  backgroundColor:
+                                      AppTheme.primaryBright.withValues(alpha: 0.15),
+                                  radius: 18,
+                                  child: const Icon(
+                                    Icons.group,
+                                    color: AppTheme.primaryBright,
+                                    size: 20,
+                                  ),
+                                ),
+                                const Icon(
+                                  Icons.chevron_right,
+                                  color: Colors.grey,
+                                  size: 20,
+                                ),
+                              ],
+                            ),
+                            const Spacer(),
+                            Text(
+                              circle.name,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 6),
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.local_fire_department,
+                                  color: Colors.orange,
+                                  size: 12,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  '${circle.id ?? 0} members',
+                                  style:
+                                      const TextStyle(color: Colors.grey, fontSize: 11),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  )
+                : ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      _buildHabitCard(
+                        'Run 5km',
+                        '12 day streak',
+                        const Color(0xFF35D49A),
+                        Icons.directions_run,
+                        true,
+                      ),
+                      _buildHabitCard(
+                        'Read 20 pages',
+                        '8 day streak',
+                        const Color(0xFF9B5CFF),
+                        Icons.menu_book,
+                        true,
+                      ),
+                      _buildHabitCard(
+                        'Build Project',
+                        '5 day streak',
+                        const Color(0xFF42D9FF),
+                        Icons.code,
+                        false,
+                      ),
+                      _buildHabitCard(
+                        'Meditate',
+                        '3 day streak',
+                        Colors.orange,
+                        Icons.self_improvement,
+                        false,
+                      ),
+                    ],
+                  ),
           ),
           const SizedBox(height: 20),
 

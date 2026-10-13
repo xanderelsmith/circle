@@ -32,7 +32,19 @@ class _MainLayoutState extends State<MainLayout> {
         onPressed: () {},
         backgroundColor: const Color(0xFF7C4DFF),
         shape: const CircleBorder(),
-        child: const Icon(Icons.add, size: 32, color: Colors.white),
+        child: Container(
+          height: 32,
+          width: 32,
+          child: const Icon(Icons.add, size: 32, color: Colors.white),
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: LinearGradient(
+              colors: [Color(0xFF7C4DFF), Color(0xFF4A148C)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomNavigationBar(

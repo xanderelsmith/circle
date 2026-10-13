@@ -323,6 +323,79 @@ class EndpointCircle extends _isc.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointNotification extends _isc.EndpointRef {
+  EndpointNotification(_isc.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'notification';
+
+  _ida.Future<bool> registerDeviceToken(
+    String token,
+    String platform,
+  ) => caller.callServerEndpoint<bool>(
+    'notification',
+    'registerDeviceToken',
+    {
+      'token': token,
+      'platform': platform,
+    },
+  );
+
+  _ida.Future<bool> unregisterDeviceToken(String token) =>
+      caller.callServerEndpoint<bool>(
+        'notification',
+        'unregisterDeviceToken',
+        {'token': token},
+      );
+
+  _ida.Future<bool> sendNotification(
+    int userId,
+    String title,
+    String body,
+    Map<String, String>? data,
+  ) => caller.callServerEndpoint<bool>(
+    'notification',
+    'sendNotification',
+    {
+      'userId': userId,
+      'title': title,
+      'body': body,
+      'data': data,
+    },
+  );
+
+  _ida.Future<bool> sendTopicNotification(
+    String topic,
+    String title,
+    String body,
+    Map<String, String>? data,
+  ) => caller.callServerEndpoint<bool>(
+    'notification',
+    'sendTopicNotification',
+    {
+      'topic': topic,
+      'title': title,
+      'body': body,
+      'data': data,
+    },
+  );
+
+  _ida.Future<bool> subscribeToCircle(int circleId) =>
+      caller.callServerEndpoint<bool>(
+        'notification',
+        'subscribeToCircle',
+        {'circleId': circleId},
+      );
+
+  _ida.Future<bool> unsubscribeFromCircle(int circleId) =>
+      caller.callServerEndpoint<bool>(
+        'notification',
+        'unsubscribeFromCircle',
+        {'circleId': circleId},
+      );
+}
+
+/// {@category Endpoint}
 class EndpointUser extends _isc.EndpointRef {
   EndpointUser(_isc.EndpointCaller caller) : super(caller);
 
@@ -449,6 +522,7 @@ class Client extends _isc.ServerpodClientShared {
     jwtRefresh = EndpointJwtRefresh(this);
     chat = EndpointChat(this);
     circle = EndpointCircle(this);
+    notification = EndpointNotification(this);
     user = EndpointUser(this);
     vapi = EndpointVapi(this);
     greeting = EndpointGreeting(this);
@@ -462,6 +536,8 @@ class Client extends _isc.ServerpodClientShared {
   late final EndpointChat chat;
 
   late final EndpointCircle circle;
+
+  late final EndpointNotification notification;
 
   late final EndpointUser user;
 
@@ -477,6 +553,7 @@ class Client extends _isc.ServerpodClientShared {
     'jwtRefresh': jwtRefresh,
     'chat': chat,
     'circle': circle,
+    'notification': notification,
     'user': user,
     'vapi': vapi,
     'greeting': greeting,

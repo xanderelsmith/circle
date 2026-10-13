@@ -1,5 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/widgets/failure.dart';
+import '../../../../core/widgets/shimmer.dart';
 import '../../../../theme.dart';
 import '../../../../core/widgets/circle_logo.dart';
 import '../../../../core/providers/current_user_provider.dart';
@@ -37,13 +39,15 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
             return await ref.read(leaderboardProvider.future);
           },
           child: leaderboardAsync.when(
-            loading: () => const Center(
-              child: CircularProgressIndicator(color: AppTheme.primaryBright),
-            ),
+            loading: () => const ShimmerList(itemCount: 8, itemHeight: 72, showTrailing: true),
             error: (err, stack) => Center(
-              child: Text(
-                'Error loading leaderboard: $err',
-                style: const TextStyle(color: Colors.red),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: FailureWidget(
+                  title: 'Unable to load leaderboard',
+                  message: 'Check your connection and try again.',
+                  onRetry: () => ref.invalidate(leaderboardProvider),
+                ),
               ),
             ),
             data: (users) {

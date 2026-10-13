@@ -4,6 +4,8 @@ import 'package:circle_client/circle_client.dart';
 
 import '../../../../client.dart';
 import '../../../../core/providers/current_user_provider.dart';
+import '../../../../core/widgets/failure.dart';
+import '../../../../core/widgets/shimmer.dart';
 import '../../../../theme.dart';
 import '../../../leaderboard/data/leaderboard_provider.dart';
 import '../../../leaderboard/widgets/leaderboard_tile.dart';
@@ -309,13 +311,15 @@ class _MembersTab extends ConsumerWidget {
     final usersAsync = ref.watch(leaderboardProvider);
 
     return usersAsync.when(
-      loading: () => const Center(
-        child: CircularProgressIndicator(color: AppTheme.primaryBright),
-      ),
+      loading: () => const ShimmerList(itemCount: 6, itemHeight: 68),
       error: (err, _) => Center(
-        child: Text(
-          'Could not load members: $err',
-          style: const TextStyle(color: AppTheme.danger),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: FailureWidget(
+            title: 'Unable to load members',
+            message: 'Check your connection and try again.',
+            onRetry: () => ref.invalidate(leaderboardProvider),
+          ),
         ),
       ),
       data: (users) {
@@ -410,13 +414,15 @@ class _LeaderboardTab extends ConsumerWidget {
     final currentUser = ref.watch(currentUserProvider).value;
 
     return usersAsync.when(
-      loading: () => const Center(
-        child: CircularProgressIndicator(color: AppTheme.primaryBright),
-      ),
+      loading: () => const ShimmerList(itemCount: 6, itemHeight: 72, showTrailing: true),
       error: (err, _) => Center(
-        child: Text(
-          'Could not load leaderboard: $err',
-          style: const TextStyle(color: AppTheme.danger),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: FailureWidget(
+            title: 'Unable to load leaderboard',
+            message: 'Check your connection and try again.',
+            onRetry: () => ref.invalidate(leaderboardProvider),
+          ),
         ),
       ),
       data: (users) {

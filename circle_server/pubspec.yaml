@@ -1,4 +1,4 @@
-﻿name: circle_server
+name: circle_server
 description: Starting point for a Serverpod server.
 # version: 1.0.0
 # homepage: https://www.example.com
@@ -13,6 +13,7 @@ dependencies:
   serverpod: 4.0.4
   serverpod_auth_idp_server: 4.0.4
   serverpod_cloud_storage: 4.0.4
+  firebase_admin: ^0.3.1+5
 
 dev_dependencies:
   lints: '>=3.0.0 <7.0.0'

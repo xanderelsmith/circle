@@ -23,6 +23,7 @@ import '../auth/email_idp_endpoint.dart' as _iuc1hd5t;
 import '../auth/jwt_refresh_endpoint.dart' as _inwq3ztq;
 import '../endpoints/chat_endpoint.dart' as _ihc7hrsa;
 import '../endpoints/circle_endpoint.dart' as _i35yc453;
+import '../endpoints/notification_endpoint.dart' as _ihb11yhk;
 import '../endpoints/user_endpoint.dart' as _iymy5306;
 import '../endpoints/vapi_endpoint.dart' as _ioy6ptx0;
 import '../greetings/greeting_endpoint.dart' as _il624ik7;
@@ -54,6 +55,12 @@ class Endpoints extends _is.EndpointDispatch {
         ..initialize(
           server,
           'circle',
+          null,
+        ),
+      'notification': _ihb11yhk.NotificationEndpoint()
+        ..initialize(
+          server,
+          'notification',
           null,
         ),
       'user': _iymy5306.UserEndpoint()
@@ -424,6 +431,174 @@ class Endpoints extends _is.EndpointDispatch {
                     session,
                     params['postId'],
                   ),
+        ),
+      },
+    );
+    connectors['notification'] = _is.EndpointConnector(
+      name: 'notification',
+      endpoint: endpoints['notification']!,
+      methodConnectors: {
+        'registerDeviceToken': _is.MethodConnector(
+          name: 'registerDeviceToken',
+          params: {
+            'token': _is.ParameterDescription(
+              name: 'token',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+            'platform': _is.ParameterDescription(
+              name: 'platform',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['notification'] as _ihb11yhk.NotificationEndpoint)
+                      .registerDeviceToken(
+                        session,
+                        params['token'],
+                        params['platform'],
+                      ),
+        ),
+        'unregisterDeviceToken': _is.MethodConnector(
+          name: 'unregisterDeviceToken',
+          params: {
+            'token': _is.ParameterDescription(
+              name: 'token',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['notification'] as _ihb11yhk.NotificationEndpoint)
+                      .unregisterDeviceToken(
+                        session,
+                        params['token'],
+                      ),
+        ),
+        'sendNotification': _is.MethodConnector(
+          name: 'sendNotification',
+          params: {
+            'userId': _is.ParameterDescription(
+              name: 'userId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+            'title': _is.ParameterDescription(
+              name: 'title',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+            'body': _is.ParameterDescription(
+              name: 'body',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+            'data': _is.ParameterDescription(
+              name: 'data',
+              type: _is.getType<Map<String, String>?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['notification'] as _ihb11yhk.NotificationEndpoint)
+                      .sendNotification(
+                        session,
+                        params['userId'],
+                        params['title'],
+                        params['body'],
+                        params['data'],
+                      ),
+        ),
+        'sendTopicNotification': _is.MethodConnector(
+          name: 'sendTopicNotification',
+          params: {
+            'topic': _is.ParameterDescription(
+              name: 'topic',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+            'title': _is.ParameterDescription(
+              name: 'title',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+            'body': _is.ParameterDescription(
+              name: 'body',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+            'data': _is.ParameterDescription(
+              name: 'data',
+              type: _is.getType<Map<String, String>?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['notification'] as _ihb11yhk.NotificationEndpoint)
+                      .sendTopicNotification(
+                        session,
+                        params['topic'],
+                        params['title'],
+                        params['body'],
+                        params['data'],
+                      ),
+        ),
+        'subscribeToCircle': _is.MethodConnector(
+          name: 'subscribeToCircle',
+          params: {
+            'circleId': _is.ParameterDescription(
+              name: 'circleId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['notification'] as _ihb11yhk.NotificationEndpoint)
+                      .subscribeToCircle(
+                        session,
+                        params['circleId'],
+                      ),
+        ),
+        'unsubscribeFromCircle': _is.MethodConnector(
+          name: 'unsubscribeFromCircle',
+          params: {
+            'circleId': _is.ParameterDescription(
+              name: 'circleId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['notification'] as _ihb11yhk.NotificationEndpoint)
+                      .unsubscribeFromCircle(
+                        session,
+                        params['circleId'],
+                      ),
         ),
       },
     );

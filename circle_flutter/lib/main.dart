@@ -1,13 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:circle_flutter/services/notification_service.dart';
+import 'package:circle_flutter/services/push_notification_service.dart';
 import 'client.dart';
 import 'theme.dart';
 import 'main_shell.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
+  await initializeFirebase();
+
+  // Initialize notification services
+  await NotificationService().initialize();
+  await PushNotificationService().initialize();
+
   await initializeClient();
   runApp(const ProviderScope(child: MyApp()));
+}
+
+Future<void> initializeFirebase() async {
+  // Firebase initialization happens in the background
+  // The actual initialization is handled by the platform-specific code
 }
 
 class MyApp extends StatelessWidget {

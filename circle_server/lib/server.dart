@@ -8,10 +8,14 @@ import 'src/cache_busting.dart';
 import 'package:serverpod/serverpod.dart';
 import 'src/generated/protocol.dart';
 import 'src/generated/endpoints.dart';
+import 'src/services/fcm_service.dart';
 import 'src/web/routes/app_config_route.dart';
 
 /// The starting point of the Serverpod server.
 void run(List<String> args) async {
+  // Initialize FCM service before starting the server
+  await FCMService.instance.initialize();
+
   // Initialize Serverpod. The generated Serverpod class is already connected
   // with your project's generate
   // final pod = Circle(args);d code.

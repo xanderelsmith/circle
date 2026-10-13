@@ -22,12 +22,14 @@ import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
 import 'chat_message.dart' as _ivuncx2e;
 import 'circle_group.dart' as _ihsam5he;
+import 'device_token.dart' as _ilggw95u;
 import 'greetings/greeting.dart' as _izw8z7ou;
 import 'proof_post.dart' as _i5883r2u;
 import 'reaction.dart' as _i3gtfqg5;
 import 'user.dart' as _iv73i78m;
 export 'chat_message.dart';
 export 'circle_group.dart';
+export 'device_token.dart';
 export 'greetings/greeting.dart';
 export 'proof_post.dart';
 export 'reaction.dart';
@@ -74,6 +76,9 @@ class Protocol extends _isc.SerializationManager {
     if (t == _ihsam5he.CircleGroup) {
       return _ihsam5he.CircleGroup.fromJson(data) as T;
     }
+    if (t == _ilggw95u.DeviceToken) {
+      return _ilggw95u.DeviceToken.fromJson(data) as T;
+    }
     if (t == _izw8z7ou.Greeting) {
       return _izw8z7ou.Greeting.fromJson(data) as T;
     }
@@ -91,6 +96,9 @@ class Protocol extends _isc.SerializationManager {
     }
     if (t == _isc.getType<_ihsam5he.CircleGroup?>()) {
       return (data != null ? _ihsam5he.CircleGroup.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_ilggw95u.DeviceToken?>()) {
+      return (data != null ? _ilggw95u.DeviceToken.fromJson(data) : null) as T;
     }
     if (t == _isc.getType<_izw8z7ou.Greeting?>()) {
       return (data != null ? _izw8z7ou.Greeting.fromJson(data) : null) as T;
@@ -122,6 +130,21 @@ class Protocol extends _isc.SerializationManager {
               .toList()
           as T;
     }
+    if (t == Map<String, String>) {
+      return (data as Map).map(
+            (k, v) => MapEntry(deserialize<String>(k), deserialize<String>(v)),
+          )
+          as T;
+    }
+    if (t == _isc.getType<Map<String, String>?>()) {
+      return (data != null
+              ? (data as Map).map(
+                  (k, v) =>
+                      MapEntry(deserialize<String>(k), deserialize<String>(v)),
+                )
+              : null)
+          as T;
+    }
     if (t == List<_irryv4ps.User>) {
       return (data as List).map((e) => deserialize<_irryv4ps.User>(e)).toList()
           as T;
@@ -139,6 +162,7 @@ class Protocol extends _isc.SerializationManager {
     return switch (type) {
       _ivuncx2e.ChatMessage => 'ChatMessage',
       _ihsam5he.CircleGroup => 'CircleGroup',
+      _ilggw95u.DeviceToken => 'DeviceToken',
       _izw8z7ou.Greeting => 'Greeting',
       _i5883r2u.ProofPost => 'ProofPost',
       _i3gtfqg5.Reaction => 'Reaction',
@@ -161,6 +185,8 @@ class Protocol extends _isc.SerializationManager {
         return 'ChatMessage';
       case _ihsam5he.CircleGroup():
         return 'CircleGroup';
+      case _ilggw95u.DeviceToken():
+        return 'DeviceToken';
       case _izw8z7ou.Greeting():
         return 'Greeting';
       case _i5883r2u.ProofPost():
@@ -196,6 +222,9 @@ class Protocol extends _isc.SerializationManager {
     }
     if (dataClassName == 'CircleGroup') {
       return deserialize<_ihsam5he.CircleGroup>(data['data']);
+    }
+    if (dataClassName == 'DeviceToken') {
+      return deserialize<_ilggw95u.DeviceToken>(data['data']);
     }
     if (dataClassName == 'Greeting') {
       return deserialize<_izw8z7ou.Greeting>(data['data']);

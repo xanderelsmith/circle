@@ -4,6 +4,8 @@ import 'package:circle_client/circle_client.dart';
 
 import '../../../../client.dart';
 import '../../../../core/providers/current_user_provider.dart';
+import '../../../../core/widgets/failure.dart';
+import '../../../../core/widgets/shimmer.dart';
 import '../../../../core/widgets/circle_logo.dart';
 import '../../../../theme.dart';
 import '../../../activity/domain/activity.dart';
@@ -220,13 +222,19 @@ class _CirclesScreenState extends ConsumerState<CirclesScreen> {
         ],
       ),
       body: circlesAsync.when(
-        loading: () => const Center(
-          child: CircularProgressIndicator(color: AppTheme.primaryBright),
+        loading: () => const ShimmerList(
+          itemCount: 4,
+          itemHeight: 120,
+          showTrailing: true,
         ),
         error: (err, stack) => Center(
-          child: Text(
-            'Error loading circles: $err',
-            style: const TextStyle(color: AppTheme.danger),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: FailureWidget(
+              title: 'Unable to load circles',
+              message: 'Check your connection and try again.',
+              onRetry: () => ref.invalidate(circlesProvider),
+            ),
           ),
         ),
         data: (circles) {

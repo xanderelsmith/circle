@@ -1,0 +1,21 @@
+# DeviceToken model for push notifications
+class: DeviceToken
+table: device_token
+fields:
+  id:
+    type: int?
+    defaultPersist: serial
+  userId:
+    type: int
+  token:
+    type: String
+  platform:
+    type: String
+  # android / ios
+  createdAt:
+    type: DateTime
+    default: now
+indexes:
+  device_token_user_platform_idx:
+    fields: "userId, platform"
+    unique: true

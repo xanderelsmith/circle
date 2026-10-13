@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "315426628570",
+    "project_id": "circle-app-lite",
+    "storage_bucket": "circle-app-lite.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:315426628570:android:a0236db28cf02ba3b516e3",
+        "android_client_info": {
+          "package_name": "com.example.circle_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKwBFBl7UH_FroYM0hNQrwR7QJLILk25M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
