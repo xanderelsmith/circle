@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:circle_flutter/theme.dart';
+import 'package:circle_flutter/services/vapi_service.dart';
 import '../../../domain/activity.dart';
 
 class ActivityHeaderCard extends StatelessWidget {
@@ -102,6 +103,66 @@ class ActivityHeaderCard extends StatelessWidget {
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
                         color: AppTheme.primaryBright,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              // AI Call button
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 7,
+                ),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF7B4DFF), Color(0xFF3D7BFF)],
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.primaryBright.withValues(alpha: 0.35),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.phone_rounded,
+                      size: 14,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(width: 4),
+                    GestureDetector(
+                      onTap: () {
+                        final vapiService = VapiService();
+                        vapiService.initiateCall(
+                          phoneNumber: '+1234567890', // TODO: Get from user profile
+                          habitName: activity.title,
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Calling you for ${activity.title}!'),
+                            backgroundColor: AppTheme.primaryBright,
+                            behavior: SnackBarBehavior.floating,
+                            duration: const Duration(milliseconds: 900),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        'AI Call',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ],

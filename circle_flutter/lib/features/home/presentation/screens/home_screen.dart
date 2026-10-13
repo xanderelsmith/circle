@@ -192,7 +192,7 @@ class HomeScreen extends ConsumerWidget {
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (ctx) => _CircleSelectorSheet(
-        circles: circles,
+        circles: circles.where((c) => c.id != null).toList(),
         currentCircleId: currentCircleId,
         onSelect: (circleId) {
           ref.read(selectedCircleIdProvider.notifier).selectCircle(circleId);

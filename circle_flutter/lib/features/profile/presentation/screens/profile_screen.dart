@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:circle_client/circle_client.dart';
+import 'package:circle_flutter/services/vapi_service.dart';
 import '../../../../core/providers/current_user_provider.dart';
 import '../../../../features/home/data/home_feed_provider.dart';
 import '../../../../theme.dart';
@@ -518,7 +519,7 @@ class ProfileScreen extends ConsumerWidget {
             child: circles != null && circles.isNotEmpty
                 ? ListView(
                     scrollDirection: Axis.horizontal,
-                    children: circles.map((circle) {
+                    children: circles.where((c) => c.id != null).map((circle) {
                       return Container(
                         width: 130,
                         margin: const EdgeInsets.only(right: 12),
@@ -597,6 +598,7 @@ class ProfileScreen extends ConsumerWidget {
                         const Color(0xFF35D49A),
                         Icons.directions_run,
                         true,
+                        '+1234567890',
                       ),
                       _buildHabitCard(
                         'Read 20 pages',
@@ -604,6 +606,7 @@ class ProfileScreen extends ConsumerWidget {
                         const Color(0xFF9B5CFF),
                         Icons.menu_book,
                         true,
+                        '+1234567890',
                       ),
                       _buildHabitCard(
                         'Build Project',
@@ -611,6 +614,7 @@ class ProfileScreen extends ConsumerWidget {
                         const Color(0xFF42D9FF),
                         Icons.code,
                         false,
+                        '+1234567890',
                       ),
                       _buildHabitCard(
                         'Meditate',
@@ -618,6 +622,7 @@ class ProfileScreen extends ConsumerWidget {
                         Colors.orange,
                         Icons.self_improvement,
                         false,
+                        '+1234567890',
                       ),
                     ],
                   ),
@@ -849,7 +854,10 @@ class ProfileScreen extends ConsumerWidget {
     Color color,
     IconData icon,
     bool done,
+    String phoneNumber,
   ) {
+    final vapiService = VapiService();
+
     return Container(
       width: 130,
       margin: const EdgeInsets.only(right: 12),
@@ -869,11 +877,23 @@ class ProfileScreen extends ConsumerWidget {
                 radius: 18,
                 child: Icon(icon, color: color, size: 20),
               ),
-              Icon(
-                done ? Icons.check_circle : Icons.radio_button_unchecked,
-                color: done ? const Color(0xFF35D49A) : const Color(0xFF1B2339),
-                size: 20,
-              ),
+              if (!done)
+                IconButton(
+                  icon: const Icon(Icons.phone, color: AppTheme.primaryBright, size: 20),
+                  onPressed: () => vapiService.initiateCall(
+                    phoneNumber: phoneNumber,
+                    habitName: title,
+                  ),
+                  tooltip: 'Get AI call for $title',
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                )
+              else
+                Icon(
+                  Icons.check_circle,
+                  color: const Color(0xFF35D49A),
+                  size: 20,
+                ),
             ],
           ),
           const Spacer(),
