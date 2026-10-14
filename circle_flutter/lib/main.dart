@@ -47,31 +47,32 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => Container(
-              decoration: const BoxDecoration(
-                gradient: AppTheme.atmosphericBackground,
-              ),
-              child: const MainShell(),
-            ),
+          decoration: const BoxDecoration(
+            gradient: AppTheme.atmosphericBackground,
+          ),
+          child: const MainShell(),
+        ),
         '/circles': (context) => Container(
-              decoration: const BoxDecoration(
-                gradient: AppTheme.atmosphericBackground,
-              ),
-              child: const CirclesScreen(),
-            ),
+          decoration: const BoxDecoration(
+            gradient: AppTheme.atmosphericBackground,
+          ),
+          child: const CirclesScreen(),
+        ),
         '/profile': (context) => Container(
-              decoration: const BoxDecoration(
-                gradient: AppTheme.atmosphericBackground,
-              ),
-              child: const ProfileScreen(),
-            ),
+          decoration: const BoxDecoration(
+            gradient: AppTheme.atmosphericBackground,
+          ),
+          child: const ProfileScreen(),
+        ),
         '/leaderboard': (context) => Container(
-              decoration: const BoxDecoration(
-                gradient: AppTheme.atmosphericBackground,
-              ),
-              child: const LeaderboardScreen(),
-            ),
+          decoration: const BoxDecoration(
+            gradient: AppTheme.atmosphericBackground,
+          ),
+          child: const LeaderboardScreen(),
+        ),
         '/activity': (context) {
-          final activity = ModalRoute.of(context)!.settings.arguments as Activity;
+          final activity =
+              ModalRoute.of(context)!.settings.arguments as Activity;
           return Container(
             decoration: const BoxDecoration(
               gradient: AppTheme.atmosphericBackground,
@@ -80,11 +81,11 @@ class MyApp extends StatelessWidget {
           );
         },
         '/notifications': (context) => Container(
-              decoration: const BoxDecoration(
-                gradient: AppTheme.atmosphericBackground,
-              ),
-              child: const NotificationsScreen(),
-            ),
+          decoration: const BoxDecoration(
+            gradient: AppTheme.atmosphericBackground,
+          ),
+          child: const NotificationsScreen(),
+        ),
       },
       home: Container(
         decoration: const BoxDecoration(

@@ -16,6 +16,7 @@ import 'package:circle_server/src/generated/user.dart' as _iauvhat4;
 import 'package:clock/clock.dart' as _io0w16m8;
 import 'package:serverpod/serverpod.dart' as _is;
 import '../future_calls/escalation_call.dart' as _ikb4287b;
+import '../future_calls/reminder_call.dart' as _ijp1okx8;
 
 /// Invokes a future call.
 typedef _InvokeFutureCall =
@@ -60,6 +61,7 @@ class FutureCalls extends _is.FutureCallDispatch<_FutureCallRef> {
   ) {
     var registeredFutureCalls = <String, _is.InvokableFutureCall>{
       'EscalationCallInvokeFutureCall': EscalationCallInvokeFutureCall(),
+      'ReminderCallInvokeFutureCall': ReminderCallInvokeFutureCall(),
     };
     _futureCallManager = futureCallManager;
     _serverId = serverId;
@@ -183,6 +185,10 @@ class _FutureCallRef {
   late final escalationCall = _EscalationCallFutureCallDispatcher(
     _invokeFutureCall,
   );
+
+  late final reminderCall = _ReminderCallFutureCallDispatcher(
+    _invokeFutureCall,
+  );
 }
 
 class _EscalationCallFutureCallDispatcher {
@@ -198,6 +204,19 @@ class _EscalationCallFutureCallDispatcher {
   }
 }
 
+class _ReminderCallFutureCallDispatcher {
+  _ReminderCallFutureCallDispatcher(this._invokeFutureCall);
+
+  final _InvokeFutureCall _invokeFutureCall;
+
+  Future<void> invoke(_iauvhat4.User? user) {
+    return _invokeFutureCall(
+      'ReminderCallInvokeFutureCall',
+      user,
+    );
+  }
+}
+
 class EscalationCallInvokeFutureCall extends _is.FutureCall<_iauvhat4.User>
     implements _is.InvokableFutureCall<_iauvhat4.User> {
   @override
@@ -206,6 +225,20 @@ class EscalationCallInvokeFutureCall extends _is.FutureCall<_iauvhat4.User>
     _iauvhat4.User? user,
   ) async {
     await _ikb4287b.EscalationCall().invoke(
+      session,
+      user,
+    );
+  }
+}
+
+class ReminderCallInvokeFutureCall extends _is.FutureCall<_iauvhat4.User>
+    implements _is.InvokableFutureCall<_iauvhat4.User> {
+  @override
+  _ida.Future<void> invoke(
+    _is.Session session,
+    _iauvhat4.User? user,
+  ) async {
+    await _ijp1okx8.ReminderCall().invoke(
       session,
       user,
     );
