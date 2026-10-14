@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:circle_flutter/theme.dart';
 import 'package:circle_flutter/features/home/data/home_feed_provider.dart';
+import 'package:circle_flutter/core/providers/notification_count_provider.dart';
+import 'package:circle_flutter/features/activity/domain/activity.dart';
 
 class NotificationsScreen extends ConsumerWidget {
   const NotificationsScreen({super.key});
@@ -9,6 +11,11 @@ class NotificationsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final feedAsync = ref.watch(homeFeedProvider);
+    // Clear badge whenever this screen is visible
+    ref.listen<int>(notificationCountProvider, (_, _) {});
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => ref.read(notificationCountProvider.notifier).clear(),
+    );
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -24,12 +31,18 @@ class NotificationsScreen extends ConsumerWidget {
           ),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, size: 24, color: AppTheme.textPrimary),
+          icon: const Icon(
+            Icons.arrow_back_rounded,
+            size: 24,
+            color: AppTheme.textPrimary,
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
       body: Container(
-        decoration: const BoxDecoration(gradient: AppTheme.atmosphericBackground),
+        decoration: const BoxDecoration(
+          gradient: AppTheme.atmosphericBackground,
+        ),
         child: feedAsync.when(
           loading: () => const Center(
             child: CircularProgressIndicator(color: AppTheme.primaryBright),
@@ -49,11 +62,19 @@ class NotificationsScreen extends ConsumerWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.notifications_none, size: 64, color: AppTheme.textMuted),
+                    Icon(
+                      Icons.notifications_none,
+                      size: 64,
+                      color: AppTheme.textMuted,
+                    ),
                     SizedBox(height: 16),
                     Text(
                       'No notifications yet',
-                      style: TextStyle(color: AppTheme.textPrimary, fontSize: 18, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     SizedBox(height: 8),
                     Text(
@@ -72,13 +93,27 @@ class NotificationsScreen extends ConsumerWidget {
                 final p = posts[index];
                 return _NotificationTile(
                   title: p.caption,
-                  subtitle: '${p.userId} • ${_formatTimeAgo(p.createdAt)}',
+                  subtitle: 'User ${p.userId} • ${_formatTimeAgo(p.createdAt)}',
                   onTap: () {
-                    // Navigate to activity thread
-                    Navigator.of(context).pushNamed('/activity', arguments: {
-                      'circleName': 'Circle',
-                      'activityTitle': p.caption,
-                    });
+                    final activity = Activity(
+                      id: '${p.circleId}',
+                      title: p.caption.isNotEmpty ? p.caption : 'Daily Habit',
+                      description: p.caption,
+                      type: ActivityType.habit,
+                      duration: DurationOption.thirtyDays,
+                      proofRequirement: ProofRequirement.any,
+                      visibility: VisibilityScope.public,
+                      iconEmoji: '🔥',
+                      memberCount: 1,
+                      isJoined: true,
+                      currentDay: 1,
+                      totalDays: 30,
+                      coverImageUrl: p.imageUrl.isNotEmpty ? p.imageUrl : null,
+                    );
+                    Navigator.of(context).pushNamed(
+                      '/activity',
+                      arguments: activity,
+                    );
                   },
                 );
               },
@@ -133,7 +168,11 @@ class _NotificationTile extends StatelessWidget {
                 color: AppTheme.primaryBright.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(Icons.notifications, color: AppTheme.primaryBright, size: 20),
+              child: const Icon(
+                Icons.notifications,
+                color: AppTheme.primaryBright,
+                size: 20,
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -153,12 +192,19 @@ class _NotificationTile extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: const TextStyle(color: AppTheme.textMuted, fontSize: 12),
+                    style: const TextStyle(
+                      color: AppTheme.textMuted,
+                      fontSize: 12,
+                    ),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right_rounded, color: AppTheme.textMuted, size: 20),
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: AppTheme.textMuted,
+              size: 20,
+            ),
           ],
         ),
       ),

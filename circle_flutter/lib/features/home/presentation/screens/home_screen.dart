@@ -4,22 +4,37 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:circle_client/circle_client.dart';
 import '../../../../client.dart';
+import '../../../../core/providers/notification_count_provider.dart';
 import '../../../../core/widgets/failure.dart';
 import '../../../../core/widgets/shimmer.dart';
 import '../../../../theme.dart';
 import '../../../../core/widgets/circle_logo.dart';
+import 'package:circle_flutter/features/activity/data/chat_provider.dart';
+import 'package:circle_flutter/features/activity/domain/activity.dart';
 import '../widgets/custom_tab_bar.dart';
 import '../widgets/proof_card.dart';
 
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final feedAsync = ref.watch(homeFeedProvider);
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  int _selectedTabIndex = 1; // 0 = For You, 1 = My Circle
+
+  @override
+  Widget build(BuildContext context) {
+    final feedAsync = _selectedTabIndex == 0
+        ? ref.watch(forYouFeedProvider)
+        : ref.watch(homeFeedProvider);
     final usersMap = ref.watch(usersMapProvider).value ?? {};
     final circlesAsync = ref.watch(circlesProvider);
     final currentCircleId = ref.watch(selectedCircleIdProvider);
+    // Sync feed count into notification badge (side-effect provider)
+    ref.watch(feedNotificationSyncProvider);
+    final notifCount = ref.watch(notificationCountProvider);
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -28,7 +43,7 @@ class HomeScreen extends ConsumerWidget {
         elevation: 0,
         title: circlesAsync.when(
           loading: () => _buildAppBarTitle('Loading...', onTap: null),
-          error: (_, __) => _buildAppBarTitle('Error', onTap: null),
+          error: (_, err) => _buildAppBarTitle('Error', onTap: null),
           data: (circles) {
             if (circles.isEmpty) {
               return _buildAppBarTitle('No Circles', onTap: null);
@@ -41,26 +56,40 @@ class HomeScreen extends ConsumerWidget {
 
             return _buildAppBarTitle(
               currentCircleName,
-              onTap: () => _showCircleSelector(context, ref, circles, currentCircleId),
+              onTap: () =>
+                  _showCircleSelector(context, ref, circles, currentCircleId),
             );
           },
         ),
         actions: [
           IconButton(
-            icon: const Badge(
-              child: Icon(Icons.notifications_none, size: 28),
+            icon: Badge(
+              isLabelVisible: notifCount > 0,
+              label: Text(
+                notifCount > 99 ? '99+' : '$notifCount',
+                style: const TextStyle(fontSize: 10),
+              ),
+              child: const Icon(Icons.notifications_none, size: 28),
             ),
-            onPressed: () => Navigator.of(context).pushNamed('/notifications'),
+            onPressed: () {
+              ref.read(notificationCountProvider.notifier).clear();
+              Navigator.of(context).pushNamed('/notifications');
+            },
           ),
           const SizedBox(width: 12),
         ],
       ),
       body: CustomScrollView(
         slivers: [
-          const SliverToBoxAdapter(
+          SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.all(16.0),
-              child: CustomTabBar(),
+              padding: const EdgeInsets.all(16.0),
+              child: CustomTabBar(
+                selectedIndex: _selectedTabIndex,
+                onTabChanged: (index) {
+                  setState(() => _selectedTabIndex = index);
+                },
+              ),
             ),
           ),
           feedAsync.when(
@@ -76,18 +105,26 @@ class HomeScreen extends ConsumerWidget {
                   child: FailureWidget(
                     title: 'Unable to load feed',
                     message: 'Check your connection and try again.',
-                    onRetry: () => ref.invalidate(homeFeedProvider),
+                    onRetry: () {
+                      if (_selectedTabIndex == 0) {
+                        ref.invalidate(forYouFeedProvider);
+                      } else {
+                        ref.invalidate(homeFeedProvider);
+                      }
+                    },
                   ),
                 ),
               ),
             ),
             data: (posts) {
               if (posts.isEmpty) {
-                return const SliverFillRemaining(
+                return SliverFillRemaining(
                   child: Center(
                     child: Text(
-                      'No proof posts yet in this circle',
-                      style: TextStyle(color: AppTheme.textMuted),
+                      _selectedTabIndex == 0
+                          ? 'No proof posts found for you yet'
+                          : 'No proof posts yet in this circle',
+                      style: const TextStyle(color: AppTheme.textMuted),
                     ),
                   ),
                 );
@@ -103,29 +140,11 @@ class HomeScreen extends ConsumerWidget {
                   itemBuilder: (context, index) {
                     final p = posts[index];
                     final author = usersMap[p.userId];
-                    final username = author?.username ?? 'User ${p.userId}';
-                    final streak = author?.streakCount ?? 1;
-                    final hoursAgo = DateTime.now()
-                        .difference(p.createdAt)
-                        .inHours;
-                    final timeAgo = hoursAgo <= 0
-                        ? 'Just now'
-                        : '${hoursAgo}h ago';
-
-                    final uiData = ProofPostData(
-                      imageUrl: p.imageUrl.isEmpty
-                          ? 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=500&q=80'
-                          : p.imageUrl,
-                      username: username,
-                      timeAgo: timeAgo,
-                      habitName: 'Daily Habit',
-                      caption: p.caption,
-                      streak: streak,
-                      flames: 0,
-                      comments: 0,
-                      cardHeight: index.isEven ? 280 : 320,
+                    return _ProofFeedCardItem(
+                      post: p,
+                      author: author,
+                      index: index,
                     );
-                    return ProofCard(post: uiData);
                   },
                 ),
               );
@@ -254,7 +273,10 @@ class _CircleSelectorSheet extends ConsumerWidget {
             return InkWell(
               onTap: () => onSelect(circle.id ?? 0),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 16,
+                ),
                 decoration: BoxDecoration(
                   border: Border(
                     bottom: BorderSide(
@@ -266,8 +288,14 @@ class _CircleSelectorSheet extends ConsumerWidget {
                   children: [
                     CircleAvatar(
                       radius: 20,
-                      backgroundColor: AppTheme.primaryBright.withValues(alpha: 0.2),
-                      child: const Icon(Icons.group, color: AppTheme.primaryBright, size: 20),
+                      backgroundColor: AppTheme.primaryBright.withValues(
+                        alpha: 0.2,
+                      ),
+                      child: const Icon(
+                        Icons.group,
+                        color: AppTheme.primaryBright,
+                        size: 20,
+                      ),
                     ),
                     const SizedBox(width: 14),
                     Expanded(
@@ -475,4 +503,63 @@ class ProofPostData {
     required this.comments,
     required this.cardHeight,
   });
+}
+
+class _ProofFeedCardItem extends ConsumerWidget {
+  const _ProofFeedCardItem({
+    required this.post,
+    required this.author,
+    required this.index,
+  });
+
+  final ProofPost post;
+  final User? author;
+  final int index;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final messagesAsync = ref.watch(groupChatMessagesProvider(post.circleId));
+    final commentCount = messagesAsync.value?.length ?? 0;
+
+    final username = author?.username ?? 'User ${post.userId}';
+    final streak = author?.streakCount ?? 1;
+    final hoursAgo = DateTime.now().difference(post.createdAt).inHours;
+    final timeAgo = hoursAgo <= 0 ? 'Just now' : '${hoursAgo}h ago';
+
+    final uiData = ProofPostData(
+      imageUrl: post.imageUrl.isEmpty
+          ? 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=500&q=80'
+          : post.imageUrl,
+      username: username,
+      timeAgo: timeAgo,
+      habitName: 'Daily Habit',
+      caption: post.caption,
+      streak: streak,
+      flames: 0,
+      comments: commentCount,
+      cardHeight: index.isEven ? 280 : 320,
+    );
+
+    return GestureDetector(
+      onTap: () {
+        final activity = Activity(
+          id: '${post.circleId}',
+          title: post.caption.isNotEmpty ? post.caption : 'Daily Habit',
+          description: post.caption,
+          type: ActivityType.habit,
+          duration: DurationOption.thirtyDays,
+          proofRequirement: ProofRequirement.any,
+          visibility: VisibilityScope.public,
+          iconEmoji: '🔥',
+          memberCount: 1,
+          isJoined: true,
+          currentDay: 1,
+          totalDays: 30,
+          coverImageUrl: post.imageUrl.isNotEmpty ? post.imageUrl : null,
+        );
+        Navigator.of(context).pushNamed('/activity', arguments: activity);
+      },
+      child: ProofCard(post: uiData),
+    );
+  }
 }
