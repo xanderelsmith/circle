@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:circle_flutter/services/notification_service.dart';
 import 'package:circle_flutter/services/push_notification_service.dart';
+import 'package:circle_flutter/core/providers/auth_provider.dart';
 import 'client.dart';
 import 'theme.dart';
 import 'main_shell.dart';
@@ -11,6 +12,8 @@ import 'features/circles/presentation/screens/circles_screen.dart';
 import 'features/profile/presentation/screens/profile_screen.dart';
 import 'features/leaderboard/presentation/screens/leaderboard_screen.dart';
 import 'features/notifications/presentation/screens/notifications_screen.dart';
+import 'features/auth/presentation/screens/login_screen.dart';
+import 'features/auth/presentation/screens/signup_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -45,13 +48,25 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey,
       initialRoute: '/',
-      routes: {
+routes: {
         '/': (context) => Container(
-          decoration: const BoxDecoration(
-            gradient: AppTheme.atmosphericBackground,
-          ),
-          child: const MainShell(),
-        ),
+              decoration: const BoxDecoration(
+                gradient: AppTheme.atmosphericBackground,
+              ),
+              child: const MainShell(),
+            ),
+        '/login': (context) => Container(
+              decoration: const BoxDecoration(
+                gradient: AppTheme.atmosphericBackground,
+              ),
+              child: const LoginScreen(),
+            ),
+        '/signup': (context) => Container(
+              decoration: const BoxDecoration(
+                gradient: AppTheme.atmosphericBackground,
+              ),
+              child: const SignUpScreen(),
+            ),
         '/circles': (context) => Container(
           decoration: const BoxDecoration(
             gradient: AppTheme.atmosphericBackground,
