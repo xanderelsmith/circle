@@ -57,3 +57,29 @@ final usersMapProvider = FutureProvider<Map<int, User>>((ref) async {
     return {};
   }
 });
+
+/// Fetches feed posts across all circles for the 'For You' discovery tab
+final forYouFeedProvider = FutureProvider<List<ProofPost>>((ref) async {
+  final circles = await ref.watch(circlesProvider.future);
+  final allPosts = <ProofPost>[];
+  for (final c in circles) {
+    if (c.id != null) {
+      try {
+        final posts = await client.circle.getFeed(c.id!);
+        allPosts.addAll(posts);
+      } catch (_) {}
+    }
+  }
+  // Deduplicate by post id and sort newest first
+  final seen = <int>{};
+  final deduped = <ProofPost>[];
+  for (final p in allPosts) {
+    if (p.id != null && seen.add(p.id!)) {
+      deduped.add(p);
+    } else if (p.id == null) {
+      deduped.add(p);
+    }
+  }
+  deduped.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+  return deduped;
+});

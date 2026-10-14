@@ -3,16 +3,42 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:circle_client/circle_client.dart';
 import 'package:circle_flutter/services/vapi_service.dart';
 import '../../../../core/providers/current_user_provider.dart';
+import '../../../../core/providers/notification_count_provider.dart';
+import '../../../../core/services/streak_service.dart';
 import '../../../../features/home/data/home_feed_provider.dart';
 import '../../../../theme.dart';
 
-class ProfileScreen extends ConsumerWidget {
+class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends ConsumerState<ProfileScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // After first frame so the BuildContext is fully ready for dialogs.
+    WidgetsBinding.instance.addPostFrameCallback((_) => _maybeShowStreak());
+  }
+
+  Future<void> _maybeShowStreak() async {
+    final user = ref.read(currentUserProvider).value;
+    if (user == null || !mounted) return;
+    await StreakService.instance.maybeShowStreakDialog(
+      context,
+      streakCount: user.streakCount,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final userAsync = ref.watch(currentUserProvider);
     final circlesAsync = ref.watch(circlesProvider);
+    // Sync notification badge
+    ref.watch(feedNotificationSyncProvider);
+    final notifCount = ref.watch(notificationCountProvider);
 
     return userAsync.when(
       loading: () => _buildLoadingSkeleton(context),
@@ -21,6 +47,12 @@ class ProfileScreen extends ConsumerWidget {
         if (user == null) {
           return _buildNotLoggedIn(context);
         }
+        // Trigger streak check whenever user data refreshes
+        if (user.streakCount > 0) {
+          WidgetsBinding.instance.addPostFrameCallback(
+            (_) => _maybeShowStreak(),
+          );
+        }
         final username = user.username;
         final rank = user.rankColor;
         final streak = user.streakCount;
@@ -28,9 +60,36 @@ class ProfileScreen extends ConsumerWidget {
         final xpProgress = ((xp % 1000) / 1000.0).clamp(0.0, 1.0);
 
         return circlesAsync.when(
-          loading: () => _buildProfileContent(context, username, rank, streak, xp, xpProgress, null),
-          error: (_, _) => _buildProfileContent(context, username, rank, streak, xp, xpProgress, null),
-          data: (circles) => _buildProfileContent(context, username, rank, streak, xp, xpProgress, circles),
+          loading: () => _buildProfileContent(
+            context,
+            username,
+            rank,
+            streak,
+            xp,
+            xpProgress,
+            null,
+            notifCount,
+          ),
+          error: (_, _1) => _buildProfileContent(
+            context,
+            username,
+            rank,
+            streak,
+            xp,
+            xpProgress,
+            null,
+            notifCount,
+          ),
+          data: (circles) => _buildProfileContent(
+            context,
+            username,
+            rank,
+            streak,
+            xp,
+            xpProgress,
+            circles,
+            notifCount,
+          ),
         );
       },
     );
@@ -111,6 +170,7 @@ class ProfileScreen extends ConsumerWidget {
     int xp,
     double xpProgress,
     List<CircleGroup>? circles,
+    int notifCount,
   ) {
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -153,14 +213,22 @@ class ProfileScreen extends ConsumerWidget {
         ),
         actions: [
           IconButton(
-            icon: const Badge(
-              child: Icon(
+            icon: Badge(
+              isLabelVisible: notifCount > 0,
+              label: Text(
+                notifCount > 99 ? '99+' : '$notifCount',
+                style: const TextStyle(fontSize: 10),
+              ),
+              child: const Icon(
                 Icons.notifications_none,
                 size: 28,
                 color: Colors.white,
               ),
             ),
-            onPressed: () {},
+            onPressed: () {
+              ref.read(notificationCountProvider.notifier).clear();
+              Navigator.of(context).pushNamed('/notifications');
+            },
           ),
           const SizedBox(width: 12),
         ],
@@ -495,7 +563,10 @@ class ProfileScreen extends ConsumerWidget {
                         circles != null && circles.isNotEmpty
                             ? '${circles.length} circle${circles.length == 1 ? '' : 's'} joined'
                             : 'Join a circle to get started',
-                        style: const TextStyle(fontSize: 12, color: Colors.grey),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
                       ),
                     ],
                   ),
@@ -541,8 +612,8 @@ class ProfileScreen extends ConsumerWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 CircleAvatar(
-                                  backgroundColor:
-                                      AppTheme.primaryBright.withValues(alpha: 0.15),
+                                  backgroundColor: AppTheme.primaryBright
+                                      .withValues(alpha: 0.15),
                                   radius: 18,
                                   child: const Icon(
                                     Icons.group,
@@ -579,8 +650,10 @@ class ProfileScreen extends ConsumerWidget {
                                 const SizedBox(width: 4),
                                 Text(
                                   '${circle.id ?? 0} members',
-                                  style:
-                                      const TextStyle(color: Colors.grey, fontSize: 11),
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 11,
+                                  ),
                                 ),
                               ],
                             ),
@@ -879,7 +952,11 @@ class ProfileScreen extends ConsumerWidget {
               ),
               if (!done)
                 IconButton(
-                  icon: const Icon(Icons.phone, color: AppTheme.primaryBright, size: 20),
+                  icon: const Icon(
+                    Icons.phone,
+                    color: AppTheme.primaryBright,
+                    size: 20,
+                  ),
                   onPressed: () => vapiService.initiateCall(
                     phoneNumber: phoneNumber,
                     habitName: title,

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:circle_flutter/services/notification_service.dart';
 import 'package:circle_flutter/services/push_notification_service.dart';
+import 'firebase_options.dart';
 import 'client.dart';
 import 'theme.dart';
 import 'main_shell.dart';
@@ -17,20 +19,40 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase
-  await initializeFirebase();
+  // 1. Initialize client first so it is available to the app and services
+  try {
+    await initializeClient();
+  } catch (e) {
+    debugPrint('Failed to initialize client: $e');
+  }
 
-  // Initialize notification services
-  await NotificationService().initialize();
-  await PushNotificationService().initialize(navigatorKey);
-
-  await initializeClient();
+  // 2. Start the UI immediately to prevent white screen / launch freezes
   runApp(const ProviderScope(child: MyApp()));
+
+  // 3. Initialize background services (Firebase & notifications) without blocking UI
+  _initializeBackgroundServices();
 }
 
-Future<void> initializeFirebase() async {
-  // Firebase initialization happens in the background
-  // The actual initialization is handled by the platform-specific code
+Future<void> _initializeBackgroundServices() async {
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    debugPrint('Firebase initialization failed: $e');
+  }
+
+  try {
+    await NotificationService().initialize();
+  } catch (e) {
+    debugPrint('NotificationService initialization failed: $e');
+  }
+
+  try {
+    await PushNotificationService().initialize(navigatorKey);
+  } catch (e) {
+    debugPrint('PushNotificationService initialization failed: $e');
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -71,8 +93,36 @@ class MyApp extends StatelessWidget {
           child: const LeaderboardScreen(),
         ),
         '/activity': (context) {
-          final activity =
-              ModalRoute.of(context)!.settings.arguments as Activity;
+          final args = ModalRoute.of(context)?.settings.arguments;
+          final Activity activity;
+          if (args is Activity) {
+            activity = args;
+          } else if (args is Map) {
+            activity = Activity(
+              id: args['id']?.toString() ?? '1',
+              title:
+                  args['activityTitle']?.toString() ??
+                  args['title']?.toString() ??
+                  args['circleName']?.toString() ??
+                  'Activity',
+              description:
+                  args['description']?.toString() ??
+                  args['activityTitle']?.toString() ??
+                  'Activity details',
+              type: ActivityType.habit,
+              duration: DurationOption.thirtyDays,
+              proofRequirement: ProofRequirement.any,
+              visibility: VisibilityScope.public,
+              iconEmoji: args['iconEmoji']?.toString() ?? '🔥',
+              memberCount: (args['memberCount'] as num?)?.toInt() ?? 1,
+              isJoined: true,
+              currentDay: 1,
+              totalDays: 30,
+              coverImageUrl: args['coverImageUrl']?.toString(),
+            );
+          } else {
+            activity = sampleActivity;
+          }
           return Container(
             decoration: const BoxDecoration(
               gradient: AppTheme.atmosphericBackground,
@@ -87,12 +137,6 @@ class MyApp extends StatelessWidget {
           child: const NotificationsScreen(),
         ),
       },
-      home: Container(
-        decoration: const BoxDecoration(
-          gradient: AppTheme.atmosphericBackground,
-        ),
-        child: const MainShell(),
-      ),
     );
   }
 }

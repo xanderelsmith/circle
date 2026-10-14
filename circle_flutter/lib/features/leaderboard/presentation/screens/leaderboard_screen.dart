@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/widgets/failure.dart';
 import '../../../../core/widgets/shimmer.dart';
@@ -10,6 +10,7 @@ import '../../widgets/leaderboard_tile.dart';
 import '../../widgets/segmented_pill_bar.dart';
 import '../../widgets/streak_hero_card.dart';
 import '../../data/leaderboard_provider.dart';
+import '../../../../core/providers/notification_count_provider.dart';
 
 class LeaderboardScreen extends ConsumerStatefulWidget {
   const LeaderboardScreen({super.key});
@@ -39,7 +40,11 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
             return await ref.read(leaderboardProvider.future);
           },
           child: leaderboardAsync.when(
-            loading: () => const ShimmerList(itemCount: 8, itemHeight: 72, showTrailing: true),
+            loading: () => const ShimmerList(
+              itemCount: 8,
+              itemHeight: 72,
+              showTrailing: true,
+            ),
             error: (err, stack) => Center(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -142,11 +147,14 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
 // -----------------------------------------------------------------------------
 // Header
 // -----------------------------------------------------------------------------
-class _LeaderboardHeader extends StatelessWidget {
+class _LeaderboardHeader extends ConsumerWidget {
   const _LeaderboardHeader();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(feedNotificationSyncProvider);
+    final notifCount = ref.watch(notificationCountProvider);
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 8, 16),
       child: Row(
@@ -173,11 +181,17 @@ class _LeaderboardHeader extends StatelessWidget {
           ),
           const Spacer(),
           IconButton(
-            onPressed: () {},
-            icon: const Badge(
-              smallSize: 9,
-              backgroundColor: AppTheme.danger,
-              child: Icon(
+            onPressed: () {
+              ref.read(notificationCountProvider.notifier).clear();
+              Navigator.of(context).pushNamed('/notifications');
+            },
+            icon: Badge(
+              isLabelVisible: notifCount > 0,
+              label: Text(
+                notifCount > 99 ? '99+' : '$notifCount',
+                style: const TextStyle(fontSize: 10),
+              ),
+              child: const Icon(
                 Icons.notifications_none,
                 size: 28,
                 color: AppTheme.textPrimary,
