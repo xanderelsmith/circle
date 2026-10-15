@@ -5,7 +5,6 @@ import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'dart:io';
 import 'dart:convert';
-import 'package:circle_flutter/client.dart';
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -14,10 +13,6 @@ class NotificationService {
 
   final FlutterLocalNotificationsPlugin _notifications =
       FlutterLocalNotificationsPlugin();
-
-  static const String _streakReminderKey = 'streak_reminder_enabled';
-  static const String _deadlineReminderKey = 'deadline_reminder_enabled';
-  static const String _firstLaunchKey = 'first_launch_complete';
 
   // Initialize notification service
   Future<void> initialize() async {
@@ -117,7 +112,7 @@ class NotificationService {
   void _onNotificationTapped(NotificationResponse response) {
     if (response.payload != null && response.payload!.isNotEmpty) {
       try {
-        final Map<String, dynamic> data = jsonDecode(response.payload!);
+        jsonDecode(response.payload!);
         // Navigation handled by PushNotificationService
       } catch (e) {
         debugPrint('Error parsing notification payload: $e');
