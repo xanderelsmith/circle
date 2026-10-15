@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:circle_client/circle_client.dart';
 import 'package:circle_flutter/services/vapi_service.dart';
+import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/current_user_provider.dart';
 import '../../../../core/providers/notification_count_provider.dart';
 import '../../../../core/services/streak_service.dart';
 import '../../../../features/home/data/home_feed_provider.dart';
 import '../../../../theme.dart';
+import '../../../auth/presentation/screens/login_screen.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -45,7 +47,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       error: (err, _) => _buildError(context, err),
       data: (user) {
         if (user == null) {
-          return _buildNotLoggedIn(context);
+          return const LoginScreen(isEmbedded: true);
         }
         // Trigger streak check whenever user data refreshes
         if (user.streakCount > 0) {
@@ -70,7 +72,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             null,
             notifCount,
           ),
-          error: (_, _1) => _buildProfileContent(
+          error: (_, stackTrace) => _buildProfileContent(
             context,
             username,
             rank,
@@ -136,25 +138,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               'Failed to load profile: $err',
               style: const TextStyle(color: Colors.white),
               textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNotLoggedIn(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.person_off, color: Colors.grey, size: 64),
-            const SizedBox(height: 16),
-            const Text(
-              'Not logged in',
-              style: TextStyle(color: Colors.white, fontSize: 18),
             ),
           ],
         ),
@@ -230,7 +213,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               Navigator.of(context).pushNamed('/notifications');
             },
           ),
-          const SizedBox(width: 12),
+          IconButton(
+            icon: const Icon(
+              Icons.logout_rounded,
+              size: 24,
+              color: Colors.white70,
+            ),
+            tooltip: 'Sign out',
+            onPressed: () async {
+              await ref.read(authControllerProvider).signOut();
+            },
+          ),
+          const SizedBox(width: 8),
         ],
       ),
       body: ListView(

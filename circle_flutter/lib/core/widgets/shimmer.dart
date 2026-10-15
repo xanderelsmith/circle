@@ -150,7 +150,9 @@ class ShimmerList extends StatelessWidget {
     return Column(
       children: List.generate(itemCount, (index) {
         return Padding(
-          padding: EdgeInsets.only(bottom: index == itemCount - 1 ? 0 : spacing),
+          padding: EdgeInsets.only(
+            bottom: index == itemCount - 1 ? 0 : spacing,
+          ),
           child: _ShimmerListItem(
             height: itemHeight,
             showAvatar: showAvatar,
@@ -290,7 +292,11 @@ class ShimmerProfileCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 12),
-                  ShimmerBox(width: double.infinity, height: 6, borderRadius: 4),
+                  ShimmerBox(
+                    width: double.infinity,
+                    height: 6,
+                    borderRadius: 4,
+                  ),
                   const SizedBox(width: 12),
                   ShimmerBox(width: 80, height: 10, borderRadius: 4),
                 ],
@@ -332,60 +338,64 @@ class ShimmerHeatmap extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
+                    ShimmerBox(width: 24, height: 24, borderRadius: 6),
+                    const SizedBox(width: 12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        ShimmerBox(width: 24, height: 24, borderRadius: 6),
-                        const SizedBox(width: 12),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ShimmerBox(width: 120, height: 16, borderRadius: 6),
-                            const SizedBox(height: 4),
-                            ShimmerBox(width: 180, height: 11, borderRadius: 4),
-                          ],
-                        ),
+                        ShimmerBox(width: 120, height: 16, borderRadius: 6),
+                        const SizedBox(height: 4),
+                        ShimmerBox(width: 180, height: 11, borderRadius: 4),
                       ],
-                    ),
-                    Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF1B2339),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        children: [
-                          ShimmerBox(width: 30, height: 16, borderRadius: 6),
-                          const SizedBox(width: 4),
-                          ShimmerBox(width: 30, height: 16, borderRadius: 6),
-                          const SizedBox(width: 4),
-                          ShimmerBox(width: 30, height: 16, borderRadius: 6),
-                        ],
-                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1B2339),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      ShimmerBox(width: 30, height: 16, borderRadius: 6),
+                      const SizedBox(width: 4),
+                      ShimmerBox(width: 30, height: 16, borderRadius: 6),
+                      const SizedBox(width: 4),
+                      ShimmerBox(width: 30, height: 16, borderRadius: 6),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: List.generate(7, (_) => ShimmerBox(width: 24, height: 10, borderRadius: 4)),
+                  children: List.generate(
+                    7,
+                    (_) => ShimmerBox(width: 24, height: 10, borderRadius: 4),
+                  ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 20,
-                      crossAxisSpacing: 4,
-                      mainAxisSpacing: 4,
-                    ),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 20,
+                          crossAxisSpacing: 4,
+                          mainAxisSpacing: 4,
+                        ),
                     itemCount: 140,
                     itemBuilder: (_, _) => ShimmerBox(
                       width: double.infinity,
@@ -471,15 +481,18 @@ class ShimmerStatsRow extends StatelessWidget {
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: List.generate(itemCount, (_) => Column(
-            children: [
-              ShimmerCircle(size: 28),
-              const SizedBox(height: 8),
-              ShimmerBox(width: 40, height: 18, borderRadius: 4),
-              const SizedBox(height: 4),
-              ShimmerBox(width: 30, height: 10, borderRadius: 4),
-            ],
-          )),
+          children: List.generate(
+            itemCount,
+            (_) => Column(
+              children: [
+                ShimmerCircle(size: 28),
+                const SizedBox(height: 8),
+                ShimmerBox(width: 40, height: 18, borderRadius: 4),
+                const SizedBox(height: 4),
+                ShimmerBox(width: 30, height: 10, borderRadius: 4),
+              ],
+            ),
+          ),
         ),
       ),
     );

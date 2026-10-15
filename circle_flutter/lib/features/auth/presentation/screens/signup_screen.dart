@@ -95,13 +95,20 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             email: _pendingEmail!,
             password: _pendingPassword!,
             verificationCode: _verificationCodeController.text.trim(),
+            username: _usernameController.text.trim(),
           );
 
       if (mounted) {
         setState(() => _isLoading = false);
 
         if (success) {
-          Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+          if (Navigator.of(context).canPop()) {
+            Navigator.of(context).pop();
+          } else {
+            Navigator.of(
+              context,
+            ).pushNamedAndRemoveUntil('/', (route) => false);
+          }
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -489,7 +496,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                               ),
                               decoration: InputDecoration(
                                 labelText: 'Verification Code',
-                                hintText: 'Enter the 6-digit code',
+                                hintText: 'Enter the verification code',
                                 prefixIcon: const Icon(
                                   Icons.lock_outline,
                                   color: AppTheme.textMuted,
@@ -515,11 +522,12 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                                 ),
                               ),
                               validator: (value) {
-                                if (value == null || value.trim().isEmpty) {
+                                final code = value?.trim();
+                                if (code == null || code.isEmpty) {
                                   return 'Please enter the verification code';
                                 }
-                                if (value.trim().length != 6) {
-                                  return 'Code must be 6 digits';
+                                if (code.length < 6 || code.length > 8) {
+                                  return 'Code must be between 6 and 8 digits';
                                 }
                                 return null;
                               },

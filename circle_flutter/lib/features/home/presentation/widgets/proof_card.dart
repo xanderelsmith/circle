@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import '../screens/home_screen.dart';
 
@@ -6,6 +7,24 @@ class ProofCard extends StatelessWidget {
 
   const ProofCard({super.key, required this.post});
 
+  ImageProvider _getImageProvider(String path) {
+    if (path.isEmpty) {
+      return const NetworkImage(
+        'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=500&q=80',
+      );
+    }
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      return NetworkImage(path);
+    }
+    final file = File(path);
+    if (file.existsSync()) {
+      return FileImage(file);
+    }
+    return const NetworkImage(
+      'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=500&q=80',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -13,7 +32,7 @@ class ProofCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         image: DecorationImage(
-          image: NetworkImage(post.imageUrl),
+          image: _getImageProvider(post.imageUrl),
           fit: BoxFit.cover,
         ),
       ),

@@ -24,9 +24,13 @@ final serverUrl = getServerUrl();
 /// instead of using a global client object. This is just a simple example.
 late final Client client;
 
+/// Completes once the persisted auth session has been restored (or not).
+late final Future<bool> authRestored;
+
 Future<void> initializeClient() async {
   client = Client(await serverUrl)
     ..connectivityMonitor = FlutterConnectivityMonitor()
     ..authSessionManager = FlutterAuthSessionManager();
-  unawaited(client.auth.initialize());
+  authRestored = client.auth.initialize().catchError((_) => false);
+  unawaited(authRestored);
 }

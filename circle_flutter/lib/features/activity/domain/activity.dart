@@ -125,7 +125,7 @@ const samplePosts = <ActivityPost>[
   ),
   ActivityPost(
     id: 'p3',
-    authorName: 'Emmanuel',
+    authorName: 'Alex',
     authorAvatarUrl: 'https://i.pravatar.cc/150?img=68',
     timeAgo: '6h ago',
     imageUrl:

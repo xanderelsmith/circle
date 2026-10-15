@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:circle_client/circle_client.dart';
 import '../../../../client.dart';
+import '../../../../core/providers/current_user_provider.dart';
 
 /// Notifier to manage the currently selected circle ID
 class SelectedCircleIdNotifier extends Notifier<int> {
@@ -47,13 +48,21 @@ final homeFeedProvider = FutureProvider<List<ProofPost>>((ref) async {
 
 /// Map of all users by ID for quick author lookup on feed posts
 final usersMapProvider = FutureProvider<Map<int, User>>((ref) async {
+  final currentUser = ref.watch(currentUserProvider).value;
   try {
     final list = await client.user.getLeaderboard();
-    return {
+    final map = {
       for (var u in list)
         if (u.id != null) u.id!: u,
     };
+    if (currentUser?.id != null) {
+      map[currentUser!.id!] = currentUser;
+    }
+    return map;
   } catch (_) {
+    if (currentUser?.id != null) {
+      return {currentUser!.id!: currentUser};
+    }
     return {};
   }
 });

@@ -3,11 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:circle_flutter/services/notification_service.dart';
 import 'package:circle_flutter/services/push_notification_service.dart';
-<<<<<<< HEAD
-import 'package:circle_flutter/core/providers/auth_provider.dart';
-=======
 import 'firebase_options.dart';
->>>>>>> 652c992e9b83a7278c1011cd66f2425065bc6404
 import 'client.dart';
 import 'theme.dart';
 import 'main_shell.dart';
@@ -73,25 +69,25 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey,
       initialRoute: '/',
-routes: {
+      routes: {
         '/': (context) => Container(
-              decoration: const BoxDecoration(
-                gradient: AppTheme.atmosphericBackground,
-              ),
-              child: const MainShell(),
-            ),
+          decoration: const BoxDecoration(
+            gradient: AppTheme.atmosphericBackground,
+          ),
+          child: const MainShell(),
+        ),
         '/login': (context) => Container(
-              decoration: const BoxDecoration(
-                gradient: AppTheme.atmosphericBackground,
-              ),
-              child: const LoginScreen(),
-            ),
+          decoration: const BoxDecoration(
+            gradient: AppTheme.atmosphericBackground,
+          ),
+          child: const LoginScreen(),
+        ),
         '/signup': (context) => Container(
-              decoration: const BoxDecoration(
-                gradient: AppTheme.atmosphericBackground,
-              ),
-              child: const SignUpScreen(),
-            ),
+          decoration: const BoxDecoration(
+            gradient: AppTheme.atmosphericBackground,
+          ),
+          child: const SignUpScreen(),
+        ),
         '/circles': (context) => Container(
           decoration: const BoxDecoration(
             gradient: AppTheme.atmosphericBackground,

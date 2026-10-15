@@ -118,7 +118,7 @@ class _AddProofScreenState extends ConsumerState<AddProofScreen> {
   // ---------------------------------------------------------------------------
   // Submit
   // ---------------------------------------------------------------------------
-  Future<void> _handlePost() async {
+  Future<void> _handlePost([User? user]) async {
     final requirement = widget.activity.proofRequirement;
     final caption = _captionController.text.trim();
 
@@ -134,7 +134,7 @@ class _AddProofScreenState extends ConsumerState<AddProofScreen> {
       return;
     }
 
-    final currentUser = ref.read(currentUserProvider).value;
+    final currentUser = user ?? ref.read(currentUserProvider).value;
     final int circleId =
         int.tryParse(widget.activity.id) ?? ref.read(selectedCircleIdProvider);
     final imagePath = _media?.path.isNotEmpty == true
@@ -153,13 +153,14 @@ class _AddProofScreenState extends ConsumerState<AddProofScreen> {
     try {
       await client.circle.createProofPost(proofPost);
       ref.invalidate(homeFeedProvider);
+      ref.invalidate(forYouFeedProvider);
     } catch (_) {
       // Continue so local preview works
     }
 
     final newPost = ActivityPost(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
-      authorName: currentUser?.username ?? 'Emmanuel',
+      authorName: currentUser?.username ?? 'You',
       authorAvatarUrl: 'https://i.pravatar.cc/150?u=${currentUser?.id ?? 1}',
       timeAgo: 'Just now',
       // Local file path is used until backend upload is wired.
@@ -179,6 +180,7 @@ class _AddProofScreenState extends ConsumerState<AddProofScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = ref.watch(currentUserProvider).value;
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     final requirement = widget.activity.proofRequirement;
 
@@ -317,7 +319,7 @@ class _AddProofScreenState extends ConsumerState<AddProofScreen> {
                   ],
                 ),
               ),
-              _PostButton(onPressed: _handlePost),
+              _PostButton(onPressed: () => _handlePost(currentUser)),
             ],
           ),
         ),

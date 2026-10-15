@@ -9,13 +9,15 @@ import 'dart:developer';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  final NotificationService backgroundNotificationService = NotificationService();
+  final NotificationService backgroundNotificationService =
+      NotificationService();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   log('Handling background message: ${message.messageId}');
 
   await backgroundNotificationService.initialize();
   if (message.notification != null || message.data.isNotEmpty) {
-    final title = message.notification?.title ?? message.data['title'] ?? 'Notification';
+    final title =
+        message.notification?.title ?? message.data['title'] ?? 'Notification';
     final body = message.notification?.body ?? message.data['body'] ?? '';
     final data = message.data;
 
@@ -28,7 +30,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 class PushNotificationService {
-  static final PushNotificationService _instance = PushNotificationService._internal();
+  static final PushNotificationService _instance =
+      PushNotificationService._internal();
   factory PushNotificationService() => _instance;
   PushNotificationService._internal();
 
@@ -45,20 +48,28 @@ class PushNotificationService {
 
     try {
       NotificationSettings settings = await _messaging.requestPermission(
-        alert: true, announcement: false, badge: true, carPlay: false,
-        criticalAlert: false, provisional: false, sound: true,
+        alert: true,
+        announcement: false,
+        badge: true,
+        carPlay: false,
+        criticalAlert: false,
+        provisional: false,
+        sound: true,
       );
 
       if (settings.authorizationStatus == AuthorizationStatus.authorized) {
         log('User granted notification permission');
-      } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
+      } else if (settings.authorizationStatus ==
+          AuthorizationStatus.provisional) {
         log('User granted provisional notification permission');
       } else {
         log('User declined or has not accepted notification permission');
       }
 
       FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
-      FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+      FirebaseMessaging.onBackgroundMessage(
+        _firebaseMessagingBackgroundHandler,
+      );
       FirebaseMessaging.onMessageOpenedApp.listen(_handleMessageOpenedApp);
 
       RemoteMessage? initialMessage = await _messaging.getInitialMessage();
@@ -121,7 +132,10 @@ class PushNotificationService {
     log('  Data: ${message.data}');
 
     if (message.notification != null) {
-      final title = message.notification?.title ?? message.data['title'] ?? 'Notification';
+      final title =
+          message.notification?.title ??
+          message.data['title'] ??
+          'Notification';
       final body = message.notification?.body ?? message.data['body'] ?? '';
       _showLocalNotification(title: title, body: body, data: message.data);
     }
@@ -134,10 +148,16 @@ class PushNotificationService {
   }
 
   Future<void> _showLocalNotification({
-    required String title, required String body, Map<String, dynamic>? data,
+    required String title,
+    required String body,
+    Map<String, dynamic>? data,
   }) async {
     try {
-      await _notificationService.sendFcmNotification(title: title, body: body, data: data);
+      await _notificationService.sendFcmNotification(
+        title: title,
+        body: body,
+        data: data,
+      );
     } catch (e) {
       log('Error showing local notification: $e');
     }
@@ -147,56 +167,83 @@ class PushNotificationService {
     final String? route = data['route'];
     final String? type = data['type'];
 
-    if (route != null) { _navigateToRoute(route); }
+    if (route != null) {
+      _navigateToRoute(route);
+    }
 
     if (type != null) {
       switch (type) {
-        case 'streak_reminder': case 'deadline_reminder': case 'streak_achieved':
-          _navigateToCircle(data['circleName'] ?? ''); break;
-        case 'proof_posted': case 'interaction':
-          _navigateToActivityThread(data['circleName'] ?? ''); break;
-        case 'weekly_summary': _navigateToProfile(); break;
-        default: log('Unknown notification type: $type');
+        case 'streak_reminder':
+        case 'deadline_reminder':
+        case 'streak_achieved':
+          _navigateToCircle(data['circleName'] ?? '');
+          break;
+        case 'proof_posted':
+        case 'interaction':
+          _navigateToActivityThread(data['circleName'] ?? '');
+          break;
+        case 'weekly_summary':
+          _navigateToProfile();
+          break;
+        default:
+          log('Unknown notification type: $type');
       }
     }
   }
 
   void _navigateToRoute(String route) {
     final navigator = _navigatorKey?.currentState;
-    if (navigator != null) { navigator.pushNamed(route); }
+    if (navigator != null) {
+      navigator.pushNamed(route);
+    }
   }
 
   void _navigateToCircle(String circleName) {
     final navigator = _navigatorKey?.currentState;
-    if (navigator != null) { navigator.pushNamed('/circles'); }
+    if (navigator != null) {
+      navigator.pushNamed('/circles');
+    }
   }
 
   void _navigateToActivityThread(String circleName) {
     final navigator = _navigatorKey?.currentState;
-    if (navigator != null) { navigator.pushNamed('/circles'); }
+    if (navigator != null) {
+      navigator.pushNamed('/circles');
+    }
   }
 
   void _navigateToProfile() {
     final navigator = _navigatorKey?.currentState;
-    if (navigator != null) { navigator.pushNamed('/profile'); }
+    if (navigator != null) {
+      navigator.pushNamed('/profile');
+    }
   }
 
   Future<void> subscribeToTopic(String topic) async {
     try {
       await _messaging.subscribeToTopic(topic);
       log('Subscribed to topic: $topic');
-    } catch (e) { log('Error subscribing to topic: $e'); }
+    } catch (e) {
+      log('Error subscribing to topic: $e');
+    }
   }
 
   Future<void> unsubscribeFromTopic(String topic) async {
     try {
       await _messaging.unsubscribeFromTopic(topic);
       log('Unsubscribed from topic: $topic');
-    } catch (e) { log('Error unsubscribing from topic: $e'); }
+    } catch (e) {
+      log('Error unsubscribing from topic: $e');
+    }
   }
 
-  Future<void> subscribeToCircle(int circleId) async { await subscribeToTopic('circle_$circleId'); }
-  Future<void> unsubscribeFromCircle(int circleId) async { await unsubscribeFromTopic('circle_$circleId'); }
+  Future<void> subscribeToCircle(int circleId) async {
+    await subscribeToTopic('circle_$circleId');
+  }
+
+  Future<void> unsubscribeFromCircle(int circleId) async {
+    await unsubscribeFromTopic('circle_$circleId');
+  }
 
   String? get currentToken => _currentToken;
   bool get isInitialized => _isInitialized;

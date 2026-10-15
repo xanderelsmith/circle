@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:circle_flutter/theme.dart';
 import 'package:circle_flutter/services/vapi_service.dart';
@@ -8,8 +9,22 @@ class ActivityHeaderCard extends StatelessWidget {
 
   final Activity activity;
 
+  ImageProvider? _getCoverImage(String? url) {
+    if (url == null || url.isEmpty) return null;
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return NetworkImage(url);
+    }
+    final file = File(url);
+    if (file.existsSync()) {
+      return FileImage(file);
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final coverImage = _getCoverImage(activity.coverImageUrl);
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -23,14 +38,22 @@ class ActivityHeaderCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Icon
+              // Icon or Cover Image
               Container(
                 width: 48,
                 height: 48,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: AppTheme.primaryGradient,
+                  gradient: coverImage == null
+                      ? AppTheme.primaryGradient
+                      : null,
+                  image: coverImage != null
+                      ? DecorationImage(
+                          image: coverImage,
+                          fit: BoxFit.cover,
+                        )
+                      : null,
                   boxShadow: [
                     BoxShadow(
                       color: AppTheme.primaryBright.withValues(alpha: 0.35),
@@ -39,10 +62,12 @@ class ActivityHeaderCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: Text(
-                  activity.iconEmoji,
-                  style: const TextStyle(fontSize: 22),
-                ),
+                child: coverImage != null
+                    ? null
+                    : Text(
+                        activity.iconEmoji,
+                        style: const TextStyle(fontSize: 22),
+                      ),
               ),
               const SizedBox(width: 14),
 
@@ -141,7 +166,8 @@ class ActivityHeaderCard extends StatelessWidget {
                       onTap: () {
                         final vapiService = VapiService();
                         vapiService.initiateCall(
-                          phoneNumber: '+1234567890', // TODO: Get from user profile
+                          phoneNumber:
+                              '+1234567890', // TODO: Get from user profile
                           habitName: activity.title,
                         );
                         ScaffoldMessenger.of(context).showSnackBar(

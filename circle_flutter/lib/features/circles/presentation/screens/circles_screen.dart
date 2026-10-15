@@ -27,59 +27,11 @@ class _CirclesScreenState extends ConsumerState<CirclesScreen> {
   String _searchQuery = '';
   int _activeTabIndex = 0;
 
-  // Interactive pending invitations
-  final List<Map<String, dynamic>> _pendingInvites = [
-    {
-      'id': 'inv_1',
-      'circleName': 'Alpha Habit Tribe',
-      'invitedBy': 'Sarah',
-      'members': 6,
-      'deadline': '21:00',
-    },
-    {
-      'id': 'inv_2',
-      'circleName': 'Early Birds Run Club',
-      'invitedBy': 'Emmanuel',
-      'members': 11,
-      'deadline': '07:00',
-    },
-  ];
+  // Pending invitations (no backend source yet, so starts empty)
+  final List<Map<String, dynamic>> _pendingInvites = [];
 
-  // Curated suggested circles
-  final List<Map<String, dynamic>> _suggestedCircles = const [
-    {
-      'name': 'Morning Routine & Flow',
-      'tagline': 'Daily check-in before 7:30 AM',
-      'streak': 9,
-      'members': 18,
-      'icon': Icons.wb_sunny_rounded,
-      'color': Color(0xFFFFB74D),
-    },
-    {
-      'name': 'Fitness & Daily HIIT',
-      'tagline': 'Daily workout proof by 8:00 PM',
-      'streak': 14,
-      'members': 35,
-      'icon': Icons.fitness_center_rounded,
-      'color': Color(0xFFFF5252),
-    },
-    {
-      'name': '30-Day Deep Focus',
-      'tagline': '2 hours uninterrupted coding daily',
-      'streak': 21,
-      'members': 28,
-      'icon': Icons.computer_rounded,
-      'color': Color(0xFF7C4DFF),
-    },
-    {
-      'name': 'Daily Book Club',
-      'tagline': 'Read 20 pages every night',
-      'streak': 12,
-      'members': 15,
-      'icon': Icons.menu_book_rounded,
-      'color': Color(0xFF26A69A),
-    },
-  ];
+  // Suggested circles (no backend source yet, so starts empty)
+  final List<Map<String, dynamic>> _suggestedCircles = const [];
 
   @override
   void initState() {
@@ -855,6 +807,29 @@ class _CirclesScreenState extends ConsumerState<CirclesScreen> {
           style: TextStyle(color: AppTheme.textMuted, fontSize: 13),
         ),
         const SizedBox(height: 16),
+        if (_suggestedCircles.isEmpty)
+          Container(
+            padding: const EdgeInsets.all(24),
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: AppTheme.card,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              children: const [
+                Icon(
+                  Icons.explore_outlined,
+                  color: AppTheme.textMuted,
+                  size: 36,
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'No suggested circles yet',
+                  style: TextStyle(color: AppTheme.textMuted, fontSize: 14),
+                ),
+              ],
+            ),
+          ),
         ..._suggestedCircles.map((sug) {
           final isAlreadyJoined = myCircles.any(
             (c) =>

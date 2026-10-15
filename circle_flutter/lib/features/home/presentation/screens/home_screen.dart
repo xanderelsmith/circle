@@ -4,6 +4,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:circle_client/circle_client.dart';
 import '../../../../client.dart';
+import '../../../../core/providers/current_user_provider.dart';
 import '../../../../core/providers/notification_count_provider.dart';
 import '../../../../core/widgets/failure.dart';
 import '../../../../core/widgets/shimmer.dart';
@@ -520,9 +521,15 @@ class _ProofFeedCardItem extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final messagesAsync = ref.watch(groupChatMessagesProvider(post.circleId));
     final commentCount = messagesAsync.value?.length ?? 0;
+    final currentUser = ref.watch(currentUserProvider).value;
 
-    final username = author?.username ?? 'User ${post.userId}';
-    final streak = author?.streakCount ?? 1;
+    final isMyPost = currentUser?.id != null && post.userId == currentUser!.id;
+    final username = isMyPost
+        ? currentUser.username
+        : (author?.username ?? 'User ${post.userId}');
+    final streak = isMyPost
+        ? currentUser.streakCount
+        : (author?.streakCount ?? 1);
     final hoursAgo = DateTime.now().difference(post.createdAt).inHours;
     final timeAgo = hoursAgo <= 0 ? 'Just now' : '${hoursAgo}h ago';
 

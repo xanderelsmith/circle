@@ -77,11 +77,11 @@ class _ActivityThreadScreenState extends ConsumerState<ActivityThreadScreen>
     );
   }
 
-  Future<void> _handleSendComment() async {
+  Future<void> _handleSendComment([User? user]) async {
     final text = _commentController.text.trim();
     if (text.isEmpty) return;
 
-    final currentUser = ref.read(currentUserProvider).value;
+    final currentUser = user ?? ref.read(currentUserProvider).value;
     final groupId = int.tryParse(widget.activity.id) ?? 1;
 
     final msg = ChatMessage(
@@ -126,6 +126,8 @@ class _ActivityThreadScreenState extends ConsumerState<ActivityThreadScreen>
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = ref.watch(currentUserProvider).value;
+
     return Scaffold(
       backgroundColor: AppTheme.background,
       body: Container(
@@ -172,7 +174,7 @@ class _ActivityThreadScreenState extends ConsumerState<ActivityThreadScreen>
               ComposerBar(
                 controller: _commentController,
                 onCameraTap: _openAddProof,
-                onSend: _handleSendComment,
+                onSend: () => _handleSendComment(currentUser),
               ),
             ],
           ),
@@ -381,7 +383,7 @@ class _MembersTab extends ConsumerWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          '${user.streakCount} day streak · ${user.rankColor ?? 'Rookie'}',
+                          '${user.streakCount} day streak · ${user.rankColor}',
                           style: const TextStyle(
                             fontSize: 11.5,
                             color: AppTheme.textMuted,
@@ -414,7 +416,8 @@ class _LeaderboardTab extends ConsumerWidget {
     final currentUser = ref.watch(currentUserProvider).value;
 
     return usersAsync.when(
-      loading: () => const ShimmerList(itemCount: 6, itemHeight: 72, showTrailing: true),
+      loading: () =>
+          const ShimmerList(itemCount: 6, itemHeight: 72, showTrailing: true),
       error: (err, _) => Center(
         child: Padding(
           padding: const EdgeInsets.all(16),

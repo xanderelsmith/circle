@@ -5,7 +5,9 @@ import 'package:circle_flutter/core/providers/auth_provider.dart';
 import 'package:circle_flutter/theme.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({super.key, this.isEmbedded = false});
+
+  final bool isEmbedded;
 
   @override
   ConsumerState<LoginScreen> createState() => _LoginScreenState();
@@ -41,7 +43,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       setState(() => _isLoading = false);
 
       if (success) {
-        Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+        if (!widget.isEmbedded) {
+          Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

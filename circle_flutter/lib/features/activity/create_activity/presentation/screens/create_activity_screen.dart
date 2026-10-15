@@ -1,17 +1,23 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:circle_client/circle_client.dart';
+import 'package:circle_flutter/client.dart';
+import 'package:circle_flutter/core/providers/current_user_provider.dart';
+import 'package:circle_flutter/features/home/data/home_feed_provider.dart';
 import 'package:circle_flutter/theme.dart';
 import 'package:circle_flutter/features/activity/domain/activity.dart';
 
-class CreateActivityScreen extends StatefulWidget {
+class CreateActivityScreen extends ConsumerStatefulWidget {
   const CreateActivityScreen({super.key});
 
   @override
-  State<CreateActivityScreen> createState() => _CreateActivityScreenState();
+  ConsumerState<CreateActivityScreen> createState() =>
+      _CreateActivityScreenState();
 }
 
-class _CreateActivityScreenState extends State<CreateActivityScreen> {
+class _CreateActivityScreenState extends ConsumerState<CreateActivityScreen> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _picker = ImagePicker();
@@ -138,7 +144,9 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
   // ---------------------------------------------------------------------------
   // Submit
   // ---------------------------------------------------------------------------
-  void _handleCreate() {
+  // Submit
+  // ---------------------------------------------------------------------------
+  Future<void> _handleCreate([User? user]) async {
     final title = _titleController.text.trim();
 
     if (title.isEmpty) {
@@ -153,8 +161,47 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
       }
     }
 
+    final coverPath = _coverImage?.path;
+    int circleId = DateTime.now().millisecondsSinceEpoch;
+
+    try {
+      final deadline =
+          _endDate ?? DateTime.now().add(Duration(days: _computeTotalDays()));
+      final circle = await client.circle.createCircle(
+        CircleGroup(
+          name: title,
+          dailyDeadline: deadline,
+        ),
+      );
+      if (circle.id != null) {
+        circleId = circle.id!;
+        ref.read(selectedCircleIdProvider.notifier).selectCircle(circleId);
+        ref.invalidate(circlesProvider);
+
+        if (coverPath != null && coverPath.isNotEmpty) {
+          final currentUser = user ?? ref.read(currentUserProvider).value;
+          await client.circle.createProofPost(
+            ProofPost(
+              userId: currentUser?.id ?? 1,
+              circleId: circleId,
+              imageUrl: coverPath,
+              caption: _descriptionController.text.trim().isNotEmpty
+                  ? _descriptionController.text.trim()
+                  : 'Started $title',
+              isVerified: true,
+              createdAt: DateTime.now(),
+            ),
+          );
+          ref.invalidate(homeFeedProvider);
+          ref.invalidate(forYouFeedProvider);
+        }
+      }
+    } catch (_) {
+      // Local fallback
+    }
+
     final newActivity = Activity(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id: circleId.toString(),
       title: title,
       description: _descriptionController.text.trim(),
       type: _type,
@@ -166,10 +213,13 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
       isJoined: true,
       currentDay: 0,
       totalDays: _computeTotalDays(),
+      coverImageUrl: coverPath,
     );
 
     // Pops with the new Activity so the caller can act on it.
-    Navigator.of(context).pop(newActivity);
+    if (mounted) {
+      Navigator.of(context).pop(newActivity);
+    }
   }
 
   int _computeTotalDays() {
@@ -213,6 +263,8 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = ref.watch(currentUserProvider).value;
+
     return Scaffold(
       backgroundColor: AppTheme.background,
       body: Container(
@@ -389,7 +441,7 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                   ],
                 ),
               ),
-              _CreateButton(onPressed: _handleCreate),
+              _CreateButton(onPressed: () => _handleCreate(currentUser)),
             ],
           ),
         ),

@@ -49,10 +49,10 @@ class NotificationService {
     // iOS initialization settings
     const DarwinInitializationSettings iosSettings =
         DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
-    );
+          requestAlertPermission: true,
+          requestBadgePermission: true,
+          requestSoundPermission: true,
+        );
 
     // Initialization settings for both platforms
     const InitializationSettings initSettings = InitializationSettings(
@@ -83,23 +83,25 @@ class NotificationService {
       enableVibration: true,
     );
 
-    const AndroidNotificationChannel deadlineChannel = AndroidNotificationChannel(
-      'deadline_reminders',
-      'Deadline Reminders',
-      description: 'Reminders for circle daily deadlines',
-      importance: Importance.high,
-      playSound: true,
-      enableVibration: true,
-    );
+    const AndroidNotificationChannel deadlineChannel =
+        AndroidNotificationChannel(
+          'deadline_reminders',
+          'Deadline Reminders',
+          description: 'Reminders for circle daily deadlines',
+          importance: Importance.high,
+          playSound: true,
+          enableVibration: true,
+        );
 
-    const AndroidNotificationChannel generalChannel = AndroidNotificationChannel(
-      'general_notifications',
-      'General Notifications',
-      description: 'General app notifications',
-      importance: Importance.defaultImportance,
-      playSound: true,
-      enableVibration: true,
-    );
+    const AndroidNotificationChannel generalChannel =
+        AndroidNotificationChannel(
+          'general_notifications',
+          'General Notifications',
+          description: 'General app notifications',
+          importance: Importance.defaultImportance,
+          playSound: true,
+          enableVibration: true,
+        );
 
     final androidImpl = _notifications
         .resolvePlatformSpecificImplementation<
@@ -166,13 +168,16 @@ class NotificationService {
 
       if (hoursUntilDeadline <= 1) {
         title = '⚠️ Deadline Approaching!';
-        body = 'Only $hoursUntilDeadline hour left for "$circleName" deadline at $deadlineTime!';
+        body =
+            'Only $hoursUntilDeadline hour left for "$circleName" deadline at $deadlineTime!';
       } else if (hoursUntilDeadline <= 3) {
         title = '⏰ Deadline Soon';
-        body = '$hoursUntilDeadline hours until "$circleName" deadline at $deadlineTime';
+        body =
+            '$hoursUntilDeadline hours until "$circleName" deadline at $deadlineTime';
       } else {
         title = '📅 Daily Reminder';
-        body = 'Don\'t forget to post your proof for "$circleName" by $deadlineTime';
+        body =
+            'Don\'t forget to post your proof for "$circleName" by $deadlineTime';
       }
 
       await _showNotification(
@@ -362,26 +367,25 @@ class NotificationService {
       // Android notification details
       final AndroidNotificationDetails androidDetails =
           AndroidNotificationDetails(
-        channelId,
-        channelId == 'streak_reminders'
-            ? 'Streak Reminders'
-            : channelId == 'deadline_reminders'
+            channelId,
+            channelId == 'streak_reminders'
+                ? 'Streak Reminders'
+                : channelId == 'deadline_reminders'
                 ? 'Deadline Reminders'
                 : 'General Notifications',
-        channelDescription:
-            channelId == 'streak_reminders'
+            channelDescription: channelId == 'streak_reminders'
                 ? 'Daily reminders to maintain your streak'
                 : channelId == 'deadline_reminders'
-                    ? 'Reminders for circle daily deadlines'
-                    : 'General app notifications',
-        importance: Importance.high,
-        priority: Priority.high,
-        showWhen: true,
-        enableVibration: true,
-        playSound: true,
-        icon: 'ic_notification',
-        styleInformation: BigTextStyleInformation(body),
-      );
+                ? 'Reminders for circle daily deadlines'
+                : 'General app notifications',
+            importance: Importance.high,
+            priority: Priority.high,
+            showWhen: true,
+            enableVibration: true,
+            playSound: true,
+            icon: 'ic_notification',
+            styleInformation: BigTextStyleInformation(body),
+          );
 
       // iOS notification details
       const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
@@ -458,7 +462,8 @@ class NotificationService {
         // We'll just show a notification now for today
         await sendDeadlineReminder(
           circleName: circleName,
-          deadlineTime: '${deadlineTime.hour.toString().padLeft(2, '0')}:${deadlineTime.minute.toString().padLeft(2, '0')}',
+          deadlineTime:
+              '${deadlineTime.hour.toString().padLeft(2, '0')}:${deadlineTime.minute.toString().padLeft(2, '0')}',
           hoursUntilDeadline: 0,
         );
         return;
@@ -476,7 +481,8 @@ class NotificationService {
         await _scheduleNotificationAt(
           id: 200 + circleId,
           title: '⏰ Deadline Reminder',
-          body: 'Post your proof for "$circleName" by ${deadlineTime.hour.toString().padLeft(2, '0')}:${deadlineTime.minute.toString().padLeft(2, '0')}',
+          body:
+              'Post your proof for "$circleName" by ${deadlineTime.hour.toString().padLeft(2, '0')}:${deadlineTime.minute.toString().padLeft(2, '0')}',
           scheduledDate: tomorrowReminder,
           channelId: 'deadline_reminders',
           payload: jsonEncode({
@@ -489,7 +495,8 @@ class NotificationService {
         await _scheduleNotificationAt(
           id: 200 + circleId,
           title: '⏰ Deadline Reminder',
-          body: 'Post your proof for "$circleName" by ${deadlineTime.hour.toString().padLeft(2, '0')}:${deadlineTime.minute.toString().padLeft(2, '0')}',
+          body:
+              'Post your proof for "$circleName" by ${deadlineTime.hour.toString().padLeft(2, '0')}:${deadlineTime.minute.toString().padLeft(2, '0')}',
           scheduledDate: reminderTime,
           channelId: 'deadline_reminders',
           payload: jsonEncode({
@@ -533,26 +540,25 @@ class NotificationService {
     try {
       final AndroidNotificationDetails androidDetails =
           AndroidNotificationDetails(
-        channelId,
-        channelId == 'streak_reminders'
-            ? 'Streak Reminders'
-            : channelId == 'deadline_reminders'
+            channelId,
+            channelId == 'streak_reminders'
+                ? 'Streak Reminders'
+                : channelId == 'deadline_reminders'
                 ? 'Deadline Reminders'
                 : 'General Notifications',
-        channelDescription:
-            channelId == 'streak_reminders'
+            channelDescription: channelId == 'streak_reminders'
                 ? 'Daily reminders to maintain your streak'
                 : channelId == 'deadline_reminders'
-                    ? 'Reminders for circle daily deadlines'
-                    : 'General app notifications',
-        importance: Importance.high,
-        priority: Priority.high,
-        showWhen: true,
-        enableVibration: true,
-        playSound: true,
-        icon: 'ic_notification',
-        styleInformation: BigTextStyleInformation(body),
-      );
+                ? 'Reminders for circle daily deadlines'
+                : 'General app notifications',
+            importance: Importance.high,
+            priority: Priority.high,
+            showWhen: true,
+            enableVibration: true,
+            playSound: true,
+            icon: 'ic_notification',
+            styleInformation: BigTextStyleInformation(body),
+          );
 
       const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
         presentAlert: true,
